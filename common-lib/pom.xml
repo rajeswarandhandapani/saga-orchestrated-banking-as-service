@@ -11,4 +11,13 @@
   <packaging>jar</packaging>
   <name>Common Library</name>
   <description>Shared utilities, DTOs, and common code for Banking as a Service</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.32</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

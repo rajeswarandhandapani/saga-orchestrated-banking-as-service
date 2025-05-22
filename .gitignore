@@ -2,6 +2,9 @@
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
+# Exclude all module target folders
+/*/target/
+
 # Eclipse
 .classpath
 .project
