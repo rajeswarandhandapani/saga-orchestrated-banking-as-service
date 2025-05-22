@@ -10,11 +10,8 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
-server:
-  port: 8081
-
-# Enable H2 console
-spring:
   h2:
     console:
       enabled: true
+server:
+  port: 8081
