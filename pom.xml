@@ -10,6 +10,7 @@
   <description>Parent project for Banking as a Service microservices platform</description>
   <modules>
     <module>common-lib</module>
+    <module>account-service</module>
     <!-- Modules will be added here as submodules are created -->
   </modules>
   <properties>
