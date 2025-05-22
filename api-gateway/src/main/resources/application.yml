@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: account-service
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/api/accounts/**
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payments/**
+        - id: transaction-service
+          uri: lb://TRANSACTION-SERVICE
+          predicates:
+            - Path=/api/transactions/**
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/notifications/**
+        - id: audit-service
+          uri: lb://AUDIT-SERVICE
+          predicates:
+            - Path=/api/audits/**
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8080
