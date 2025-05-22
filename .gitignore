@@ -1,0 +1,46 @@
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ
+*.iml
+.idea/
+out/
+
+# VS Code
+.vscode/
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build
+/build/
+
+# Others
+*.swp
+*.swo
+
+# Java
+*.class
+
+# Environment
+.env
+
+# Test reports
+/test-output/
+
+# Spring Boot
+spring.log
+
+# Ignore local configuration
+application-local.properties
+application-local.yml
