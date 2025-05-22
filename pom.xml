@@ -15,6 +15,7 @@
     <module>payment-service</module>
     <module>transaction-service</module>
     <module>notification-service</module>
+    <module>audit-service</module>
     <!-- Modules will be added here as submodules are created -->
   </modules>
   <properties>
