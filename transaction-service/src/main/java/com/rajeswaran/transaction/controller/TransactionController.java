@@ -2,6 +2,7 @@ package com.rajeswaran.transaction.controller;
 
 import com.rajeswaran.transaction.entity.Transaction;
 import com.rajeswaran.transaction.service.TransactionService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,31 +10,49 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
+
     @Autowired
     private TransactionService transactionService;
 
     @GetMapping
     public List<Transaction> getAllTransactions() {
-        return transactionService.getAllTransactions();
+        log.info("Received request: getAllTransactions");
+        List<Transaction> transactions = transactionService.getAllTransactions();
+        log.info("Completed request: getAllTransactions, count={}", transactions.size());
+        return transactions;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
+        log.info("Received request: getTransactionById, id={}", id);
         Optional<Transaction> transaction = transactionService.getTransactionById(id);
-        return transaction.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        if (transaction.isPresent()) {
+            log.info("Completed request: getTransactionById, found transactionId={}", id);
+            return ResponseEntity.ok(transaction.get());
+        } else {
+            log.info("Completed request: getTransactionById, transactionId={} not found", id);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
     public Transaction createTransaction(@RequestBody Transaction transaction) {
-        return transactionService.createTransaction(transaction);
+        log.info("Received request: createTransaction, payload={}", transaction);
+        Transaction created = transactionService.createTransaction(transaction);
+        log.info("Completed request: createTransaction, createdId={}", created.getId());
+        return created;
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
+        log.info("Received request: deleteTransaction, id={}", id);
         transactionService.deleteTransaction(id);
+        log.info("Completed request: deleteTransaction, id={}", id);
         return ResponseEntity.noContent().build();
     }
 }
+
