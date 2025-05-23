@@ -1,4 +1,4 @@
-package com.rajeswaran.payment;
+package com.rajeswaran.audit;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
