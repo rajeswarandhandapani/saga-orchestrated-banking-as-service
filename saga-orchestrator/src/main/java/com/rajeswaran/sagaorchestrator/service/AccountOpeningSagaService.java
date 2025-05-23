@@ -2,17 +2,24 @@ package com.rajeswaran.sagaorchestrator.service;
 
 import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaRequest;
 import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaResponse;
+import com.rajeswaran.common.events.AccountOpenedEvent;
+import com.rajeswaran.common.events.AccountOpeningFailedEvent;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.cloud.stream.function.StreamBridge;
+
+import java.time.Instant;
 
 @Service
 public class AccountOpeningSagaService {
     private final WebClient webClient;
+    private final StreamBridge streamBridge;
 
-    public AccountOpeningSagaService(WebClient.Builder webClientBuilder) {
+    public AccountOpeningSagaService(WebClient.Builder webClientBuilder, StreamBridge streamBridge) {
         this.webClient = webClientBuilder.build();
+        this.streamBridge = streamBridge;
     }
 
     // URLs for user-service and account-service via API Gateway
@@ -20,6 +27,8 @@ public class AccountOpeningSagaService {
     private static final String ACCOUNT_SERVICE_URL = "http://localhost:8080/api/accounts";
 
     public AccountOpeningSagaResponse executeAccountOpeningSaga(AccountOpeningSagaRequest request, String authorizationHeader) {
+        String userId = null;
+        String accountId = null;
         try {
             // 1. Create user in user-service
             var userPayload = new UserCreateRequest(request.username(), request.email(), request.fullName());
@@ -36,9 +45,12 @@ public class AccountOpeningSagaService {
                     .bodyToMono(UserCreateResponse.class)
                     .block();
             if (userResponse == null || userResponse.id() == null) {
+                var event = new AccountOpeningFailedEvent(null, null, request.email(), request.fullName(), Instant.now(), "User creation failed", "User creation failed");
+                streamBridge.send("auditEvent-out-0", event);
+                streamBridge.send("notificationEvent-out-0", event);
                 return new AccountOpeningSagaResponse("FAILED", "User creation failed", null, null);
             }
-            String userId = userResponse.id();
+            userId = userResponse.id();
 
             // 2. Create account in account-service
             var accountPayload = new AccountCreateRequest(null, null, request.accountType(), userId, 0.0, "ACTIVE");
@@ -55,15 +67,23 @@ public class AccountOpeningSagaService {
                     .bodyToMono(AccountCreateResponse.class)
                     .block();
             if (accountResponse == null || accountResponse.accountId() == null) {
-                // Compensation: delete user (not implemented)
+                var event = new AccountOpeningFailedEvent(userId, null, request.email(), request.fullName(), Instant.now(), "Account creation failed", "Account creation failed, user will be deleted (compensation not implemented)");
+                streamBridge.send("auditEvent-out-0", event);
+                streamBridge.send("notificationEvent-out-0", event);
                 return new AccountOpeningSagaResponse("FAILED", "Account creation failed, user will be deleted (compensation not implemented)", userId, null);
             }
-            String accountId = accountResponse.accountId();
+            accountId = accountResponse.accountId();
 
-            // Success
+            // Success: publish AccountOpenedEvent
+            var openedEvent = new AccountOpenedEvent(userId, accountId, request.email(), request.fullName(), Instant.now(), "User and account created successfully");
+            streamBridge.send("auditEvent-out-0", openedEvent);
+            streamBridge.send("notificationEvent-out-0", openedEvent);
             return new AccountOpeningSagaResponse("SUCCESS", "User and account created successfully", userId, accountId);
         } catch (Exception ex) {
-            return new AccountOpeningSagaResponse("FAILED", "Saga failed: " + ex.getMessage(), null, null);
+            var event = new AccountOpeningFailedEvent(userId, accountId, request.email(), request.fullName(), Instant.now(), "Saga exception", "Saga failed: " + ex.getMessage());
+            streamBridge.send("auditEvent-out-0", event);
+            streamBridge.send("notificationEvent-out-0", event);
+            return new AccountOpeningSagaResponse("FAILED", "Saga failed: " + ex.getMessage(), userId, accountId);
         }
     }
 
