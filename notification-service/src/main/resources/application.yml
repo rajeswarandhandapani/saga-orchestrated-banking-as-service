@@ -20,9 +20,12 @@ spring:
       bindings:
         notificationEvent-in-0:
           destination: notification-events
+          group: notification-service-group
       kafka:
         binder:
           brokers: localhost:9092
+    function:
+      definition: notificationEvent
   security:
     oauth2:
       resourceserver:

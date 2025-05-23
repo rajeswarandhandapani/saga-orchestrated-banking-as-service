@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 @Component
 public class AccountOpeningSagaEventListener {
     @Bean
-    public Consumer<AccountOpenedEvent> notificationAccountOpenedEvent() {
+    public Consumer<AccountOpenedEvent> notificationEvent() {
         return event -> {
             log.info("[NOTIFICATION] AccountOpenedEvent received: {}", event);
             // TODO: Send notification (email/SMS/etc.) if required

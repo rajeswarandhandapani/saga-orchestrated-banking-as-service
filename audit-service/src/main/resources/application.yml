@@ -20,9 +20,12 @@ spring:
       bindings:
         auditEvent-in-0:
           destination: audit-events
+          group: audit-service-group
       kafka:
         binder:
           brokers: localhost:9092
+    function:
+      definition: auditEvent
   security:
     oauth2:
       resourceserver:

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class AccountOpeningSagaEventListener {
 
     @Bean
-    public Consumer<AccountOpenedEvent> auditAccountOpenedEvent() {
+    public Consumer<AccountOpenedEvent> auditEvent() {
         return event -> {
             log.info("[AUDIT] AccountOpenedEvent received: {}", event);
             // TODO: Persist audit event if required
