@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/saga/account-opening")
+@RequestMapping("/api/saga/account-opening")
 public class AccountOpeningSagaController {
     @Autowired
     private AccountOpeningSagaService sagaService;

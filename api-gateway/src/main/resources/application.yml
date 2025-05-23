@@ -31,6 +31,10 @@ spring:
           uri: lb://AUDIT-SERVICE
           predicates:
             - Path=/api/audits/**
+        - id: saga-orchestrator
+          uri: lb://SAGA-ORCHESTRATOR
+          predicates:
+            - Path=/api/saga/**
   security:
     oauth2:
       resourceserver:
