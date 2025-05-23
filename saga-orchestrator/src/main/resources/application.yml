@@ -6,6 +6,16 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8089/realms/BaaS
+  cloud:
+    stream:
+      bindings:
+        auditEvent-out-0:
+          destination: audit-events
+        notificationEvent-out-0:
+          destination: notification-events
+      kafka:
+        binder:
+          brokers: localhost:9092
 server:
   port: 8090
 

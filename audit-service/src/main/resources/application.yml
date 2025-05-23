@@ -16,6 +16,13 @@ spring:
   cloud:
     discovery:
       enabled: true
+    stream:
+      bindings:
+        auditEvent-in-0:
+          destination: audit-events
+      kafka:
+        binder:
+          brokers: localhost:9092
   security:
     oauth2:
       resourceserver:
