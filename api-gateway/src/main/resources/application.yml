@@ -31,6 +31,11 @@ spring:
           uri: lb://AUDIT-SERVICE
           predicates:
             - Path=/api/audits/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8089/realms/BaaS
 eureka:
   client:
     service-url:
