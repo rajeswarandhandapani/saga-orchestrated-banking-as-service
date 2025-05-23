@@ -12,6 +12,10 @@
   <name>Common Library</name>
   <description>Shared utilities, DTOs, and common code for Banking as a Service</description>
 
+  <properties>
+    <java.version>21</java.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.projectlombok</groupId>

@@ -12,6 +12,10 @@
   <name>Account Service</name>
   <description>Microservice for managing customer bank accounts</description>
 
+  <properties>
+    <java.version>21</java.version>
+  </properties>
+
   <dependencies>
     <!-- Spring Boot Starter -->
     <dependency>

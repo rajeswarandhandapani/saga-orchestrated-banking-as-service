@@ -11,6 +11,9 @@
   <packaging>jar</packaging>
   <name>API Gateway</name>
   <description>API Gateway for routing and securing requests</description>
+  <properties>
+    <java.version>21</java.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>

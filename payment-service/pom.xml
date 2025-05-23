@@ -12,6 +12,10 @@
   <name>Payment Service</name>
   <description>Microservice for initiating and processing payments and transfers</description>
 
+  <properties>
+    <java.version>21</java.version>
+  </properties>
+
   <dependencies>
     <!-- Spring Boot Starter -->
     <dependency>

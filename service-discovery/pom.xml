@@ -12,6 +12,9 @@
   <packaging>jar</packaging>
   <name>Service Discovery</name>
   <description>Service discovery for microservices</description>
+  <properties>
+    <java.version>21</java.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
