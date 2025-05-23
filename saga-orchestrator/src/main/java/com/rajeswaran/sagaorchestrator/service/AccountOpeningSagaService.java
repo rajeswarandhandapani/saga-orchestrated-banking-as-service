@@ -19,13 +19,18 @@ public class AccountOpeningSagaService {
     private static final String USER_SERVICE_URL = "http://localhost:8080/api/users";
     private static final String ACCOUNT_SERVICE_URL = "http://localhost:8080/api/accounts";
 
-    public AccountOpeningSagaResponse executeAccountOpeningSaga(AccountOpeningSagaRequest request) {
+    public AccountOpeningSagaResponse executeAccountOpeningSaga(AccountOpeningSagaRequest request, String authorizationHeader) {
         try {
             // 1. Create user in user-service
             var userPayload = new UserCreateRequest(request.username(), request.email(), request.fullName());
             var userResponse = webClient.post()
                     .uri(USER_SERVICE_URL)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .headers(headers -> {
+                        if (authorizationHeader != null) {
+                            headers.set(HttpHeaders.AUTHORIZATION, authorizationHeader);
+                        }
+                    })
                     .bodyValue(userPayload)
                     .retrieve()
                     .bodyToMono(UserCreateResponse.class)
@@ -40,6 +45,11 @@ public class AccountOpeningSagaService {
             var accountResponse = webClient.post()
                     .uri(ACCOUNT_SERVICE_URL)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .headers(headers -> {
+                        if (authorizationHeader != null) {
+                            headers.set(HttpHeaders.AUTHORIZATION, authorizationHeader);
+                        }
+                    })
                     .bodyValue(accountPayload)
                     .retrieve()
                     .bodyToMono(AccountCreateResponse.class)
