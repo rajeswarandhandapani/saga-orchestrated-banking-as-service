@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "user-service", url = "http://localhost:8080/api/users")
+@FeignClient(name = "user-service")
 public interface UserServiceFeignClient {
-    @PostMapping(consumes = "application/json")
+    @PostMapping("/api/users")
     UserCreateResponse createUser(
         @RequestBody UserCreateRequest request,
         @RequestHeader(name = "Authorization", required = false) String authorizationHeader

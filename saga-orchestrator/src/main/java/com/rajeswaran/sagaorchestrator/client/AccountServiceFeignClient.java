@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.rajeswaran.sagaorchestrator.dto.AccountCreateRequest;
 import com.rajeswaran.sagaorchestrator.dto.AccountCreateResponse;
 
-@FeignClient(name = "account-service", url = "http://localhost:8080/api/accounts")
+@FeignClient(name = "account-service")
 public interface AccountServiceFeignClient {
-    @PostMapping
+    @PostMapping("/api/accounts")
     AccountCreateResponse createAccount(
         @RequestBody AccountCreateRequest request,
         @RequestHeader(value = "Authorization", required = false) String authorizationHeader
