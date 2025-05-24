@@ -1,7 +1,9 @@
 package com.rajeswaran.sagaorchestrator.service;
 
+import com.rajeswaran.sagaorchestrator.client.AccountServiceFeignClient;
 import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaRequest;
 import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaResponse;
+import com.rajeswaran.sagaorchestrator.dto.AccountCreateRequest;
 import com.rajeswaran.common.events.AccountOpenedEvent;
 import com.rajeswaran.common.events.AccountOpeningFailedEvent;
 import org.springframework.http.HttpHeaders;
@@ -16,10 +18,12 @@ import java.time.Instant;
 public class AccountOpeningSagaService {
     private final WebClient webClient;
     private final StreamBridge streamBridge;
+    private final AccountServiceFeignClient accountServiceFeignClient;
 
-    public AccountOpeningSagaService(WebClient.Builder webClientBuilder, StreamBridge streamBridge) {
+    public AccountOpeningSagaService(WebClient.Builder webClientBuilder, StreamBridge streamBridge, AccountServiceFeignClient accountServiceFeignClient) {
         this.webClient = webClientBuilder.build();
         this.streamBridge = streamBridge;
+        this.accountServiceFeignClient = accountServiceFeignClient;
     }
 
     // URLs for user-service and account-service via API Gateway
@@ -52,20 +56,9 @@ public class AccountOpeningSagaService {
             }
             userId = userResponse.id();
 
-            // 2. Create account in account-service
+            // 2. Create account in account-service (using Feign)
             var accountPayload = new AccountCreateRequest(null, null, request.accountType(), userId, 0.0, "ACTIVE");
-            var accountResponse = webClient.post()
-                    .uri(ACCOUNT_SERVICE_URL)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .headers(headers -> {
-                        if (authorizationHeader != null) {
-                            headers.set(HttpHeaders.AUTHORIZATION, authorizationHeader);
-                        }
-                    })
-                    .bodyValue(accountPayload)
-                    .retrieve()
-                    .bodyToMono(AccountCreateResponse.class)
-                    .block();
+            var accountResponse = accountServiceFeignClient.createAccount(accountPayload, authorizationHeader);
             if (accountResponse == null || accountResponse.accountId() == null) {
                 var event = new AccountOpeningFailedEvent(userId, null, request.email(), request.fullName(), Instant.now(), "Account creation failed", "Account creation failed, user will be deleted (compensation not implemented)");
                 streamBridge.send("auditEvent-out-0", event);
@@ -90,6 +83,4 @@ public class AccountOpeningSagaService {
     // DTOs for user-service and account-service requests/responses
     private record UserCreateRequest(String username, String email, String fullName) {}
     private record UserCreateResponse(String id, String username, String email, String fullName) {}
-    private record AccountCreateRequest(String accountId, String accountNumber, String accountType, String userId, double balance, String status) {}
-    private record AccountCreateResponse(String accountId, String accountNumber, String accountType, String userId, double balance, String status) {}
 }
