@@ -1,16 +1,16 @@
 package com.rajeswaran.sagaorchestrator.service;
 
-import com.rajeswaran.sagaorchestrator.client.AccountServiceFeignClient;
-import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaRequest;
-import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaResponse;
-import com.rajeswaran.sagaorchestrator.dto.AccountCreateRequest;
 import com.rajeswaran.common.events.AccountOpenedEvent;
 import com.rajeswaran.common.events.AccountOpeningFailedEvent;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import com.rajeswaran.sagaorchestrator.client.AccountServiceFeignClient;
+import com.rajeswaran.sagaorchestrator.client.UserServiceFeignClient;
+import com.rajeswaran.sagaorchestrator.dto.AccountCreateRequest;
+import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaRequest;
+import com.rajeswaran.sagaorchestrator.dto.AccountOpeningSagaResponse;
+import com.rajeswaran.sagaorchestrator.dto.UserCreateRequest;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.cloud.stream.function.StreamBridge;
 
 import java.time.Instant;
 
@@ -19,11 +19,13 @@ public class AccountOpeningSagaService {
     private final WebClient webClient;
     private final StreamBridge streamBridge;
     private final AccountServiceFeignClient accountServiceFeignClient;
+    private final UserServiceFeignClient userServiceFeignClient;
 
-    public AccountOpeningSagaService(WebClient.Builder webClientBuilder, StreamBridge streamBridge, AccountServiceFeignClient accountServiceFeignClient) {
+    public AccountOpeningSagaService(WebClient.Builder webClientBuilder, StreamBridge streamBridge, AccountServiceFeignClient accountServiceFeignClient, UserServiceFeignClient userServiceFeignClient) {
         this.webClient = webClientBuilder.build();
         this.streamBridge = streamBridge;
         this.accountServiceFeignClient = accountServiceFeignClient;
+        this.userServiceFeignClient = userServiceFeignClient;
     }
 
     // URLs for user-service and account-service via API Gateway
@@ -34,20 +36,9 @@ public class AccountOpeningSagaService {
         String userId = null;
         String accountId = null;
         try {
-            // 1. Create user in user-service
+            // 1. Create user in user-service (using Feign)
             var userPayload = new UserCreateRequest(request.username(), request.email(), request.fullName());
-            var userResponse = webClient.post()
-                    .uri(USER_SERVICE_URL)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .headers(headers -> {
-                        if (authorizationHeader != null) {
-                            headers.set(HttpHeaders.AUTHORIZATION, authorizationHeader);
-                        }
-                    })
-                    .bodyValue(userPayload)
-                    .retrieve()
-                    .bodyToMono(UserCreateResponse.class)
-                    .block();
+            var userResponse = userServiceFeignClient.createUser(userPayload, authorizationHeader);
             if (userResponse == null || userResponse.id() == null) {
                 var event = new AccountOpeningFailedEvent(null, null, request.email(), request.fullName(), Instant.now(), "User creation failed", "User creation failed");
                 streamBridge.send("auditEvent-out-0", event);
@@ -79,8 +70,4 @@ public class AccountOpeningSagaService {
             return new AccountOpeningSagaResponse("FAILED", "Saga failed: " + ex.getMessage(), userId, accountId);
         }
     }
-
-    // DTOs for user-service and account-service requests/responses
-    private record UserCreateRequest(String username, String email, String fullName) {}
-    private record UserCreateResponse(String id, String username, String email, String fullName) {}
 }
