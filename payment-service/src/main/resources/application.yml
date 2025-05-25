@@ -20,7 +20,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8089/realms/BaaS
+          issuer-uri: http://localhost:8089/realms/master
 eureka:
   client:
     service-url:
