@@ -22,10 +22,11 @@ public class AccountOpeningSagaController {
     @PostMapping
     public ResponseEntity<AccountOpeningSagaResponse> startAccountOpeningSaga(
             @RequestBody AccountOpeningSagaRequest request,
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
-        log.info("Received AccountOpeningSaga request: {}", request);
-        AccountOpeningSagaResponse response = sagaService.executeAccountOpeningSaga(request, authorizationHeader);
-        log.info("Completed AccountOpeningSaga request: status={}, message={}", response.status(), response.message());
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @RequestHeader(value = "X-Correlation-Id", required = false) String correlationIdHeader) {
+        log.info("Received AccountOpeningSaga request: {} correlationId={}", request, correlationIdHeader);
+        AccountOpeningSagaResponse response = sagaService.executeAccountOpeningSaga(request, authorizationHeader, correlationIdHeader);
+        log.info("Completed AccountOpeningSaga request: status={}, message={}, correlationId={}", response.status(), response.message(), correlationIdHeader);
         return ResponseEntity.ok(response);
     }
 }

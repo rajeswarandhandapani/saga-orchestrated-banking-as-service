@@ -31,9 +31,10 @@ public class AccountOpeningSagaService {
     private static final String USER_SERVICE_URL = "http://localhost:8080/api/users";
     private static final String ACCOUNT_SERVICE_URL = "http://localhost:8080/api/accounts";
 
-    public AccountOpeningSagaResponse executeAccountOpeningSaga(AccountOpeningSagaRequest request, String authorizationHeader) {
+    public AccountOpeningSagaResponse executeAccountOpeningSaga(AccountOpeningSagaRequest request, String authorizationHeader, String correlationIdHeader) {
         String userId = null;
         String accountId = null;
+        var correlationId = new SagaEvent.CorrelationId(correlationIdHeader);
         try {
             // 1. Create user in user-service (using Feign)
             var userPayload = new UserCreateRequest(request.username(), request.email(), request.fullName());
@@ -44,6 +45,7 @@ public class AccountOpeningSagaService {
                     null,
                     Instant.now(),
                     "User creation failed",
+                    correlationId,
                     SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
                     SagaEvent.SagaEventType.ACCOUNT_OPEN_FAILED
                 );
@@ -62,6 +64,7 @@ public class AccountOpeningSagaService {
                     null,
                     Instant.now(),
                     "Account creation failed",
+                    correlationId,
                     SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
                     SagaEvent.SagaEventType.ACCOUNT_OPEN_FAILED
                 );
@@ -77,6 +80,7 @@ public class AccountOpeningSagaService {
                 accountId,
                 Instant.now(),
                 "User and account created successfully",
+                correlationId,
                 SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
                 SagaEvent.SagaEventType.ACCOUNT_OPENED
             );
@@ -89,6 +93,7 @@ public class AccountOpeningSagaService {
                 accountId,
                 Instant.now(),
                 "Saga failed: " + ex.getMessage(),
+                correlationId,
                 SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
                 SagaEvent.SagaEventType.ACCOUNT_OPEN_FAILED
             );

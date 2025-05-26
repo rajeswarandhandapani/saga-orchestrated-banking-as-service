@@ -34,5 +34,7 @@ public class AuditLog {
     private String details; // Summary or specific message from the event
 
     private String serviceName; // Service that originated the event or is related to the saga
-}
 
+    @Column(length = 128)
+    private String correlationId;
+}

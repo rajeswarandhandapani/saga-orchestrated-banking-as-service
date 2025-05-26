@@ -7,6 +7,7 @@ public record SagaEvent(
     String accountId,
     Instant timestamp,
     String details,
+    CorrelationId correlationId,
     ServiceName serviceName,
     SagaEventType eventType
 ) {
@@ -22,4 +23,5 @@ public record SagaEvent(
         NOTIFICATION_SERVICE,
         AUDIT_SERVICE
     }
+    public record CorrelationId(String value) {}
 }
