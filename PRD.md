@@ -13,7 +13,7 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - **Service Communication**: 
   - REST APIs
   - Apache Kafka for event-driven communication
-- **Pattern**: Saga Orchestration Pattern
+- **Pattern**: Saga Choreography Pattern
 
 ### Core Microservices
 
@@ -49,12 +49,15 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
    - Transaction logging
    - Audit trail
 
-9. **Saga Orchestrator**
-   - Manage distributed transactions
-   - Compensation handling
-
-10. **Common Library**
+9. **Common Library**
     - Shared DTOs and utilities
+
+## Saga Choreography Pattern
+
+- Distributed transactions are managed using the Saga Choreography pattern.
+- Each microservice listens to relevant Kafka topics and reacts to events independently.
+- There is no central orchestrator; services coordinate by publishing and consuming events.
+- Compensation logic is handled by the services themselves if needed.
 
 ## Core Features
 
