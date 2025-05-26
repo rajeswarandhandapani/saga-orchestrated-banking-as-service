@@ -23,7 +23,8 @@ public class AuditLogService {
     }
 
     public AuditLog createLog(AuditLog log) {
-        log.setTimestamp(LocalDateTime.now());
+        // The eventTimestamp should be set by the caller (AuditEventListener)
+        // based on the actual event's timestamp.
         return auditLogRepository.save(log);
     }
 

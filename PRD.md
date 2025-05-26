@@ -8,7 +8,7 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 ### Technology Stack
 - **Framework**: Spring Boot
 - **Build Tool**: Maven (Multi-module project)
-- **Database**: H2 (Development/Testing)
+- **Database**: H2 (Development/Testing) - Each microservice has its own database (Database per Microservice pattern)
 - **Authentication**: Keycloak
 - **Service Communication**: 
   - REST APIs
@@ -27,36 +27,34 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
    - Basic health checks
 
 3. **User Service**
-   - Basic user registration
-   - Login/Authentication
-   - Keycloak integration
+   - User registration and management
+   - Authentication integration
 
 4. **Account Service**
-   - Create/View account
+   - Account creation and management
    - Balance inquiry
 
 5. **Transaction Service**
-   - Basic money transfer between accounts
-   - View transaction history
+   - Money transfer between accounts
+   - Transaction history
 
 6. **Payment Service**
    - Internal account-to-account transfers
-   - Basic payment status tracking
+   - Payment status tracking
 
 7. **Notification Service**
-   - Basic email notifications for transactions
+   - Email notifications for transactions
 
 8. **Audit Service**
-   - Simple transaction logging
-   - Basic audit trail
+   - Transaction logging
+   - Audit trail
 
 9. **Saga Orchestrator**
    - Manage distributed transactions
-   - Basic compensation handling
+   - Compensation handling
 
 10. **Common Library**
-    - Shared DTOs
-    - Common utilities
+    - Shared DTOs and utilities
 
 ## Core Features
 
@@ -154,22 +152,21 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - Simple event publishing/listening
 
 ## Testing Strategy
-- Basic unit tests
-- Simple integration tests
+- [ ] Basic unit tests
+- [ ] Simple integration tests
 
 ## Deployment
-- Docker containers
-- Docker Compose for local deployment
+- [ ] Docker containers
+- [ ] Docker Compose for local deployment
 
 ## Phase 1 Implementation (MVP)
-1. User registration and login
-2. Account creation
-3. Basic fund transfer
-4. Simple transaction history
-5. Basic email notifications
+- [ ] User registration and login
+- [ ] Account creation
+- [ ] Basic fund transfer
+- [ ] Simple transaction history
+- [ ] Basic email notifications
 
 ## Monitoring
-- Basic health checks
-- Simple logging
-- Service status dashboard
-
+- [ ] Basic health checks
+- [ ] Simple logging
+- [ ] Service status dashboard

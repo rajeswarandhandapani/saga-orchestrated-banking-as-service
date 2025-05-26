@@ -1,27 +1,40 @@
 package com.rajeswaran.audit.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "audit_logs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AuditLog {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String service;
-    private String action;
+
+    @Column(nullable = false)
+    private Instant eventTimestamp;
+
+    @Column(nullable = false)
+    private String eventType; // e.g., AccountOpenedEvent, AccountOpeningFailedEvent
+
     private String userId;
-    private String details;
-    private LocalDateTime timestamp;
+
+    private String accountId;
+
+    @Column(length = 1024)
+    private String details; // Summary or specific message from the event
+
+    private String status; // e.g., SUCCESS, FAILED
+
+    private String serviceName; // Service that originated the event or is related to the saga
 }
+
