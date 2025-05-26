@@ -25,6 +25,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User createUserFromJwt(String username, String email, String fullName) {
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setFullName(fullName);
+        return userRepository.save(user);
+    }
+
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
