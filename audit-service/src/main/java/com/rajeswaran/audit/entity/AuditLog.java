@@ -33,8 +33,6 @@ public class AuditLog {
     @Column(length = 1024)
     private String details; // Summary or specific message from the event
 
-    private String status; // e.g., SUCCESS, FAILED
-
     private String serviceName; // Service that originated the event or is related to the saga
 }
 

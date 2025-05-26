@@ -2,7 +2,7 @@ package com.rajeswaran.audit.listener;
 
 import com.rajeswaran.audit.entity.AuditLog;
 import com.rajeswaran.audit.service.AuditLogService;
-import com.rajeswaran.common.events.AccountOpenedEvent;
+import com.rajeswaran.common.events.SagaEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -21,20 +21,19 @@ public class AuditEventListener {
     }
 
     @Bean
-    public Consumer<AccountOpenedEvent> auditEvent() {
+    public Consumer<SagaEvent> auditEvent() {
         return event -> {
-            logger.info("Processing AccountOpenedEvent: {}", event);
+            logger.info("Processing SagaEvent: {}", event);
 
-            AuditLog auditLog = AuditLog.builder()
-                    .eventTimestamp(event.timestamp())
-                    .eventType(event.getClass().getSimpleName())
-                    .userId(event.userId())
-                    .accountId(event.accountId())
-                    .details(event.message())
-                    .status("SUCCESS")
-                    .serviceName("saga-orchestrator")
-                    .build();
-            auditLogService.createLog(auditLog);
+            AuditLog.AuditLogBuilder builder = AuditLog.builder()
+                .eventTimestamp(event.timestamp())
+                .eventType(event.eventType().name())
+                .userId(event.userId())
+                .accountId(event.accountId())
+                .details(event.details())
+                .serviceName(event.serviceName().name());
+
+            auditLogService.createLog(builder.build());
         };
     }
 }

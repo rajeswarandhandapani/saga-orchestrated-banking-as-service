@@ -1,7 +1,6 @@
 package com.rajeswaran.sagaorchestrator.service;
 
-import com.rajeswaran.common.events.AccountOpenedEvent;
-import com.rajeswaran.common.events.AccountOpeningFailedEvent;
+import com.rajeswaran.common.events.SagaEvent;
 import com.rajeswaran.sagaorchestrator.client.AccountServiceFeignClient;
 import com.rajeswaran.sagaorchestrator.client.UserServiceFeignClient;
 import com.rajeswaran.sagaorchestrator.dto.AccountCreateRequest;
@@ -40,7 +39,14 @@ public class AccountOpeningSagaService {
             var userPayload = new UserCreateRequest(request.username(), request.email(), request.fullName());
             var userResponse = userServiceFeignClient.createUser(userPayload, authorizationHeader);
             if (userResponse == null || userResponse.id() == null) {
-                var event = new AccountOpeningFailedEvent(null, null, request.email(), request.fullName(), Instant.now(), "User creation failed", "User creation failed");
+                var event = new SagaEvent(
+                    null,
+                    null,
+                    Instant.now(),
+                    "User creation failed",
+                    SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
+                    SagaEvent.SagaEventType.ACCOUNT_OPEN_FAILED
+                );
                 streamBridge.send("auditEvent-out-0", event);
                 streamBridge.send("notificationEvent-out-0", event);
                 return new AccountOpeningSagaResponse("FAILED", "User creation failed", null, null);
@@ -51,20 +57,41 @@ public class AccountOpeningSagaService {
             var accountPayload = new AccountCreateRequest(null, null, request.accountType(), userId, 0.0, "ACTIVE");
             var accountResponse = accountServiceFeignClient.createAccount(accountPayload, authorizationHeader);
             if (accountResponse == null || accountResponse.accountId() == null) {
-                var event = new AccountOpeningFailedEvent(userId, null, request.email(), request.fullName(), Instant.now(), "Account creation failed", "Account creation failed, user will be deleted (compensation not implemented)");
+                var event = new SagaEvent(
+                    userId,
+                    null,
+                    Instant.now(),
+                    "Account creation failed",
+                    SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
+                    SagaEvent.SagaEventType.ACCOUNT_OPEN_FAILED
+                );
                 streamBridge.send("auditEvent-out-0", event);
                 streamBridge.send("notificationEvent-out-0", event);
                 return new AccountOpeningSagaResponse("FAILED", "Account creation failed, user will be deleted (compensation not implemented)", userId, null);
             }
             accountId = accountResponse.accountId();
 
-            // Success: publish AccountOpenedEvent
-            var openedEvent = new AccountOpenedEvent(userId, accountId, request.email(), request.fullName(), Instant.now(), "User and account created successfully");
+            // Success: publish SagaEvent for ACCOUNT_OPENED
+            var openedEvent = new SagaEvent(
+                userId,
+                accountId,
+                Instant.now(),
+                "User and account created successfully",
+                SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
+                SagaEvent.SagaEventType.ACCOUNT_OPENED
+            );
             streamBridge.send("auditEvent-out-0", openedEvent);
             streamBridge.send("notificationEvent-out-0", openedEvent);
             return new AccountOpeningSagaResponse("SUCCESS", "User and account created successfully", userId, accountId);
         } catch (Exception ex) {
-            var event = new AccountOpeningFailedEvent(userId, accountId, request.email(), request.fullName(), Instant.now(), "Saga exception", "Saga failed: " + ex.getMessage());
+            var event = new SagaEvent(
+                userId,
+                accountId,
+                Instant.now(),
+                "Saga failed: " + ex.getMessage(),
+                SagaEvent.ServiceName.SAGA_ORCHESTRATOR,
+                SagaEvent.SagaEventType.ACCOUNT_OPEN_FAILED
+            );
             streamBridge.send("auditEvent-out-0", event);
             streamBridge.send("notificationEvent-out-0", event);
             return new AccountOpeningSagaResponse("FAILED", "Saga failed: " + ex.getMessage(), userId, accountId);
