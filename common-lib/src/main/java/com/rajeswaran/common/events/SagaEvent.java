@@ -12,6 +12,8 @@ public record SagaEvent(
     SagaEventType eventType
 ) {
     public enum SagaEventType {
+        USER_REGISTERED,
+        USER_REGISTRATION_FAILED,
         ACCOUNT_OPENED,
         ACCOUNT_OPEN_FAILED
     }

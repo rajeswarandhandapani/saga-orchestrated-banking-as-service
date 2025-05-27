@@ -65,6 +65,11 @@
       <artifactId>common-lib</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+    <!-- Spring Cloud Stream for Kafka -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
