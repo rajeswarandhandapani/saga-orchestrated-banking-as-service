@@ -10,7 +10,5 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public final class UserRegisteredEvent extends SagaEvent {
-    private String username;
-    private String email;
-    private String fullName;
+    private String userId;
 }

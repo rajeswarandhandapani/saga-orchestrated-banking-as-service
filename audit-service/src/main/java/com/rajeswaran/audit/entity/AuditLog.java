@@ -20,21 +20,20 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Instant eventTimestamp;
+    private String username;
 
     @Column(nullable = false)
-    private String eventType; // e.g., AccountOpenedEvent, AccountOpeningFailedEvent
-
-    private String userId;
-
-    private String accountId;
+    private Instant timestamp;
 
     @Column(length = 1024)
     private String details; // Summary or specific message from the event
 
-    private String serviceName; // Service that originated the event or is related to the saga
-
     @Column(length = 128)
     private String correlationId;
+
+    private String serviceName; // Service that originated the event or is related to the saga
+
+    @Column(nullable = false)
+    private String eventType; // e.g., AccountOpenedEvent, AccountOpeningFailedEvent
+
 }

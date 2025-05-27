@@ -26,13 +26,12 @@ public class AuditEventListener {
             logger.info("Processing SagaEvent: {}", event);
 
             AuditLog.AuditLogBuilder builder = AuditLog.builder()
-                    .eventTimestamp(event.getTimestamp())
-                    .eventType(event.getEventType().name())
-                    .userId(event.getUserId())
-                    .accountId(event.getAccountId())
+                    .username(event.getUsername())
+                    .timestamp(event.getTimestamp())
                     .details(event.getDetails())
+                    .correlationId(event.getCorrelationId())
                     .serviceName(event.getServiceName().name())
-                    .correlationId(event.getCorrelationId());
+                    .eventType(event.getEventType().name());
 
             auditLogService.createLog(builder.build());
         };

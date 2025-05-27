@@ -1,13 +1,18 @@
 package com.rajeswaran.common.events;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 public final class AccountOpenedEvent extends SagaEvent {
-    private final String accountType;
-    private final Double balance;
-    private final String status;
+    private String accountType;
+    private String accountNumber;
+    private Double balance;
+    private String status;
 }
 

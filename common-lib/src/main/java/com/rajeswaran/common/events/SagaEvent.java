@@ -13,8 +13,9 @@ import java.time.Instant;
 @NoArgsConstructor
 @SuperBuilder
 public class SagaEvent {
-    private String userId;
-    private String accountId;
+    private String username;
+    private String email;
+    private String fullName;
     private Instant timestamp;
     private String details;
     private String correlationId;

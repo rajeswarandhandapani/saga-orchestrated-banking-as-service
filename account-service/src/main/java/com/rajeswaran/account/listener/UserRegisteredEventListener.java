@@ -3,6 +3,7 @@ package com.rajeswaran.account.listener;
 import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
 import com.rajeswaran.common.AppConstants;
+import com.rajeswaran.common.events.AccountOpenedEvent;
 import com.rajeswaran.common.events.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,20 +40,23 @@ public class UserRegisteredEventListener {
             accountService.createAccount(account);
             log.info("Created new account for userId={}, accountNumber={}", event.getUserId(), account.getAccountNumber());
 
-            UserRegisteredEvent auditEvent = UserRegisteredEvent.builder()
-                .userId(event.getUserId())
-                .accountId(account.getAccountId())
-                .timestamp(Instant.now())
-                .details("Account opened for user: " + event.getUsername())
-                .correlationId(event.getCorrelationId())
-                .serviceName(AppConstants.ServiceName.ACCOUNT_SERVICE)
-                .eventType(AppConstants.SagaEventType.ACCOUNT_OPENED)
-                .username(event.getUsername())
-                .email(event.getEmail())
-                .fullName(event.getFullName())
-                .build();
+            AccountOpenedEvent accountOpenedEvent = AccountOpenedEvent.builder()
+                    .username(event.getUsername())
+                    .email(event.getEmail())
+                    .fullName(event.getFullName())
+                    .timestamp(Instant.now())
+                    .details("Account opened for user: " + event.getUsername())
+                    .correlationId(event.getCorrelationId())
+                    .serviceName(AppConstants.ServiceName.ACCOUNT_SERVICE)
+                    .eventType(AppConstants.SagaEventType.ACCOUNT_OPENED)
+                    .accountType(account.getAccountType())
+                    .accountNumber(account.getAccountNumber())
+                    .balance(account.getBalance())
+                    .status(account.getStatus())
+                    .build();
 
-            streamBridge.send("auditEvent-out-0", auditEvent);
+            streamBridge.send("auditEvent-out-0", accountOpenedEvent);
+            streamBridge.send("notificationEvent-out-0", accountOpenedEvent);
         };
     }
 

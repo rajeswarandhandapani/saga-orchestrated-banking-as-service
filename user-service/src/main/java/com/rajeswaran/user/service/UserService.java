@@ -46,11 +46,11 @@ public class UserService {
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
                 .fullName(savedUser.getFullName())
+                .timestamp(Instant.now())
                 .details("User registered: " + savedUser.getUsername())
+                .correlationId(correlationId)
                 .serviceName(AppConstants.ServiceName.USER_SERVICE)
                 .eventType(AppConstants.SagaEventType.USER_REGISTERED)
-                .timestamp(Instant.now())
-                .correlationId(correlationId)
                 .build();
 
         streamBridge.send("userRegistered-out-0", event);
