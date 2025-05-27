@@ -1,7 +1,6 @@
 package com.rajeswaran.user.service;
 
 import com.rajeswaran.common.AppConstants;
-import com.rajeswaran.common.events.SagaEvent;
 import com.rajeswaran.common.events.UserRegisteredEvent;
 import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.repository.UserRepository;
@@ -41,27 +40,22 @@ public class UserService {
         user.setEmail(email);
         user.setFullName(fullName);
         User savedUser = userRepository.save(user);
-        // Publish UserRegisteredEvent to Kafka with correlationId
-        UserRegisteredEvent event = new UserRegisteredEvent(
-            String.valueOf(savedUser.getId()),
-            savedUser.getUsername(),
-            savedUser.getEmail(),
-            savedUser.getFullName(),
-            Instant.now(),
-            correlationId
-        );
+
+        UserRegisteredEvent event = UserRegisteredEvent.builder()
+                .userId(String.valueOf(savedUser.getId()))
+                .username(savedUser.getUsername())
+                .email(savedUser.getEmail())
+                .fullName(savedUser.getFullName())
+                .details("User registered: " + savedUser.getUsername())
+                .serviceName(AppConstants.ServiceName.USER_SERVICE)
+                .eventType(AppConstants.SagaEventType.USER_REGISTERED)
+                .timestamp(Instant.now())
+                .correlationId(correlationId)
+                .build();
+
         streamBridge.send("userRegistered-out-0", event);
-        // Publish SagaEvent to audit-events with same correlationId
-        SagaEvent auditEvent = new SagaEvent(
-            String.valueOf(savedUser.getId()),
-            null,
-            Instant.now(),
-            "User registered: " + savedUser.getUsername(),
-            correlationId,
-            AppConstants.ServiceName.USER_SERVICE,
-            AppConstants.SagaEventType.USER_REGISTERED
-        );
-        streamBridge.send("auditEvent-out-0", auditEvent);
+        streamBridge.send("auditEvent-out-0", event);
+
         return savedUser;
     }
 

@@ -3,7 +3,6 @@ package com.rajeswaran.account.listener;
 import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
 import com.rajeswaran.common.AppConstants;
-import com.rajeswaran.common.events.SagaEvent;
 import com.rajeswaran.common.events.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,26 +28,30 @@ public class UserRegisteredEventListener {
     @Bean
     public Consumer<UserRegisteredEvent> userRegistered() {
         return event -> {
-            log.info("Received UserRegisteredEvent for userId={}, username={}, email={}", event.userId(), event.username(), event.email());
+            log.info("Received UserRegisteredEvent for userId={}, username={}, email={}", event.getUserId(), event.getUsername(), event.getEmail());
             // Create a new account for the registered user
             Account account = new Account();
             account.setAccountNumber(generateAccountNumber());
             account.setAccountType("SAVINGS");
-            account.setUserId(event.userId());
+            account.setUserId(event.getUserId());
             account.setBalance(0.0);
             account.setStatus("ACTIVE");
             accountService.createAccount(account);
-            log.info("Created new account for userId={}, accountNumber={}", event.userId(), account.getAccountNumber());
+            log.info("Created new account for userId={}, accountNumber={}", event.getUserId(), account.getAccountNumber());
 
-            SagaEvent auditEvent = new SagaEvent(
-                event.userId(),
-                account.getAccountNumber(),
-                Instant.now(),
-                "Account opened for user: " + event.username(),
-                event.correlationId(),
-                AppConstants.ServiceName.ACCOUNT_SERVICE,
-                AppConstants.SagaEventType.ACCOUNT_OPENED
-            );
+            UserRegisteredEvent auditEvent = UserRegisteredEvent.builder()
+                .userId(event.getUserId())
+                .accountId(account.getAccountId())
+                .timestamp(Instant.now())
+                .details("Account opened for user: " + event.getUsername())
+                .correlationId(event.getCorrelationId())
+                .serviceName(AppConstants.ServiceName.ACCOUNT_SERVICE)
+                .eventType(AppConstants.SagaEventType.ACCOUNT_OPENED)
+                .username(event.getUsername())
+                .email(event.getEmail())
+                .fullName(event.getFullName())
+                .build();
+
             streamBridge.send("auditEvent-out-0", auditEvent);
         };
     }

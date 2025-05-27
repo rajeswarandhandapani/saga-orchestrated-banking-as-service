@@ -2,7 +2,9 @@ package com.rajeswaran.audit.listener;
 
 import com.rajeswaran.audit.entity.AuditLog;
 import com.rajeswaran.audit.service.AuditLogService;
+import com.rajeswaran.common.events.AccountOpenedEvent;
 import com.rajeswaran.common.events.SagaEvent;
+import com.rajeswaran.common.events.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -23,17 +25,23 @@ public class AuditEventListener {
     @Bean
     public Consumer<SagaEvent> auditEvent() {
         return event -> {
-            // Set correlationId in MDC for logging context
             logger.info("Processing SagaEvent: {}", event);
 
             AuditLog.AuditLogBuilder builder = AuditLog.builder()
-                    .eventTimestamp(event.timestamp())
-                    .eventType(event.eventType().name())
-                    .userId(event.userId())
-                    .accountId(event.accountId())
-                    .details(event.details())
-                    .serviceName(event.serviceName().name())
-                    .correlationId(event.correlationId());
+                    .eventTimestamp(event.getTimestamp())
+                    .eventType(event.getEventType().name())
+                    .userId(event.getUserId())
+                    .accountId(event.getAccountId())
+                    .details(event.getDetails())
+                    .serviceName(event.getServiceName().name())
+                    .correlationId(event.getCorrelationId());
+
+            // Optionally handle event-specific fields
+            if (event instanceof UserRegisteredEvent ure) {
+                // ure.getUsername(), ure.getEmail(), ure.getFullName() can be used if needed
+            } else if (event instanceof AccountOpenedEvent aoe) {
+                // aoe.getAccountType(), aoe.getBalance(), aoe.getStatus() can be used if needed
+            }
 
             auditLogService.createLog(builder.build());
         };
