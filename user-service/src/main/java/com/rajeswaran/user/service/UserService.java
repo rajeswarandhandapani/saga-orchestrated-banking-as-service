@@ -53,7 +53,7 @@ public class UserService {
                 .eventType(AppConstants.SagaEventType.USER_REGISTERED)
                 .build();
 
-        streamBridge.send("userRegistered-out-0", event);
+        streamBridge.send("userRegisteredEvent-out-0", event);
         streamBridge.send("auditEvent-out-0", event);
 
         return savedUser;

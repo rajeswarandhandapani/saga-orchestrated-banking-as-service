@@ -22,6 +22,10 @@ public class AccountService {
     }
 
     public Account createAccount(Account account) {
+        // mimic exception for testing
+         /*if (!account.getAccountNumber().equals("1234567890")) {
+             throw new RuntimeException("Simulated exception for testing");
+         }*/
         return accountRepository.save(account);
     }
 

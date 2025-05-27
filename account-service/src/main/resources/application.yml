@@ -21,15 +21,19 @@ spring:
   cloud:
     stream:
       bindings:
-        userRegistered-in-0:
-          destination: user-registered
+        userRegisteredEvent-in-0:
+          destination: user-registered-events
           group: account-service
+          content-type: application/json
+        accountOpenFailedEvent-out-0:
+          destination: account-open-failed-events
           content-type: application/json
         auditEvent-out-0:
           destination: audit-events
           content-type: application/json
         notificationEvent-out-0:
           destination: notification-events
+          content-type: application/json
       kafka:
         binder:
           brokers: localhost:9092
