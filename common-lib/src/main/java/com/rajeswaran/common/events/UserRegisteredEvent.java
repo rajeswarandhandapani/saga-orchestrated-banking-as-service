@@ -7,6 +7,6 @@ public record UserRegisteredEvent(
     String username,
     String email,
     String fullName,
-    Instant timestamp
+    Instant timestamp,
+    String correlationId
 ) {}
-

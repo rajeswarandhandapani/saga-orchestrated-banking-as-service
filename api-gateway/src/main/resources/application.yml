@@ -30,7 +30,7 @@ spring:
         - id: audit-service
           uri: lb://AUDIT-SERVICE
           predicates:
-            - Path=/api/audits/**
+            - Path=/api/audit-logs/**
         - id: saga-orchestrator
           uri: lb://SAGA-ORCHESTRATOR
           predicates:

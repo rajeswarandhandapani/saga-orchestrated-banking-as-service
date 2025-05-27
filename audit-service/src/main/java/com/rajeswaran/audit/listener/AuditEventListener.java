@@ -23,16 +23,17 @@ public class AuditEventListener {
     @Bean
     public Consumer<SagaEvent> auditEvent() {
         return event -> {
+            // Set correlationId in MDC for logging context
             logger.info("Processing SagaEvent: {}", event);
 
             AuditLog.AuditLogBuilder builder = AuditLog.builder()
-                .eventTimestamp(event.timestamp())
-                .eventType(event.eventType().name())
-                .userId(event.userId())
-                .accountId(event.accountId())
-                .details(event.details())
-                .serviceName(event.serviceName().name())
-                .correlationId(event.correlationId() != null ? event.correlationId().value() : null);
+                    .eventTimestamp(event.timestamp())
+                    .eventType(event.eventType().name())
+                    .userId(event.userId())
+                    .accountId(event.accountId())
+                    .details(event.details())
+                    .serviceName(event.serviceName().name())
+                    .correlationId(event.correlationId().value());
 
             auditLogService.createLog(builder.build());
         };
