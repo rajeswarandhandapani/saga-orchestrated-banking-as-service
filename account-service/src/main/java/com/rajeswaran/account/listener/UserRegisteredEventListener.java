@@ -2,6 +2,7 @@ package com.rajeswaran.account.listener;
 
 import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
+import com.rajeswaran.common.AppConstants;
 import com.rajeswaran.common.events.SagaEvent;
 import com.rajeswaran.common.events.UserRegisteredEvent;
 import org.slf4j.Logger;
@@ -39,16 +40,14 @@ public class UserRegisteredEventListener {
             accountService.createAccount(account);
             log.info("Created new account for userId={}, accountNumber={}", event.userId(), account.getAccountNumber());
 
-            String correlationId = event.correlationId();
-            log.info("Using correlationId={} for audit event", correlationId);
             SagaEvent auditEvent = new SagaEvent(
                 event.userId(),
                 account.getAccountNumber(),
                 Instant.now(),
                 "Account opened for user: " + event.username(),
-                new SagaEvent.CorrelationId(correlationId),
-                SagaEvent.ServiceName.ACCOUNT_SERVICE,
-                SagaEvent.SagaEventType.ACCOUNT_OPENED
+                event.correlationId(),
+                AppConstants.ServiceName.ACCOUNT_SERVICE,
+                AppConstants.SagaEventType.ACCOUNT_OPENED
             );
             streamBridge.send("auditEvent-out-0", auditEvent);
         };

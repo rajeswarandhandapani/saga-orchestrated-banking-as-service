@@ -33,7 +33,7 @@ public class AuditEventListener {
                     .accountId(event.accountId())
                     .details(event.details())
                     .serviceName(event.serviceName().name())
-                    .correlationId(event.correlationId().value());
+                    .correlationId(event.correlationId());
 
             auditLogService.createLog(builder.build());
         };

@@ -1,5 +1,8 @@
 package com.rajeswaran.common.events;
 
+import com.rajeswaran.common.AppConstants.SagaEventType;
+import com.rajeswaran.common.AppConstants.ServiceName;
+
 import java.time.Instant;
 
 public record SagaEvent(
@@ -7,23 +10,7 @@ public record SagaEvent(
     String accountId,
     Instant timestamp,
     String details,
-    CorrelationId correlationId,
+    String correlationId,
     ServiceName serviceName,
     SagaEventType eventType
-) {
-    public enum SagaEventType {
-        USER_REGISTERED,
-        USER_REGISTRATION_FAILED,
-        ACCOUNT_OPENED,
-        ACCOUNT_OPEN_FAILED
-    }
-    public enum ServiceName {
-        SAGA_ORCHESTRATOR,
-        USER_SERVICE,
-        ACCOUNT_SERVICE,
-        PAYMENT_SERVICE,
-        NOTIFICATION_SERVICE,
-        AUDIT_SERVICE
-    }
-    public record CorrelationId(String value) {}
-}
+) {}

@@ -1,6 +1,6 @@
 package com.rajeswaran.user.service;
 
-import com.rajeswaran.common.components.CorrelationIdFilter;
+import com.rajeswaran.common.AppConstants;
 import com.rajeswaran.common.events.SagaEvent;
 import com.rajeswaran.common.events.UserRegisteredEvent;
 import com.rajeswaran.user.entity.User;
@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public User createUserFromJwt(String username, String email, String fullName) {
-        String correlationId = MDC.get(CorrelationIdFilter.CORRELATION_ID_MDC_KEY);
+        String correlationId = MDC.get(AppConstants.CORRELATION_ID_MDC_KEY);
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
@@ -57,9 +57,9 @@ public class UserService {
             null,
             Instant.now(),
             "User registered: " + savedUser.getUsername(),
-            new SagaEvent.CorrelationId(correlationId),
-            SagaEvent.ServiceName.USER_SERVICE,
-            SagaEvent.SagaEventType.USER_REGISTERED
+            correlationId,
+            AppConstants.ServiceName.USER_SERVICE,
+            AppConstants.SagaEventType.USER_REGISTERED
         );
         streamBridge.send("auditEvent-out-0", auditEvent);
         return savedUser;
