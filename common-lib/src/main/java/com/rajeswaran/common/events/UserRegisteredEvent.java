@@ -1,12 +1,16 @@
 package com.rajeswaran.common.events;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 public final class UserRegisteredEvent extends SagaEvent {
-    private final String username;
-    private final String email;
-    private final String fullName;
+    private String username;
+    private String email;
+    private String fullName;
 }

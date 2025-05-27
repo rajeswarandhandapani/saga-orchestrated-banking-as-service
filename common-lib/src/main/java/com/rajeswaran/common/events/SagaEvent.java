@@ -2,20 +2,22 @@ package com.rajeswaran.common.events;
 
 import com.rajeswaran.common.AppConstants;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
-@Getter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
-public abstract class SagaEvent {
-    private final String userId;
-    private final String accountId;
-    private final Instant timestamp;
-    private final String details;
-    private final String correlationId;
-    private final AppConstants.ServiceName serviceName;
-    private final AppConstants.SagaEventType eventType;
+public class SagaEvent {
+    private String userId;
+    private String accountId;
+    private Instant timestamp;
+    private String details;
+    private String correlationId;
+    private AppConstants.ServiceName serviceName;
+    private AppConstants.SagaEventType eventType;
 }
