@@ -21,6 +21,9 @@ spring:
         userRegistered-out-0:
           destination: user-registered
           content-type: application/json
+        auditEvent-out-0:
+          destination: audit-events
+          content-type: application/json
       kafka:
         binder:
           brokers: localhost:9092

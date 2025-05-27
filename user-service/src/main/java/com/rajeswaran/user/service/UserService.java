@@ -1,6 +1,7 @@
 package com.rajeswaran.user.service;
 
 import com.rajeswaran.common.events.UserRegisteredEvent;
+import com.rajeswaran.common.events.SagaEvent;
 import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -46,6 +48,17 @@ public class UserService {
             Instant.now()
         );
         streamBridge.send("userRegistered-out-0", event);
+        // Publish SagaEvent to audit-events
+        SagaEvent auditEvent = new SagaEvent(
+            String.valueOf(savedUser.getId()),
+            null,
+            Instant.now(),
+            "User registered: " + savedUser.getUsername(),
+            new SagaEvent.CorrelationId(UUID.randomUUID().toString()),
+            SagaEvent.ServiceName.USER_SERVICE,
+            SagaEvent.SagaEventType.USER_REGISTERED
+        );
+        streamBridge.send("auditEvent-out-0", auditEvent);
         return savedUser;
     }
 

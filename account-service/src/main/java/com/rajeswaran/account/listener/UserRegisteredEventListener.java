@@ -3,19 +3,26 @@ package com.rajeswaran.account.listener;
 import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
 import com.rajeswaran.common.events.UserRegisteredEvent;
+import com.rajeswaran.common.events.SagaEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
+import java.time.Instant;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Component
 public class UserRegisteredEventListener {
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private StreamBridge streamBridge;
 
     private static final Logger log = LoggerFactory.getLogger(UserRegisteredEventListener.class);
 
@@ -32,6 +39,17 @@ public class UserRegisteredEventListener {
             account.setStatus("ACTIVE");
             accountService.createAccount(account);
             log.info("Created new account for userId={}, accountNumber={}", event.userId(), account.getAccountNumber());
+            // Publish SagaEvent to audit-events
+            SagaEvent auditEvent = new SagaEvent(
+                event.userId(),
+                account.getAccountNumber(),
+                Instant.now(),
+                "Account opened for user: " + event.username(),
+                new SagaEvent.CorrelationId(UUID.randomUUID().toString()),
+                SagaEvent.ServiceName.ACCOUNT_SERVICE,
+                SagaEvent.SagaEventType.ACCOUNT_OPENED
+            );
+            streamBridge.send("auditEvent-out-0", auditEvent);
         };
     }
 

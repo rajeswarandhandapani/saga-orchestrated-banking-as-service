@@ -20,7 +20,7 @@ spring:
       bindings:
         auditEvent-in-0:
           destination: audit-events
-          group: audit-service-group
+          group: audit-service
       kafka:
         binder:
           brokers: localhost:9092
