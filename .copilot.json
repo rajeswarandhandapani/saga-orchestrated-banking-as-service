@@ -6,7 +6,8 @@
     "Prefer record classes wherever possible for immutable data structures.",
     "All common constants must be placed in the common-lib module.",
     "Follow standard Java naming conventions.",
-    "Encapsulate reusable logic in common-lib when appropriate."
+    "Encapsulate reusable logic in common-lib when appropriate.",
+    "make sure the changes are compatible and consistent with the existing codebase."
   ]
 }
 
