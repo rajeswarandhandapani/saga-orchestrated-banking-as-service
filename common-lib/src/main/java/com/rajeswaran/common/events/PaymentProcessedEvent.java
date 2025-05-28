@@ -13,6 +13,9 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class PaymentProcessedEvent extends SagaEvent {
     private String paymentId;
+    private String sourceAccountNumber;
+    private String destinationAccountNumber;
+    private Double amount;
     private boolean processed;
     private String reason;
 }

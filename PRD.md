@@ -77,20 +77,21 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - Flow Plan (Corrected):
   1. **Initiate Payment**: REST endpoint in payment-service (POST /payments) receives payment details and creates a
      payment.
-    2. **Publish PaymentInitiatedEvent**: payment-service publishes **PaymentInitiatedEvent** to Kafka.
+  2. **Publish PaymentInitiatedEvent**: payment-service publishes **PaymentInitiatedEvent** to Kafka.
   3. **Validate Account**: account-service subscribes to **PaymentInitiatedEvent**, validates the source account, and
      publishes **PaymentValidatedEvent** or **PaymentFailedEvent**.
   4. **Update Account Balance**: account-service, after successful validation, deducts the amount from the source
      account, adds to the destination account, and publishes **AccountBalanceUpdatedEvent**.
   5. **Process Payment**: payment-service subscribes to **AccountBalanceUpdatedEvent**, marks payment as processed, and
      publishes **PaymentProcessedEvent**.
-  6. **Record Transaction**: transaction-service subscribes to **PaymentProcessedEvent** and records the transaction in
-     its database.
+  6. **Record Transaction**: transaction-service subscribes to **PaymentProcessedEvent** and records two transactions (
+     DEBIT for source account, CREDIT for destination account) in its database. Publishes TransactionRecordedEvent for
+     audit only.
   7. **Notify User**: notification-service subscribes to **AccountBalanceUpdatedEvent** and sends a notification to the
      user.
   8. **Audit Logging**: audit-service subscribes to all relevant events (e.g., **PaymentInitiatedEvent**, *
-     *PaymentValidatedEvent**, **AccountBalanceUpdatedEvent**, **PaymentProcessedEvent**, **PaymentFailedEvent**) and
-     logs each step for audit purposes.
+     *PaymentValidatedEvent**, **AccountBalanceUpdatedEvent**, **PaymentProcessedEvent**, **PaymentFailedEvent**, *
+     *TransactionRecordedEvent**) and logs each step for audit purposes.
 - **Error Handling**: If any step fails, a corresponding failure event (e.g., **PaymentFailedEvent**) is published.
   Downstream services listen for failure events to perform compensating actions or notify users.
 - **Summary Table:**
@@ -101,16 +102,16 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
   | Validate Account       | account-service     | PaymentValidatedEvent / PaymentFailedEvent                                                                          | payment-service                      |
   | Update Account Balance | account-service     | AccountBalanceUpdatedEvent                                                                                          | payment-service, notification-service|
   | Process Payment        | payment-service     | PaymentProcessedEvent                                                                                               | transaction-service, audit-service   |
-  | Record Transaction     | transaction-service | (transaction recorded)                                                                                              | -                                    |
+  | Record Transaction     | transaction-service |                                                                                             | audit-service                        |
   | Notify User            | notification-svc    | (notification sent)                                                                                                 | -                                    |
-  | Audit Logging          | all services        | PaymentInitiatedEvent, PaymentValidatedEvent, AccountBalanceUpdatedEvent, PaymentProcessedEvent, PaymentFailedEvent | audit-service                        |
+  | Audit Logging          | all services        | PaymentInitiatedEvent, PaymentValidatedEvent, AccountBalanceUpdatedEvent, PaymentProcessedEvent, PaymentFailedEvent, TransactionRecordedEvent | audit-service                        |
 
 - **Current Step Implemented:**
-  - AccountBalanceUpdatedEvent is now published by account-service after successful validation, deduction from the
-    source account, and addition to the destination account.
+  - Transaction-service now listens for PaymentProcessedEvent, records both DEBIT and CREDIT transactions, and publishes
+    TransactionRecordedEvent for audit only.
 - **Next Step:**
-  - Implement payment-service to listen for AccountBalanceUpdatedEvent, mark payment as processed, and publish
-    PaymentProcessedEvent.
+  - Implement notification-service to listen for AccountBalanceUpdatedEvent and notify the user.
+  - Ensure audit-service is logging all relevant events including TransactionRecordedEvent.
 
 ### 3. Account Closure Saga (To be implemented)
 
@@ -176,8 +177,8 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - Add explicit authorization checks where needed
 - Expand Saga orchestration if required for complex transactions
 - Implement additional saga flows for core banking operations as listed above
-- Complete Payment Processing Saga by implementing payment-service to listen for AccountBalanceUpdatedEvent and publish
-  PaymentProcessedEvent
+- Complete Payment Processing Saga by implementing notification-service to listen for AccountBalanceUpdatedEvent and
+  notify the user, and ensure audit-service logs all relevant events including TransactionRecordedEvent.
 - Use this summary for future Copilot analysis to avoid repeating the full review
 
 ## Development Guidelines

@@ -18,6 +18,17 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8089/realms/master
+  cloud:
+    stream:
+      bindings:
+        paymentProcessedEvent-in-0:
+          destination: payment-processed
+          group: transaction-service
+          content-type: application/json
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: true
 
 eureka:
   client:
@@ -32,3 +43,4 @@ server:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%X{correlationId}] %msg%n"
+
