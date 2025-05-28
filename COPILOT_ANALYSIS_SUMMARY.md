@@ -32,15 +32,18 @@
    - Steps: Create user → Publish UserRegisteredEvent → Create default account → Send notification → Log audit event
 
 2. **Payment Processing Saga** (To be implemented)
-   - Services: payment-service, account-service, notification-service, audit-service
+    - Services: payment-service, account-service, transaction-service, notification-service, audit-service
    - Flow Plan:
      1. **Initiate Payment**: REST endpoint in payment-service (e.g., POST /payments) receives payment details and starts the saga.
      2. **Publish PaymentInitiatedEvent**: payment-service publishes PaymentInitiatedEvent to Kafka.
      3. **Validate Account**: account-service subscribes to PaymentInitiatedEvent, validates the source account, and publishes PaymentValidatedEvent or PaymentFailedEvent.
      4. **Process Payment**: payment-service subscribes to PaymentValidatedEvent, processes the payment, and publishes PaymentProcessedEvent.
      5. **Update Account Balance**: account-service subscribes to PaymentProcessedEvent, updates the account balance, and publishes AccountBalanceUpdatedEvent.
-     6. **Notify User**: notification-service subscribes to AccountBalanceUpdatedEvent and sends a notification to the user.
-     7. **Audit Logging**: audit-service subscribes to all relevant events and logs each step for audit purposes.
+     6. **Record Transaction**: transaction-service subscribes to PaymentProcessedEvent and records the transaction in
+        its database.
+     7. **Notify User**: notification-service subscribes to AccountBalanceUpdatedEvent and sends a notification to the
+        user.
+     8. **Audit Logging**: audit-service subscribes to all relevant events and logs each step for audit purposes.
    - Error Handling: If any step fails, a corresponding failure event (e.g., PaymentFailedEvent) is published. Downstream services listen for failure events to perform compensating actions or notify users.
    - Summary Table:
 
@@ -50,6 +53,7 @@
      | Validate Account            | account-service   | payment-service         |
      | Process Payment             | payment-service   | account-service         |
      | Update Account Balance      | account-service   | notification-service    |
+     | Record Transaction          | payment-service   | transaction-service     |
      | Notify User                 | notification-svc  | -                       |
      | Audit Logging               | all services      | audit-service           |
 
