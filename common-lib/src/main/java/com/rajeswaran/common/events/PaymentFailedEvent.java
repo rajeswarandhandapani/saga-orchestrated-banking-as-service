@@ -13,6 +13,5 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class PaymentFailedEvent extends SagaEvent {
     private String paymentId;
-    private String reason;
 }
 

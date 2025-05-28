@@ -71,10 +71,9 @@ public class PaymentInitiatedEventListener {
             } else {
                 PaymentFailedEvent failedEvent = PaymentFailedEvent.builder()
                         .paymentId(event.getPaymentId())
-                        .reason("Account validation failed or insufficient balance")
                         .username(event.getUsername())
                         .timestamp(java.time.Instant.now())
-                        .details("Payment validation failed for paymentId: " + event.getPaymentId())
+                        .details("Payment validation failed due to insufficient balance for paymentId: " + event.getPaymentId())
                         .correlationId(correlationId)
                         .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
                         .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_FAILED)
