@@ -14,8 +14,8 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String fromAccountNumber;
-    private String toAccountNumber;
+    private String sourceAccountNumber;
+    private String destinationAccountNumber;
     private double amount;
     private String status;
     private String reference;

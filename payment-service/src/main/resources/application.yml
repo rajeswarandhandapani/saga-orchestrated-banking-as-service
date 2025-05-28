@@ -16,6 +16,26 @@ spring:
   cloud:
     discovery:
       enabled: true
+    stream:
+      default-binder: kafka
+      bindings:
+        paymentInitiatedEvent-out-0:
+          destination: payment-initiated
+          content-type: application/json
+        paymentValidatedEvent-in-0:
+          destination: payment-validated
+          group: payment-service
+          content-type: application/json
+        paymentProcessedEvent-out-0:
+          destination: payment-processed
+          content-type: application/json
+        paymentFailedEvent-out-0:
+          destination: payment-failed
+          content-type: application/json
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: true
   security:
     oauth2:
       resourceserver:
@@ -34,3 +54,4 @@ server:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%X{correlationId}] %msg%n"
+
