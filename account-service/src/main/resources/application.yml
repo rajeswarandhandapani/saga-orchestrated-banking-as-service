@@ -19,6 +19,8 @@ spring:
         jwt:
           issuer-uri: http://localhost:8089/realms/master
   cloud:
+    function:
+      definition: userRegisteredEvent;paymentInitiatedEvent
     stream:
       bindings:
         userRegisteredEvent-in-0:

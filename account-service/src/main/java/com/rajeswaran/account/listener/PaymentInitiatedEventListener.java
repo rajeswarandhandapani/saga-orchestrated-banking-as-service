@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -21,6 +22,7 @@ public class PaymentInitiatedEventListener {
     private final AccountService accountService;
     private final StreamBridge streamBridge;
 
+    @Bean
     public Consumer<PaymentInitiatedEvent> paymentInitiatedEvent() {
         return event -> {
             log.info("Received PaymentInitiatedEvent for paymentId={}, sourceAccountNumber={}, amount={}",

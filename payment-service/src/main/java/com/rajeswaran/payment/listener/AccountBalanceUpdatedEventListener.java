@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -24,6 +25,7 @@ public class AccountBalanceUpdatedEventListener {
     @Autowired
     private StreamBridge streamBridge;
 
+    @Bean
     public Consumer<AccountBalanceUpdatedEvent> accountBalanceUpdatedEvent() {
         return event -> {
             log.info("Received AccountBalanceUpdatedEvent for paymentId={}, sourceAccountNumber={}, destinationAccountNumber={}, amount={}",
