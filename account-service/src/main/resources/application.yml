@@ -34,6 +34,19 @@ spring:
         notificationEvent-out-0:
           destination: notification-events
           content-type: application/json
+        paymentInitiatedEvent-in-0:
+          destination: payment-initiated
+          group: account-service
+          content-type: application/json
+        paymentValidatedEvent-out-0:
+          destination: payment-validated
+          content-type: application/json
+        paymentFailedEvent-out-0:
+          destination: payment-failed
+          content-type: application/json
+        accountBalanceUpdatedEvent-out-0:
+          destination: account-balance-updated
+          content-type: application/json
       kafka:
         binder:
           brokers: localhost:9092

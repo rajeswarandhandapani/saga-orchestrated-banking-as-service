@@ -28,15 +28,15 @@ spring:
         paymentInitiatedEvent-out-0:
           destination: payment-initiated
           content-type: application/json
-        paymentValidatedEvent-in-0:
-          destination: payment-validated
-          group: payment-service
-          content-type: application/json
         paymentProcessedEvent-out-0:
           destination: payment-processed
           content-type: application/json
         paymentFailedEvent-out-0:
           destination: payment-failed
+          content-type: application/json
+        accountBalanceUpdatedEvent-in-0:
+          destination: account-balance-updated
+          group: payment-service
           content-type: application/json
       kafka:
         binder:
