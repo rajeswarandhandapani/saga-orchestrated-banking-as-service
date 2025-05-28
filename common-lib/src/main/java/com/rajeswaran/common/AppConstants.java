@@ -10,7 +10,12 @@ public final class AppConstants {
         USER_REGISTERED,
         USER_REGISTRATION_FAILED,
         ACCOUNT_OPENED,
-        ACCOUNT_OPEN_FAILED
+        ACCOUNT_OPEN_FAILED,
+        PAYMENT_INITIATED,
+        PAYMENT_VALIDATED,
+        PAYMENT_FAILED,
+        PAYMENT_PROCESSED,
+        ACCOUNT_BALANCE_UPDATED
     }
 
     public enum ServiceName {

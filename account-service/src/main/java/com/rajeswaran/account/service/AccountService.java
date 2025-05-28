@@ -34,4 +34,14 @@ public class AccountService {
     public void deleteAccount(String id) {
         accountRepository.deleteById(id);
     }
+
+    // Validate if account exists and has sufficient balance
+    public boolean validateSourceAccount(String accountNumber, double amount) {
+        Optional<Account> accountOpt = getAccountByAccountNumber(accountNumber);
+        if (accountOpt.isPresent()) {
+            Account account = accountOpt.get();
+            return account.getBalance() >= amount;
+        }
+        return false;
+    }
 }

@@ -19,6 +19,12 @@ spring:
     stream:
       default-binder: kafka
       bindings:
+        auditEvent-out-0:
+          destination: audit-events
+          content-type: application/json
+        notificationEvent-out-0:
+          destination: notification-events
+          content-type: application/json
         paymentInitiatedEvent-out-0:
           destination: payment-initiated
           content-type: application/json

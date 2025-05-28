@@ -13,4 +13,8 @@
 5. Make sure the changes are compatible and consistent with the existing codebase.
 6. Create changes step by step, allowing for review and feedback at each stage.
 7. make sure to use builders to construct saga events.
+8. when creating saga event, it should contain username, timestamp, details, correlationId, serviceName, eventType. For example refer how UserRegisteredEvent is built in UserService class.
+9. when publishing make sure to publish to audit service to record the event.
+10. when implementing sage flow update prd with current implemented step of saga flow. so that future steps can be implemented easily..
+
 ```
