@@ -18,7 +18,7 @@ public class Account {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    private String accountId;
+    private String id;
     private String accountNumber;
     private String accountType;
     private String userId;

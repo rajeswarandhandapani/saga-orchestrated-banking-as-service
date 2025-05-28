@@ -25,15 +25,15 @@ public class AccountController {
         return accounts;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable String id) {
-        log.info("Received request: getAccountById, id={}", id);
-        Optional<Account> account = accountService.getAccountById(id);
+    @GetMapping("/{accountNumber}")
+    public ResponseEntity<Account> getAccountByNumber(@PathVariable String accountNumber) {
+        log.info("Received request: getAccountByNumber, accountNumber={}", accountNumber);
+        Optional<Account> account = accountService.getAccountByAccountNumber(accountNumber);
         if (account.isPresent()) {
-            log.info("Completed request: getAccountById, found accountId={}", id);
+            log.info("Completed request: getAccountByNumber, found accountNumber={}", accountNumber);
             return ResponseEntity.ok(account.get());
         } else {
-            log.info("Completed request: getAccountById, accountId={} not found", id);
+            log.info("Completed request: getAccountByNumber, accountNumber={} not found", accountNumber);
             return ResponseEntity.notFound().build();
         }
     }
@@ -42,7 +42,7 @@ public class AccountController {
     public Account createAccount(@RequestBody Account account) {
         log.info("Received request: createAccount, payload={}", account);
         Account created = accountService.createAccount(account);
-        log.info("Completed request: createAccount, createdId={}", created.getAccountId());
+        log.info("Completed request: createAccount, account number={}", created.getAccountNumber());
         return created;
     }
 

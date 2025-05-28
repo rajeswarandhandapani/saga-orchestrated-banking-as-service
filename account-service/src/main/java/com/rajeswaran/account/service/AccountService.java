@@ -17,8 +17,10 @@ public class AccountService {
         return accountRepository.findAll();
     }
 
-    public Optional<Account> getAccountById(String accountId) {
-        return accountRepository.findById(accountId);
+
+    //Get account by account number
+    public Optional<Account> getAccountByAccountNumber(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber);
     }
 
     public Account createAccount(Account account) {
@@ -29,7 +31,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    public void deleteAccount(String accountId) {
-        accountRepository.deleteById(accountId);
+    public void deleteAccount(String id) {
+        accountRepository.deleteById(id);
     }
 }
