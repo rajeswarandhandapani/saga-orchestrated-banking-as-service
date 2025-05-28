@@ -41,25 +41,20 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestHeader(value = "X-Correlation-Id", required = true) String correlationId) {
+    public User createUser() {
         log.info("Received request: createUser from JWT");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         String username = null;
         String email = null;
         String fullName = null;
+
         if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
             username = jwt.getClaimAsString("preferred_username");
             email = jwt.getClaimAsString("email");
             fullName = jwt.getClaimAsString("name");
-        } else if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
-            username = userDetails.getUsername();
-            email = userDetails.getUsername();
-            fullName = userDetails.getUsername();
         }
-        // If correlationId is not provided, generate one
-        if (correlationId == null || correlationId.isBlank()) {
-            correlationId = java.util.UUID.randomUUID().toString();
-        }
+
         User created = userService.createUserFromJwt(username, email, fullName);
         log.info("Completed request: createUser, createdId={}", created.getId());
         return created;
