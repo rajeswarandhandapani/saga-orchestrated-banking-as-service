@@ -71,39 +71,45 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
   | Notify User   | notification-service | (notification sent)                                             | -                                   |
   | Audit Logging | all services         | UserRegisteredEvent, AccountOpenedEvent, AccountOpenFailedEvent | audit-service                       |
 
-### 2. Payment Processing Saga (To be implemented)
+### 2. Payment Processing Saga (In Progress)
 
 - Services: payment-service, account-service, transaction-service, notification-service, audit-service
-- Flow Plan:
+- Flow Plan (Corrected):
     1. **Initiate Payment**: REST endpoint in payment-service (POST /payments) receives payment details and creates a
        payment.
     2. **Publish PaymentInitiatedEvent**: payment-service publishes **PaymentInitiatedEvent** to Kafka.
     3. **Validate Account**: account-service subscribes to **PaymentInitiatedEvent**, validates the source account, and
        publishes **PaymentValidatedEvent** or **PaymentFailedEvent**.
-    4. **Process Payment**: payment-service subscribes to **PaymentValidatedEvent**, processes the payment, and
-       publishes **PaymentProcessedEvent**.
-    5. **Update Account Balance**: account-service subscribes to **PaymentProcessedEvent**, updates the account balance,
-       and publishes **AccountBalanceUpdatedEvent**.
+    4. **Update Account Balance**: account-service, after successful validation, deducts the amount and publishes *
+       *AccountBalanceUpdatedEvent**.
+    5. **Process Payment**: payment-service subscribes to **AccountBalanceUpdatedEvent**, marks payment as processed,
+       and publishes **PaymentProcessedEvent**.
     6. **Record Transaction**: transaction-service subscribes to **PaymentProcessedEvent** and records the transaction
        in its database.
     7. **Notify User**: notification-service subscribes to **AccountBalanceUpdatedEvent** and sends a notification to
        the user.
     8. **Audit Logging**: audit-service subscribes to all relevant events (e.g., **PaymentInitiatedEvent**, *
-       *PaymentValidatedEvent**, **PaymentProcessedEvent**, **AccountBalanceUpdatedEvent**, **PaymentFailedEvent**) and
+       *PaymentValidatedEvent**, **AccountBalanceUpdatedEvent**, **PaymentProcessedEvent**, **PaymentFailedEvent**) and
        logs each step for audit purposes.
-- Error Handling: If any step fails, a corresponding failure event (e.g., **PaymentFailedEvent**) is published.
+- **Error Handling**: If any step fails, a corresponding failure event (e.g., **PaymentFailedEvent**) is published.
   Downstream services listen for failure events to perform compensating actions or notify users.
-- Summary Table:
+- **Summary Table:**
 
   | Step                   | Publisher           | Event Name                                                                                                          | Subscriber(s)                        |
     |------------------------|---------------------|---------------------------------------------------------------------------------------------------------------------|--------------------------------------|
   | Initiate Payment       | payment-service     | PaymentInitiatedEvent                                                                                               | account-service                      |
   | Validate Account       | account-service     | PaymentValidatedEvent / PaymentFailedEvent                                                                          | payment-service                      |
-  | Process Payment        | payment-service     | PaymentProcessedEvent                                                                                               | account-service, transaction-service |
-  | Update Account Balance | account-service     | AccountBalanceUpdatedEvent                                                                                          | notification-service                 |
+  | Update Account Balance | account-service     | AccountBalanceUpdatedEvent                                                                                          | payment-service, notification-service|
+  | Process Payment        | payment-service     | PaymentProcessedEvent                                                                                               | transaction-service, audit-service   |
   | Record Transaction     | transaction-service | (transaction recorded)                                                                                              | -                                    |
   | Notify User            | notification-svc    | (notification sent)                                                                                                 | -                                    |
-  | Audit Logging          | all services        | PaymentInitiatedEvent, PaymentValidatedEvent, PaymentProcessedEvent, AccountBalanceUpdatedEvent, PaymentFailedEvent | audit-service                        |
+  | Audit Logging          | all services        | PaymentInitiatedEvent, PaymentValidatedEvent, AccountBalanceUpdatedEvent, PaymentProcessedEvent, PaymentFailedEvent | audit-service                        |
+
+- **Current Step Implemented:**
+    - Up to AccountBalanceUpdatedEvent published by account-service after successful validation and deduction.
+- **Next Step:**
+    - Implement payment-service to listen for AccountBalanceUpdatedEvent, mark payment as processed, and publish
+      PaymentProcessedEvent.
 
 ### 3. Account Closure Saga (To be implemented)
 
@@ -169,6 +175,8 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - Add explicit authorization checks where needed
 - Expand Saga orchestration if required for complex transactions
 - Implement additional saga flows for core banking operations as listed above
+- Complete Payment Processing Saga by implementing payment-service to listen for AccountBalanceUpdatedEvent and publish
+  PaymentProcessedEvent
 - Use this summary for future Copilot analysis to avoid repeating the full review
 
 ## Development Guidelines

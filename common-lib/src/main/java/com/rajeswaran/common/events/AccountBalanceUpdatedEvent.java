@@ -12,7 +12,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class AccountBalanceUpdatedEvent extends SagaEvent {
-    private String accountNumber;
-    private double newBalance;
     private String paymentId;
+    private String sourceAccountNumber;
+    private String destinationAccountNumber;
+    private Double amount;
 }
