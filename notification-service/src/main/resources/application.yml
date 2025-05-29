@@ -21,11 +21,15 @@ spring:
         notificationEvent-in-0:
           destination: notification-events
           group: notification-service
+        accountBalanceUpdatedNotification-in-0:
+          destination: account-balance-updated
+          group: notification-service
+          content-type: application/json
       kafka:
         binder:
           brokers: localhost:9092
     function:
-      definition: notificationEvent
+      definition: notificationEvent;accountBalanceUpdatedNotification
   security:
     oauth2:
       resourceserver:

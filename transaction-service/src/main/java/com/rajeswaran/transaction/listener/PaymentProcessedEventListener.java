@@ -1,11 +1,14 @@
 package com.rajeswaran.transaction.listener;
 
 import com.rajeswaran.common.events.PaymentProcessedEvent;
+import com.rajeswaran.common.events.TransactionRecordedEvent;
+import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.transaction.entity.Transaction;
 import com.rajeswaran.transaction.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +22,8 @@ public class PaymentProcessedEventListener {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    @Bean
+    @Autowired
+    private StreamBridge streamBridge;    @Bean
     public Consumer<PaymentProcessedEvent> paymentProcessedEvent() {
         return event -> {
             log.info("Received PaymentProcessedEvent for paymentId={}, amount={}", event.getPaymentId(), event.getAmount());
@@ -33,7 +37,7 @@ public class PaymentProcessedEventListener {
             debitTransaction.setStatus("COMPLETED");
             debitTransaction.setReference(event.getPaymentId());
             debitTransaction.setTimestamp(LocalDateTime.now());
-            transactionRepository.save(debitTransaction);
+            Transaction savedDebitTransaction = transactionRepository.save(debitTransaction);
 
             // Record CREDIT transaction for destination account
             Transaction creditTransaction = new Transaction();
@@ -44,7 +48,26 @@ public class PaymentProcessedEventListener {
             creditTransaction.setStatus("COMPLETED");
             creditTransaction.setReference(event.getPaymentId());
             creditTransaction.setTimestamp(LocalDateTime.now());
-            transactionRepository.save(creditTransaction);
+            Transaction savedCreditTransaction = transactionRepository.save(creditTransaction);
+
+            // Publish TransactionRecordedEvent for audit
+            TransactionRecordedEvent transactionRecordedEvent = TransactionRecordedEvent.builder()
+                    .paymentId(event.getPaymentId())
+                    .sourceAccountNumber(event.getSourceAccountNumber())
+                    .destinationAccountNumber(event.getDestinationAccountNumber())
+                    .amount(event.getAmount())
+                    .debitTransactionId(String.valueOf(savedDebitTransaction.getId()))
+                    .creditTransactionId(String.valueOf(savedCreditTransaction.getId()))
+                    .username(event.getUsername())
+                    .timestamp(SagaEventBuilderUtil.now())
+                    .details("Transactions recorded for paymentId: " + event.getPaymentId())
+                    .correlationId(event.getCorrelationId())
+                    .serviceName(com.rajeswaran.common.AppConstants.ServiceName.AUDIT_SERVICE)
+                    .eventType(com.rajeswaran.common.AppConstants.SagaEventType.TRANSACTION_RECORDED)
+                    .build();
+            
+            streamBridge.send("auditEvent-out-0", transactionRecordedEvent);
+            log.info("Published TransactionRecordedEvent for paymentId={}", event.getPaymentId());
         };
     }
 }

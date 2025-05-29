@@ -4,9 +4,7 @@ public final class AppConstants {
     private AppConstants() {}
 
     public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
-    public static final String CORRELATION_ID_MDC_KEY = "correlationId";
-
-    public enum SagaEventType {
+    public static final String CORRELATION_ID_MDC_KEY = "correlationId";    public enum SagaEventType {
         USER_REGISTERED,
         USER_REGISTRATION_FAILED,
         ACCOUNT_OPENED,
@@ -15,7 +13,8 @@ public final class AppConstants {
         PAYMENT_VALIDATED,
         PAYMENT_FAILED,
         PAYMENT_PROCESSED,
-        ACCOUNT_BALANCE_UPDATED
+        ACCOUNT_BALANCE_UPDATED,
+        TRANSACTION_RECORDED
     }
 
     public enum ServiceName {

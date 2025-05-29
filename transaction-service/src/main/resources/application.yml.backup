@@ -7,8 +7,7 @@ spring:
     username: sa
     password: ""
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
+    database-platform: org.hibernate.dialect.H2Dialect    hibernate:
       ddl-auto: update
   h2:
     console:
@@ -48,3 +47,4 @@ server:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%X{correlationId}] %msg%n"
+
