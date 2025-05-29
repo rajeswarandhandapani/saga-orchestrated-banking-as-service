@@ -7,7 +7,6 @@ import com.rajeswaran.common.events.PaymentInitiatedEvent;
 import com.rajeswaran.common.events.PaymentValidatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -28,7 +27,6 @@ public class PaymentInitiatedEventListener {
             log.info("Received PaymentInitiatedEvent for paymentId={}, sourceAccountNumber={}, amount={}",
                     event.getPaymentId(), event.getSourceAccountNumber(), event.getAmount());
             boolean valid = accountService.validateSourceAccount(event.getSourceAccountNumber(), event.getAmount());
-            String correlationId = MDC.get("correlationId");
             if (valid) {
                 PaymentValidatedEvent validatedEvent = PaymentValidatedEvent.builder()
                         .paymentId(event.getPaymentId())
@@ -37,7 +35,7 @@ public class PaymentInitiatedEventListener {
                         .username(event.getUsername())
                         .timestamp(java.time.Instant.now())
                         .details("Payment validated for paymentId: " + event.getPaymentId())
-                        .correlationId(correlationId)
+                        .correlationId(event.getCorrelationId())
                         .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
                         .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_VALIDATED)
                         .build();
@@ -57,7 +55,7 @@ public class PaymentInitiatedEventListener {
                             .username(event.getUsername())
                             .timestamp(Instant.now())
                             .details("Source and destination account balances updated for paymentId: " + event.getPaymentId())
-                            .correlationId(correlationId)
+                            .correlationId(event.getCorrelationId())
                             .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
                             .eventType(com.rajeswaran.common.AppConstants.SagaEventType.ACCOUNT_BALANCE_UPDATED)
                             .build();
@@ -74,7 +72,7 @@ public class PaymentInitiatedEventListener {
                         .username(event.getUsername())
                         .timestamp(java.time.Instant.now())
                         .details("Payment validation failed due to insufficient balance for paymentId: " + event.getPaymentId())
-                        .correlationId(correlationId)
+                        .correlationId(event.getCorrelationId())
                         .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
                         .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_FAILED)
                         .build();

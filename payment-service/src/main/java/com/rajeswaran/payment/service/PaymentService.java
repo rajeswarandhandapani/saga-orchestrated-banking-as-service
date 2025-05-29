@@ -32,7 +32,6 @@ public class PaymentService {
     public Payment createPayment(Payment payment) {
         Payment created = paymentRepository.save(payment);
         // Use SecurityContextHolder here, not in common-lib
-        String correlationId = SagaEventBuilderUtil.getCurrentCorrelationId();
         String username = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -46,7 +45,7 @@ public class PaymentService {
                 .username(username)
                 .timestamp(SagaEventBuilderUtil.now())
                 .details("Payment initiated for paymentId: " + created.getId())
-                .correlationId(correlationId)
+                .correlationId(SagaEventBuilderUtil.getCurrentCorrelationId())
                 .serviceName(com.rajeswaran.common.AppConstants.ServiceName.PAYMENT_SERVICE)
                 .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_INITIATED)
                 .build();

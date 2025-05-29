@@ -2,9 +2,9 @@ package com.rajeswaran.user.service;
 
 import com.rajeswaran.common.AppConstants;
 import com.rajeswaran.common.events.UserRegisteredEvent;
+import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.repository.UserRepository;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,6 @@ public class UserService {
     }
 
     public User createUserFromJwt(String username, String email, String fullName) {
-        String correlationId = MDC.get(AppConstants.CORRELATION_ID_MDC_KEY);
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
@@ -48,7 +47,7 @@ public class UserService {
                 .fullName(savedUser.getFullName())
                 .timestamp(Instant.now())
                 .details("User registered: " + savedUser.getUsername())
-                .correlationId(correlationId)
+                .correlationId(SagaEventBuilderUtil.getCurrentCorrelationId())
                 .serviceName(AppConstants.ServiceName.USER_SERVICE)
                 .eventType(AppConstants.SagaEventType.USER_REGISTERED)
                 .build();
