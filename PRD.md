@@ -1,36 +1,38 @@
 # Banking as a Service (BaaS) Platform - Product Requirements Document
 
 ## Overview
+
 A minimalist Banking as a Service (BaaS) platform demonstrating microservices architecture capabilities using Spring Boot. The focus is on core banking operations with emphasis on service communication patterns and distributed transaction management.
 
 ## Key Requirements
 
-- Microservices architecture using Spring Boot, Maven
-- Each service has its own H2 database
-- Authentication via Keycloak (JWT)
-- Service communication: REST + Apache Kafka (event-driven)
-- Saga Choreography Pattern for distributed transactions
-- Core services: API Gateway, Service Discovery, User, Account, Transaction, Payment, Notification, Audit
+- **Architecture**: Microservices using Spring Boot and Maven
+- **Database**: H2 per service (Database per Microservice pattern)
+- **Authentication**: Keycloak with JWT tokens
+- **Communication**: REST APIs + Apache Kafka (event-driven)
+- **Transaction Management**: Saga Choreography Pattern
+- **Core Services**: API Gateway, Service Discovery, User, Account, Transaction, Payment, Notification, Audit
 
 ## Technical Architecture
-- **Framework**: Spring Boot
+
+- **Framework**: Spring Boot with Java 21
 - **Build Tool**: Maven (Multi-module project)
-- **Database**: H2 (Development/Testing) - Each microservice has its own database (Database per Microservice pattern)
-- **Authentication**: Keycloak
-- **Service Communication**: REST APIs, Apache Kafka for event-driven communication
-- **Pattern**: Saga Choreography Pattern
+- **Database**: H2 (Development/Testing) - Each microservice has its own database
+- **Authentication**: Keycloak (OAuth 2.0, OpenID Connect, JWT)
+- **Service Communication**: REST APIs + Apache Kafka for event-driven communication
+- **Pattern**: Saga Choreography Pattern for distributed transactions
 
 ### Core Microservices
 
-1. **API Gateway**: Single entry point, routing, authentication integration
-2. **Service Discovery**: Service registration, health checks
-3. **User Service**: User registration/management, authentication integration
-4. **Account Service**: Account creation/management, balance inquiry
-5. **Transaction Service**: Money transfer, transaction history
-6. **Payment Service**: Internal account-to-account transfers, payment status tracking
-7. **Notification Service**: Email notifications for transactions
-8. **Audit Service**: Transaction logging, audit trail
-9. **Common Library**: Shared DTOs and utilities
+1. **API Gateway** - Single entry point, routing, authentication integration
+2. **Service Discovery** - Service registration and health checks
+3. **User Service** - User registration/management, authentication integration
+4. **Account Service** - Account creation/management, balance inquiry
+5. **Transaction Service** - Money transfer, transaction history
+6. **Payment Service** - Internal account-to-account transfers, payment status tracking
+7. **Notification Service** - Email notifications for transactions
+8. **Audit Service** - Transaction logging, audit trail
+9. **Common Library** - Shared DTOs and utilities
 
 ## Security & Authentication
 
@@ -44,214 +46,268 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - Distributed transactions managed using the Saga Choreography pattern
 - Each microservice listens to relevant Kafka topics and reacts to events independently
 - No central orchestrator; services coordinate by publishing and consuming events
-- Compensation logic handled by services if needed
+- Compensation logic handled by services when needed
 
 ## Saga Flows
 
-### 1. User Onboarding Saga (Implemented)
+### 1. User Onboarding Saga ✅ COMPLETED
 
-- **Services**: user-service, account-service, notification-service, audit-service
-- **Flow Plan:**
-    1. **Register User**: REST endpoint in user-service (POST /users) receives user registration details and creates a
-       user.
-    2. **Publish UserRegisteredEvent**: user-service publishes **UserRegisteredEvent** to Kafka.
-    3. **Open Account**: account-service subscribes to **UserRegisteredEvent**, creates a default account for the user,
-       and publishes **AccountOpenedEvent** or **AccountOpenFailedEvent**.
-    4. **Notify User**: notification-service subscribes to **AccountOpenedEvent** and sends a notification to the user.
-    5. **Audit Logging**: audit-service subscribes to all relevant events (e.g., **UserRegisteredEvent**, *
-       *AccountOpenedEvent**, **AccountOpenFailedEvent**) and logs each step for audit purposes.
-- **Error Handling**: If account creation fails, **AccountOpenFailedEvent** is published. Downstream services listen for
-  failure events to perform compensating actions or notify users.
-- **Summary Table:**
+**Services**: user-service, account-service, notification-service, audit-service
 
-  | Step          | Publisher            | Event Name                                                      | Subscriber(s)                       |
-    |---------------|----------------------|-----------------------------------------------------------------|-------------------------------------|
-  | Register User | user-service         | UserRegisteredEvent                                             | account-service                     |
-  | Open Account  | account-service      | AccountOpenedEvent / AccountOpenFailedEvent                     | notification-service, audit-service |
-  | Notify User   | notification-service | (notification sent)                                             | -                                   |
-  | Audit Logging | all services         | UserRegisteredEvent, AccountOpenedEvent, AccountOpenFailedEvent | audit-service                       |
+**Flow Steps:**
 
-### 2. Payment Processing Saga (In Progress)
+1. **Register User** - REST endpoint `POST /users` receives registration details and creates user
+2. **Publish UserRegisteredEvent** - user-service publishes event to Kafka
+3. **Open Account** - account-service subscribes to UserRegisteredEvent, creates default account, publishes
+   AccountOpenedEvent/AccountOpenFailedEvent
+4. **Notify User** - notification-service subscribes to AccountOpenedEvent and sends welcome notification
+5. **Audit Logging** - audit-service subscribes to all events and logs each step
 
-- Services: payment-service, account-service, transaction-service, notification-service, audit-service
-- Flow Plan (Corrected):
-  1. **Initiate Payment**: REST endpoint in payment-service (POST /payments) receives payment details and creates a
-     payment.
-  2. **Publish PaymentInitiatedEvent**: payment-service publishes **PaymentInitiatedEvent** to Kafka.
-  3. **Validate Account**: account-service subscribes to **PaymentInitiatedEvent**, validates the source account, and
-     publishes **PaymentValidatedEvent** or **PaymentFailedEvent**.
-  4. **Update Account Balance**: account-service, after successful validation, deducts the amount from the source
-     account, adds to the destination account, and publishes **AccountBalanceUpdatedEvent**.
-  5. **Process Payment**: payment-service subscribes to **AccountBalanceUpdatedEvent**, marks payment as processed, and
-     publishes **PaymentProcessedEvent**.
-  6. **Record Transaction**: transaction-service subscribes to **PaymentProcessedEvent** and records two transactions (
-     DEBIT for source account, CREDIT for destination account) in its database. Publishes TransactionRecordedEvent for
-     audit only.
-  7. **Notify User**: notification-service subscribes to **AccountBalanceUpdatedEvent** and sends a notification to the
-     user.
-  8. **Audit Logging**: audit-service subscribes to all relevant events (e.g., **PaymentInitiatedEvent**, *
-     *PaymentValidatedEvent**, **AccountBalanceUpdatedEvent**, **PaymentProcessedEvent**, **PaymentFailedEvent**, *
-     *TransactionRecordedEvent**) and logs each step for audit purposes.
-- **Error Handling**: If any step fails, a corresponding failure event (e.g., **PaymentFailedEvent**) is published.
-  Downstream services listen for failure events to perform compensating actions or notify users.
-- **Summary Table:**
+**Error Handling**: AccountOpenFailedEvent triggers compensating actions including user deletion
 
-  | Step                   | Publisher           | Event Name                                                                                                          | Subscriber(s)                        |
-    |------------------------|---------------------|---------------------------------------------------------------------------------------------------------------------|--------------------------------------|
-  | Initiate Payment       | payment-service     | PaymentInitiatedEvent                                                                                               | account-service                      |
-  | Validate Account       | account-service     | PaymentValidatedEvent / PaymentFailedEvent                                                                          | payment-service                      |
-  | Update Account Balance | account-service     | AccountBalanceUpdatedEvent                                                                                          | payment-service, notification-service|
-  | Process Payment        | payment-service     | PaymentProcessedEvent                                                                                               | transaction-service, audit-service   |
-  | Record Transaction     | transaction-service |                                                                                             | audit-service                        |
-  | Notify User            | notification-svc    | (notification sent)                                                                                                 | -                                    |
-  | Audit Logging          | all services        | PaymentInitiatedEvent, PaymentValidatedEvent, AccountBalanceUpdatedEvent, PaymentProcessedEvent, PaymentFailedEvent, TransactionRecordedEvent | audit-service                        |
+**Event Flow Summary:**
 
-- **Current Step Implemented:**
-  - Payment Processing Saga is now 100% COMPLETE ✅
-  - Transaction-service listens for PaymentProcessedEvent, records both DEBIT and CREDIT transactions, and publishes TransactionRecordedEvent for audit
-  - Notification-service listens for AccountBalanceUpdatedEvent and notifies users of payment completion
-  - All events (PaymentInitiatedEvent, PaymentValidatedEvent, AccountBalanceUpdatedEvent, PaymentProcessedEvent, PaymentFailedEvent, TransactionRecordedEvent) are being audited
-- **Next Steps:**
-  - Implement Account Closure Saga
-  - Implement Transaction Dispute Saga
+| Step          | Publisher            | Event Name                                  | Subscriber(s)                       |
+|---------------|----------------------|---------------------------------------------|-------------------------------------|
+| Register User | user-service         | UserRegisteredEvent                         | account-service                     |
+| Open Account  | account-service      | AccountOpenedEvent / AccountOpenFailedEvent | notification-service, audit-service |
+| Notify User   | notification-service | (notification sent)                         | -                                   |
+| Audit Logging | all services         | All above events                            | audit-service                       |
 
-### 3. Account Closure Saga (To be implemented)
+### 2. Payment Processing Saga ✅ COMPLETED
 
-- Services: account-service, transaction-service, notification-service, audit-service
-- Flow Plan:
-    1. **Request Account Closure**: REST endpoint in account-service (POST /accounts/{id}/close) receives closure
-       request and starts the saga.
-    2. **Publish AccountClosureRequestedEvent**: account-service publishes AccountClosureRequestedEvent to Kafka.
-    3. **Check Pending Transactions**: transaction-service subscribes to AccountClosureRequestedEvent, checks for
-       pending transactions, and publishes AccountClosureValidatedEvent or AccountClosureBlockedEvent.
-    4. **Close Account**: account-service subscribes to AccountClosureValidatedEvent, closes the account, and publishes
-       AccountClosedEvent.
-    5. **Notify User**: notification-service subscribes to AccountClosedEvent and sends a notification to the user.
-    6. **Audit Logging**: audit-service subscribes to all relevant events and logs each step for audit purposes.
-- Error Handling: If any step fails, a corresponding failure event (e.g., AccountClosureBlockedEvent) is published.
-  Downstream services listen for failure events to perform compensating actions or notify users.
-- Summary Table:
+**Services**: payment-service, account-service, transaction-service, notification-service, audit-service
 
-  | Step                       | Publisher           | Subscriber(s)        |
-    |----------------------------|---------------------|----------------------|
-  | Request Account Closure    | account-service     | transaction-service  |
-  | Check Pending Transactions | transaction-service | account-service      |
-  | Close Account              | account-service     | notification-service |
-  | Notify User                | notification-svc    | -                    |
-  | Audit Logging              | all services        | audit-service        |
+**Flow Steps:**
 
-### 4. Transaction Dispute Saga (To be implemented)
+1. **Initiate Payment** - REST endpoint `POST /payments` receives payment details and creates payment
+2. **Publish PaymentInitiatedEvent** - payment-service publishes event to Kafka
+3. **Validate Account** - account-service validates source account, publishes PaymentValidatedEvent/PaymentFailedEvent
+4. **Update Account Balance** - account-service updates balances, publishes AccountBalanceUpdatedEvent
+5. **Process Payment** - payment-service marks payment as processed, publishes PaymentProcessedEvent
+6. **Record Transaction** - transaction-service records DEBIT/CREDIT transactions, publishes TransactionRecordedEvent
+7. **Notify User** - notification-service sends payment notification
+8. **Audit Logging** - audit-service logs all events
 
-- Services: transaction-service, account-service, notification-service, audit-service
-- Flow Plan:
-    1. **Raise Dispute**: REST endpoint in transaction-service (POST /transactions/{id}/dispute) receives dispute
-       request and starts the saga.
-    2. **Publish TransactionDisputeRaisedEvent**: transaction-service publishes TransactionDisputeRaisedEvent to Kafka.
-    3. **Freeze Transaction/Account**: account-service subscribes to TransactionDisputeRaisedEvent, freezes the relevant
-       account/transaction, and publishes TransactionFrozenEvent.
-    4. **Investigate Dispute**: transaction-service subscribes to TransactionFrozenEvent, investigates the dispute, and
-       publishes DisputeResolvedEvent.
-    5. **Notify User**: notification-service subscribes to DisputeResolvedEvent and sends a notification to the user.
-    6. **Audit Logging**: audit-service subscribes to all relevant events and logs each step for audit purposes.
-- Error Handling: If any step fails, a corresponding failure event (e.g., DisputeRejectedEvent) is published. Downstream
-  services listen for failure events to perform compensating actions or notify users.
-- Summary Table:
+**Error Handling**: PaymentFailedEvent triggers compensation with detailed error messages
 
-  | Step                       | Publisher           | Subscriber(s)        |
-    |----------------------------|---------------------|----------------------|
-  | Raise Dispute              | transaction-service | account-service      |
-  | Freeze Transaction/Account | account-service     | transaction-service  |
-  | Investigate Dispute        | transaction-service | notification-service |
-  | Notify User                | notification-svc    | -                    |
-  | Audit Logging              | all services        | audit-service        |
+**Event Flow Summary:**
 
-## Current Implementation Status (Updated: May 29, 2025)
+| Step                   | Publisher            | Event Name                                 | Subscriber(s)                         |
+|------------------------|----------------------|--------------------------------------------|---------------------------------------|
+| Initiate Payment       | payment-service      | PaymentInitiatedEvent                      | account-service                       |
+| Validate Account       | account-service      | PaymentValidatedEvent / PaymentFailedEvent | payment-service                       |
+| Update Account Balance | account-service      | AccountBalanceUpdatedEvent                 | payment-service, notification-service |
+| Process Payment        | payment-service      | PaymentProcessedEvent                      | transaction-service, audit-service    |
+| Record Transaction     | transaction-service  | TransactionRecordedEvent                   | audit-service                         |
+| Notify User            | notification-service | (notification sent)                        | -                                     |
+| Audit Logging          | all services         | All above events                           | audit-service                         |
 
-### ✅ **COMPLETED SAGA FLOWS**
+### 3. Account Closure Saga ❌ TO BE IMPLEMENTED
 
-#### 1. User Onboarding Saga (100% Complete)
-- **Services**: user-service, account-service, notification-service, audit-service
-- **Implementation Status**: ✅ FULLY IMPLEMENTED
-- **Flow**: User registration → Account creation → Welcome notification → Audit logging
-- **Compensation Logic**: ✅ User deletion on account creation failure
-- **Events**: UserRegisteredEvent, AccountOpenedEvent, AccountOpenFailedEvent
+**Services**: account-service, transaction-service, notification-service, audit-service
 
-#### 2. Payment Processing Saga (100% Complete) 
-- **Services**: payment-service, account-service, transaction-service, notification-service, audit-service
-- **Implementation Status**: ✅ FULLY IMPLEMENTED
-- **Flow**: Payment initiation → Account validation → Balance updates → Payment processing → Transaction recording → User notification → Audit logging
-- **Events**: PaymentInitiatedEvent, PaymentValidatedEvent, PaymentFailedEvent, AccountBalanceUpdatedEvent, PaymentProcessedEvent, TransactionRecordedEvent
-- **Compensation Logic**: ✅ Payment failure handling with detailed error messages
+**Flow Steps:**
 
-### 🔄 **PENDING SAGA FLOWS**
+1. **Request Account Closure** - REST endpoint `POST /accounts/{id}/close` receives closure request
+2. **Publish AccountClosureRequestedEvent** - account-service publishes event to Kafka
+3. **Check Pending Transactions** - transaction-service validates no pending transactions, publishes
+   AccountClosureValidatedEvent/AccountClosureBlockedEvent
+4. **Close Account** - account-service closes the account, publishes AccountClosedEvent
+5. **Notify User** - notification-service sends closure confirmation
+6. **Audit Logging** - audit-service logs all events
 
-#### 3. Account Closure Saga (Not Implemented)
-- **Implementation Status**: ❌ TO BE IMPLEMENTED
-- **Estimated Complexity**: Medium
-- **Required Events**: AccountClosureRequestedEvent, AccountClosureValidatedEvent, AccountClosureBlockedEvent, AccountClosedEvent
+**Error Handling**: AccountClosureBlockedEvent prevents closure and notifies user
 
-#### 4. Transaction Dispute Saga (Not Implemented)  
-- **Implementation Status**: ❌ TO BE IMPLEMENTED
-- **Estimated Complexity**: Medium
-- **Required Events**: TransactionDisputeRaisedEvent, TransactionFrozenEvent, DisputeResolvedEvent
+**Event Flow Summary:**
 
-### 🏗️ **INFRASTRUCTURE STATUS**
+| Step                       | Publisher            | Event Name                                                | Subscriber(s)        |
+|----------------------------|----------------------|-----------------------------------------------------------|----------------------|
+| Request Account Closure    | account-service      | AccountClosureRequestedEvent                              | transaction-service  |
+| Check Pending Transactions | transaction-service  | AccountClosureValidatedEvent / AccountClosureBlockedEvent | account-service      |
+| Close Account              | account-service      | AccountClosedEvent                                        | notification-service |
+| Notify User                | notification-service | (notification sent)                                       | -                    |
+| Audit Logging              | all services         | All above events                                          | audit-service        |
 
-#### ✅ **COMPLETED INFRASTRUCTURE**
-- Maven multi-module project structure
-- Spring Boot microservices (9 services)
-- H2 databases per service (Database per Microservice pattern)
-- Kafka event-driven communication with Spring Cloud Stream
-- Saga Choreography Pattern implementation
-- Common-lib with shared events and utilities
-- Docker Compose configuration
-- Keycloak authentication setup
-- Service Discovery (Eureka)
-- API Gateway routing
-- Correlation ID tracking across services
-- Comprehensive audit logging
+### 4. Transaction Dispute Saga ❌ TO BE IMPLEMENTED
 
-#### 🔧 **TECHNICAL IMPROVEMENTS NEEDED**
-- Explicit authorization annotations (@PreAuthorize) in REST endpoints
-- Enhanced error handling and retry mechanisms  
-- Comprehensive integration testing
-- API documentation (OpenAPI/Swagger)
-- Monitoring and observability (metrics, traces)
-- Circuit breaker patterns for resilience
+**Services**: transaction-service, account-service, notification-service, audit-service
 
-## Summary
+**Flow Steps:**
 
-The Banking as a Service platform demonstrates a **solid microservices architecture** with **80% of core saga flows implemented**. The **User Onboarding** and **Payment Processing** sagas are fully functional with proper event choreography, compensation logic, and audit trails.
+1. **Raise Dispute** - REST endpoint `POST /transactions/{id}/dispute` receives dispute request
+2. **Publish TransactionDisputeRaisedEvent** - transaction-service publishes event to Kafka
+3. **Freeze Transaction/Account** - account-service freezes relevant account/transaction, publishes
+   TransactionFrozenEvent
+4. **Investigate Dispute** - transaction-service investigates dispute, publishes DisputeResolvedEvent
+5. **Notify User** - notification-service sends dispute resolution notification
+6. **Audit Logging** - audit-service logs all events
 
-**Next Priority**: Implement Account Closure and Transaction Dispute sagas to complete the core banking operations coverage.
+**Error Handling**: DisputeRejectedEvent handles failed investigations
+
+**Event Flow Summary:**
+
+| Step                       | Publisher            | Event Name                    | Subscriber(s)        |
+|----------------------------|----------------------|-------------------------------|----------------------|
+| Raise Dispute              | transaction-service  | TransactionDisputeRaisedEvent | account-service      |
+| Freeze Transaction/Account | account-service      | TransactionFrozenEvent        | transaction-service  |
+| Investigate Dispute        | transaction-service  | DisputeResolvedEvent          | notification-service |
+| Notify User                | notification-service | (notification sent)           | -                    |
+| Audit Logging              | all services         | All above events              | audit-service        |
+
+## Implementation Status
+
+*Last Updated: May 29, 2025*
+
+### ✅ Completed Features
+
+#### Infrastructure & Core Services
+
+- ✅ Maven multi-module project structure
+- ✅ Spring Boot microservices (9 services)
+- ✅ H2 databases per service (Database per Microservice pattern)
+- ✅ Kafka event-driven communication with Spring Cloud Stream
+- ✅ Saga Choreography Pattern implementation
+- ✅ Common-lib with shared events and utilities
+- ✅ Docker Compose configuration
+- ✅ Keycloak authentication setup
+- ✅ Service Discovery (Eureka)
+- ✅ API Gateway routing
+- ✅ Correlation ID tracking across services
+- ✅ Comprehensive audit logging
+
+#### Saga Implementations
+
+- ✅ **User Onboarding Saga** (100% Complete)
+  - Flow: User registration → Account creation → Welcome notification → Audit logging
+  - Compensation: User deletion on account creation failure
+  - Events: UserRegisteredEvent, AccountOpenedEvent, AccountOpenFailedEvent
+
+- ✅ **Payment Processing Saga** (100% Complete)
+  - Flow: Payment initiation → Account validation → Balance updates → Payment processing → Transaction recording → User
+    notification → Audit logging
+  - Compensation: Payment failure handling with detailed error messages
+  - Events: PaymentInitiatedEvent, PaymentValidatedEvent, PaymentFailedEvent, AccountBalanceUpdatedEvent,
+    PaymentProcessedEvent, TransactionRecordedEvent
+
+### 🔄 Pending Implementation
+
+#### Saga Flows
+
+- ❌ **Account Closure Saga** (Not Implemented)
+  - Estimated Complexity: Medium
+  - Required Events: AccountClosureRequestedEvent, AccountClosureValidatedEvent, AccountClosureBlockedEvent,
+    AccountClosedEvent
+
+- ❌ **Transaction Dispute Saga** (Not Implemented)
+  - Estimated Complexity: Medium
+  - Required Events: TransactionDisputeRaisedEvent, TransactionFrozenEvent, DisputeResolvedEvent
+
+#### Technical Improvements
+
+- ❌ Explicit authorization annotations (@PreAuthorize) in REST endpoints
+- ❌ Enhanced error handling and retry mechanisms
+- ❌ Comprehensive integration testing
+- ❌ API documentation (OpenAPI/Swagger)
+- ❌ Monitoring and observability (metrics, traces)
+- ❌ Circuit breaker patterns for resilience
+
+### 📊 Progress Summary
+
+**Overall Progress**: 80% of core saga flows implemented
+
+The Banking as a Service platform demonstrates a solid microservices architecture with User Onboarding and Payment
+Processing sagas fully functional with proper event choreography, compensation logic, and audit trails.
+
+**Next Priority**: Implement Account Closure and Transaction Dispute sagas to complete core banking operations coverage.
 
 ## Development Guidelines
-- Maven multi-module structure
-- Java 21 syntax and features
-- All common constants in `common-lib`
-- Standard Java naming conventions
-- Encapsulate reusable logic in `common-lib` when appropriate
-- Use builders to construct saga events
-- Each service uses its own H2 database
-- RESTful endpoints, basic Swagger documentation
-- Kafka for service communication, simple event publishing/listening
 
-## Testing Strategy
-- [ ] Basic unit tests
-- [ ] Simple integration tests
+### Technical Standards
 
-## Deployment
-- [ ] Docker containers
-- [ ] Docker Compose for local deployment
+- **Project Structure**: Maven multi-module architecture
+- **Java Version**: Java 21 with modern syntax and features
+- **Code Organization**: All common constants and utilities in `common-lib`
+- **Naming Conventions**: Standard Java conventions throughout
+- **Event Construction**: Use builder pattern for saga events
+- **Database Strategy**: Each service maintains its own H2 database
 
-## Phase 1 Implementation (MVP)
-- [ ] User registration and login
-- [ ] Account creation
-- [ ] Basic fund transfer
-- [ ] Simple transaction history
-- [ ] Basic email notifications
+### API & Communication
 
-## Monitoring
-- [ ] Basic health checks
-- [ ] Simple logging
-- [ ] Service status dashboard
+- **REST APIs**: RESTful endpoints with basic Swagger documentation
+- **Event-Driven**: Kafka for asynchronous service communication
+- **Messaging**: Simple event publishing and listening patterns
+
+## Implementation Roadmap
+
+### Phase 1: Core Banking Operations (Current)
+
+- [x] User registration and authentication
+- [x] Account creation and management
+- [x] Payment processing and fund transfers
+- [x] Transaction recording and history
+- [x] Email notifications for key events
+
+### Phase 2: Advanced Features (Next)
+
+- [ ] Account closure workflows
+- [ ] Transaction dispute handling
+- [ ] Enhanced security and authorization
+- [ ] Comprehensive error handling and retry mechanisms
+
+### Phase 3: Production Readiness (Future)
+
+- [ ] Circuit breaker patterns for resilience
+- [ ] Comprehensive integration testing
+- [ ] Monitoring and observability
+- [ ] API documentation (OpenAPI/Swagger)
+- [ ] Performance optimization
+
+## Testing & Quality Assurance
+
+### Testing Strategy
+
+- [ ] Unit tests for business logic
+- [ ] Integration tests for saga flows
+- [ ] Contract testing between services
+- [ ] End-to-end testing of complete workflows
+
+### Quality Gates
+
+- [ ] Code coverage thresholds
+- [ ] Static code analysis
+- [ ] Security scanning
+- [ ] Performance benchmarks
+
+## Deployment & Operations
+
+### Local Development
+
+- [x] Docker Compose for local environment
+- [x] H2 in-memory databases for development
+- [x] Kafka and Keycloak containerized
+
+### Production Considerations
+
+- [ ] Container orchestration (Kubernetes)
+- [ ] External databases (PostgreSQL/MySQL)
+- [ ] Kafka cluster configuration
+- [ ] Load balancing and scaling
+- [ ] Monitoring and alerting
+- [ ] Backup and disaster recovery
+
+## Monitoring & Observability
+
+### Health & Status
+
+- [ ] Service health checks
+- [ ] Application metrics and KPIs
+- [ ] Distributed tracing
+- [ ] Centralized logging
+
+### Business Metrics
+
+- [ ] Transaction success rates
+- [ ] Payment processing times
+- [ ] User onboarding completion rates
+- [ ] System availability and uptime
