@@ -5,12 +5,12 @@ import com.rajeswaran.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -19,6 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @GetMapping
     public List<User> getAllUsers() {
         log.info("Received request: getAllUsers");
@@ -27,19 +28,8 @@ public class UserController {
         return users;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        log.info("Received request: getUserById, id={}", id);
-        Optional<User> user = userService.getUserById(id);
-        if (user.isPresent()) {
-            log.info("Completed request: getUserById, found userId={}", id);
-            return ResponseEntity.ok(user.get());
-        } else {
-            log.info("Completed request: getUserById, userId={} not found", id);
-            return ResponseEntity.notFound().build();
-        }
-    }
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN) or hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
     @PostMapping
     public User createUser() {
         log.info("Received request: createUser from JWT");
@@ -60,6 +50,7 @@ public class UserController {
         return created;
     }
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         log.info("Received request: deleteUser, id={}", id);
@@ -68,3 +59,4 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 }
+
