@@ -43,6 +43,7 @@ public class UserRegisteredEventListener {
                 log.info("Created new account for userId={}, accountNumber={}", event.getUserId(), account.getAccountNumber());
 
                 AccountOpenedEvent accountOpenedEvent = AccountOpenedEvent.builder()
+                        .userId(event.getUserId())
                         .username(event.getUsername())
                         .email(event.getEmail())
                         .fullName(event.getFullName())

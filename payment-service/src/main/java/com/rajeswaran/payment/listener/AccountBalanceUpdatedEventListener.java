@@ -39,6 +39,7 @@ public class AccountBalanceUpdatedEventListener {
 
                 PaymentProcessedEvent processedEvent = PaymentProcessedEvent.builder()
                         .paymentId(event.getPaymentId())
+                        .userId(event.getUserId())
                         .username(event.getUsername())
                         .sourceAccountNumber(event.getSourceAccountNumber())
                         .destinationAccountNumber(event.getDestinationAccountNumber())

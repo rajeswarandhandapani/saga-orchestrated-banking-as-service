@@ -6,11 +6,6 @@ public final class AppConstants {
     public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
     public static final String CORRELATION_ID_MDC_KEY = "correlationId";
 
-    // Role Constants
-    public static final String ROLE_ADMIN = "ADMIN";
-    public static final String ROLE_USER = "USER";
-    public static final String ROLE_CUSTOMER = "CUSTOMER";
-
     public enum SagaEventType {
         USER_REGISTERED,
         USER_REGISTRATION_FAILED,

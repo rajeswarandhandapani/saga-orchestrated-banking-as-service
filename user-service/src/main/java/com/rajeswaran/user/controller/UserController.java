@@ -56,7 +56,7 @@ public class UserController {
         }
 
         User created = userService.createUserFromJwt(username, email, fullName);
-        log.info("Completed request: createUser, createdId={}", created.getId());
+        log.info("Completed request: createUser, createdId={}", created.getUserId());
         return created;
     }
 

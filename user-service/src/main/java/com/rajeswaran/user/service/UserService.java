@@ -41,7 +41,7 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         UserRegisteredEvent event = UserRegisteredEvent.builder()
-                .userId(String.valueOf(savedUser.getId()))
+                .userId(String.valueOf(savedUser.getUserId()))
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
                 .fullName(savedUser.getFullName())
