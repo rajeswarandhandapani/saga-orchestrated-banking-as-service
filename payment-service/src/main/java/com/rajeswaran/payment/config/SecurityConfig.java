@@ -1,4 +1,4 @@
-package com.rajeswaran.transaction;
+package com.rajeswaran.payment.config;
 
 import com.rajeswaran.common.security.CommonJwtGrantedAuthoritiesConverter;
 import org.springframework.context.annotation.Bean;

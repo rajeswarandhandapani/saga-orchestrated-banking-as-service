@@ -1,4 +1,4 @@
-package com.rajeswaran.notification;
+package com.rajeswaran.notification.config;
 
 import com.rajeswaran.common.security.CommonJwtGrantedAuthoritiesConverter;
 import org.springframework.context.annotation.Bean;

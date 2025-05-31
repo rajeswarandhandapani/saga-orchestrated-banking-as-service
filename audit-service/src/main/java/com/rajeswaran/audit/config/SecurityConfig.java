@@ -1,4 +1,4 @@
-package com.rajeswaran.audit;
+package com.rajeswaran.audit.config;
 
 import com.rajeswaran.common.security.CommonJwtGrantedAuthoritiesConverter;
 import org.springframework.context.annotation.Bean;
