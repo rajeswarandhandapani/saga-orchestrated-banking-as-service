@@ -41,6 +41,7 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - **API Security**: Bearer token authentication, token validation at API Gateway, method-level security enabled
 - **Password Policy**: Minimum length 8, uppercase, number, special character
 - **JWT Authentication**: Custom JwtAuthenticationConverter for authority mapping
+- **Centralized Security Utilities**: Common SecurityUtil class for JWT role extraction and user information
 
 ## Saga Choreography Pattern
 
@@ -58,13 +59,15 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 **Flow Steps:**
 
 1. **Register User** - REST endpoint `POST /users` receives registration details and creates user
-2. **Publish UserRegisteredEvent** - user-service publishes event to Kafka
-3. **Open Account** - account-service subscribes to UserRegisteredEvent, creates default account, publishes
-   AccountOpenedEvent/AccountOpenFailedEvent
+2. **Publish UserRegisteredEvent** - user-service publishes event to Kafka with user roles information
+3. **Open Account** - account-service subscribes to UserRegisteredEvent, creates default account for regular users
+   only (skips BAAS_ADMIN users), publishes AccountOpenedEvent/AccountOpenFailedEvent
 4. **Notify User** - notification-service subscribes to AccountOpenedEvent and sends welcome notification
 5. **Audit Logging** - audit-service subscribes to all events and logs each step
 
 **Error Handling**: AccountOpenFailedEvent triggers compensating actions including user deletion
+
+**Role-Based Logic**: Account creation is skipped for users with BAAS_ADMIN role
 
 **Event Flow Summary:**
 
