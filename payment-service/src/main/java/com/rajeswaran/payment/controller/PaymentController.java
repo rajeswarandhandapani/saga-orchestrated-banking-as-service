@@ -5,6 +5,7 @@ import com.rajeswaran.payment.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @GetMapping
     public List<Payment> getAllPayments() {
         log.info("Received request: getAllPayments");
@@ -25,6 +27,7 @@ public class PaymentController {
         return payments;
     }
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN) or hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
     @GetMapping("/{id}")
     public ResponseEntity<Payment> getPaymentById(@PathVariable Long id) {
         log.info("Received request: getPaymentById, id={}", id);
@@ -38,6 +41,7 @@ public class PaymentController {
         }
     }
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
     @PostMapping
     public Payment createPayment(@RequestBody Payment payment) {
         log.info("Received request: createPayment, payload={}", payment);
@@ -45,5 +49,4 @@ public class PaymentController {
         log.info("Completed request: createPayment, createdId={}", created.getId());
         return created;
     }
-
 }
