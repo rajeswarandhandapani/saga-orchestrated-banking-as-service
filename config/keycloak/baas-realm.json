@@ -3,6 +3,7 @@
   "enabled": true,
   "sslRequired": "external",
   "registrationAllowed": false,
+  "accessTokenLifespan": 3600,
   "roles": {
     "realm": [
       {
@@ -93,7 +94,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "banking-service-secret",
       "redirectUris": [
-        "http://localhost:8080/*"
+        "https://oauth.pstmn.io/v1/callback"
       ],
       "webOrigins": [
         "*"
