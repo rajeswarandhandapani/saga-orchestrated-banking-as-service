@@ -16,4 +16,5 @@ public class AccountBalanceUpdatedEvent extends SagaEvent {
     private String sourceAccountNumber;
     private String destinationAccountNumber;
     private Double amount;
+    private String recipientUsername; // Added field to identify the recipient
 }

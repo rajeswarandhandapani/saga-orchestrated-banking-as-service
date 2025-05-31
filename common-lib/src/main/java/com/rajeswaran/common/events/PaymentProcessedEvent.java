@@ -18,5 +18,6 @@ public class PaymentProcessedEvent extends SagaEvent {
     private Double amount;
     private boolean processed;
     private String reason;
+    private String recipientUsername; // Added field to track the recipient of the payment
 }
 

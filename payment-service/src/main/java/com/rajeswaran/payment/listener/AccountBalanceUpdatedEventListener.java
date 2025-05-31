@@ -44,6 +44,7 @@ public class AccountBalanceUpdatedEventListener {
                         .sourceAccountNumber(event.getSourceAccountNumber())
                         .destinationAccountNumber(event.getDestinationAccountNumber())
                         .amount(event.getAmount())
+                        .recipientUsername(event.getRecipientUsername()) // Pass through the recipient username from AccountBalanceUpdatedEvent
                         .timestamp(SagaEventBuilderUtil.now())
                         .details("Payment processed for paymentId: " + event.getPaymentId())
                         .correlationId(event.getCorrelationId())

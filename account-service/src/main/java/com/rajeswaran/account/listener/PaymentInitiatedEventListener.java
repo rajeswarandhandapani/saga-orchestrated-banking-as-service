@@ -1,5 +1,6 @@
 package com.rajeswaran.account.listener;
 
+import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
 import com.rajeswaran.common.events.AccountBalanceUpdatedEvent;
 import com.rajeswaran.common.events.PaymentFailedEvent;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -47,6 +49,13 @@ public class PaymentInitiatedEventListener {
                 // Add amount to destination account
                 boolean added = accountService.addToAccount(event.getDestinationAccountNumber(), event.getAmount());
                 if (deducted && added) {
+                    // Look up the recipient's username from the destination account
+                    String recipientUsername = null;
+                    Optional<Account> destinationAccount = accountService.getAccountByAccountNumber(event.getDestinationAccountNumber());
+                    if (destinationAccount.isPresent()) {
+                        recipientUsername = destinationAccount.get().getUserName();
+                    }
+
                     // Publish AccountBalanceUpdatedEvent
                     AccountBalanceUpdatedEvent balanceUpdatedEvent = AccountBalanceUpdatedEvent.builder()
                             .paymentId(event.getPaymentId())
@@ -55,6 +64,7 @@ public class PaymentInitiatedEventListener {
                             .amount(event.getAmount())
                             .userId(event.getUserId())
                             .username(event.getUsername())
+                            .recipientUsername(recipientUsername) // Add recipient username
                             .timestamp(Instant.now())
                             .details("Source and destination account balances updated for paymentId: " + event.getPaymentId())
                             .correlationId(event.getCorrelationId())

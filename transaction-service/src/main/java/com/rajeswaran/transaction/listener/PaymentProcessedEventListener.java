@@ -23,12 +23,14 @@ public class PaymentProcessedEventListener {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private StreamBridge streamBridge;    @Bean
+    private StreamBridge streamBridge;
+
+    @Bean
     public Consumer<PaymentProcessedEvent> paymentProcessedEvent() {
         return event -> {
             log.info("Received PaymentProcessedEvent for paymentId={}, amount={}", event.getPaymentId(), event.getAmount());
 
-            // Record DEBIT transaction for source account
+            // Record DEBIT transaction for source account - associated with the sender (current user)
             Transaction debitTransaction = new Transaction();
             debitTransaction.setAccountNumber(event.getSourceAccountNumber());
             debitTransaction.setAmount(event.getAmount());
@@ -37,17 +39,20 @@ public class PaymentProcessedEventListener {
             debitTransaction.setStatus("COMPLETED");
             debitTransaction.setReference(event.getPaymentId());
             debitTransaction.setTimestamp(LocalDateTime.now());
+            debitTransaction.setUsername(event.getUsername()); // The initiator of the payment
             Transaction savedDebitTransaction = transactionRepository.save(debitTransaction);
 
-            // Record CREDIT transaction for destination account
+            // Record CREDIT transaction for destination account - associated with the recipient
             Transaction creditTransaction = new Transaction();
             creditTransaction.setAccountNumber(event.getDestinationAccountNumber());
+            creditTransaction.setUsername(event.getRecipientUsername());
             creditTransaction.setAmount(event.getAmount());
             creditTransaction.setType("CREDIT");
             creditTransaction.setDescription("Payment received for paymentId: " + event.getPaymentId());
             creditTransaction.setStatus("COMPLETED");
             creditTransaction.setReference(event.getPaymentId());
             creditTransaction.setTimestamp(LocalDateTime.now());
+
             Transaction savedCreditTransaction = transactionRepository.save(creditTransaction);
 
             // Publish TransactionRecordedEvent for audit
