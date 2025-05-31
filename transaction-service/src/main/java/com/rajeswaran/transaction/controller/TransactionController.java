@@ -5,7 +5,10 @@ import com.rajeswaran.transaction.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,20 +42,6 @@ public class TransactionController {
         }
     }
 
-    @PostMapping
-    public Transaction createTransaction(@RequestBody Transaction transaction) {
-        log.info("Received request: createTransaction, payload={}", transaction);
-        Transaction created = transactionService.createTransaction(transaction);
-        log.info("Completed request: createTransaction, createdId={}", created.getId());
-        return created;
-    }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
-        log.info("Received request: deleteTransaction, id={}", id);
-        transactionService.deleteTransaction(id);
-        log.info("Completed request: deleteTransaction, id={}", id);
-        return ResponseEntity.noContent().build();
-    }
 }
 

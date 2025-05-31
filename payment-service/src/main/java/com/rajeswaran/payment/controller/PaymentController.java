@@ -46,11 +46,4 @@ public class PaymentController {
         return created;
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
-        log.info("Received request: deletePayment, id={}", id);
-        paymentService.deletePayment(id);
-        log.info("Completed request: deletePayment, id={}", id);
-        return ResponseEntity.noContent().build();
-    }
 }
