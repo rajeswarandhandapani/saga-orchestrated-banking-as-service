@@ -1,4 +1,4 @@
-package com.rajeswaran.user;
+package com.rajeswaran.user.config;
 
 import com.rajeswaran.common.security.CommonJwtGrantedAuthoritiesConverter;
 import org.springframework.context.annotation.Bean;
