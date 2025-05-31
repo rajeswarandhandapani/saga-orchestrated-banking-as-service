@@ -2,12 +2,11 @@ package com.rajeswaran.payment.service;
 
 import com.rajeswaran.common.events.PaymentInitiatedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
+import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.payment.entity.Payment;
 import com.rajeswaran.payment.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,18 +24,23 @@ public class PaymentService {
         return paymentRepository.findAll();
     }
 
+    public List<Payment> getPaymentsByUsername(String username) {
+        return paymentRepository.findByCreatedBy(username);
+    }
+
     public Optional<Payment> getPaymentById(Long id) {
         return paymentRepository.findById(id);
     }
 
     public Payment createPayment(Payment payment) {
-        Payment created = paymentRepository.save(payment);
         // Use SecurityContextHolder here, not in common-lib
-        String username = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            username = authentication.getName();
-        }
+        String username = SecurityUtil.getCurrentUsername();
+
+        // Set the createdBy field to track which user created this payment
+        payment.setCreatedBy(username);
+
+        Payment created = paymentRepository.save(payment);
+
         PaymentInitiatedEvent event = PaymentInitiatedEvent.builder()
                 .paymentId(String.valueOf(created.getId()))
                 .sourceAccountNumber(created.getSourceAccountNumber())

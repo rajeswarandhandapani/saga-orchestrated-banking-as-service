@@ -1,5 +1,6 @@
 package com.rajeswaran.payment.controller;
 
+import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.payment.entity.Payment;
 import com.rajeswaran.payment.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,16 @@ public class PaymentController {
         log.info("Received request: getAllPayments");
         List<Payment> payments = paymentService.getAllPayments();
         log.info("Completed request: getAllPayments, count={}", payments.size());
+        return payments;
+    }
+
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
+    @GetMapping("/my-payments")
+    public List<Payment> getMyPayments() {
+        log.info("Received request: getMyPayments");
+        String username = SecurityUtil.getCurrentUsername();
+        List<Payment> payments = paymentService.getPaymentsByUsername(username);
+        log.info("User {} requesting their payments, count={}", username, payments.size());
         return payments;
     }
 

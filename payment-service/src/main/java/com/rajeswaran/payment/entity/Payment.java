@@ -19,4 +19,5 @@ public class Payment {
     private double amount;
     private String status;
     private String reference;
+    private String createdBy; // Added field to track which user created this payment
 }
