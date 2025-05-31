@@ -2,9 +2,11 @@ package com.rajeswaran.account.controller;
 
 import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
+import com.rajeswaran.common.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @GetMapping
     public List<Account> getAllAccounts() {
         log.info("Received request: getAllAccounts");
@@ -25,6 +28,7 @@ public class AccountController {
         return accounts;
     }
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN) or hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
     @GetMapping("/{accountNumber}")
     public ResponseEntity<Account> getAccountByNumber(@PathVariable String accountNumber) {
         log.info("Received request: getAccountByNumber, accountNumber={}", accountNumber);
@@ -38,6 +42,7 @@ public class AccountController {
         }
     }
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @PostMapping
     public Account createAccount(@RequestBody Account account) {
         log.info("Received request: createAccount, payload={}", account);
@@ -46,11 +51,15 @@ public class AccountController {
         return created;
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable String id) {
-        log.info("Received request: deleteAccount, id={}", id);
-        accountService.deleteAccount(id);
-        log.info("Completed request: deleteAccount, id={}", id);
-        return ResponseEntity.noContent().build();
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/my-accounts")
+    public List<Account> getMyAccounts() {
+        log.info("Received request: getMyAccounts");
+        String username = SecurityUtil.getCurrentUsername();
+
+        List<Account> accounts = accountService.getAccountsByUserName(username);
+
+        log.info("Completed request: getMyAccounts, found {} accounts for user {}", accounts.size(), username);
+        return accounts;
     }
 }

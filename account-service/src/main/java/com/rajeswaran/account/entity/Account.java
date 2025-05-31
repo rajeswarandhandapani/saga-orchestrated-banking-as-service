@@ -22,6 +22,7 @@ public class Account {
     private String accountNumber;
     private String accountType;
     private String userId;
+    private String userName;
     private double balance;
     private String status;
 }

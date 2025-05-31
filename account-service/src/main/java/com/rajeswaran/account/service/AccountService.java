@@ -70,4 +70,14 @@ public class AccountService {
         }
         return false;
     }
+
+    // Get accounts by user ID
+    public List<Account> getAccountsByUserId(String userId) {
+        return accountRepository.findByUserId(userId);
+    }
+
+    // Get accounts by user name
+    public List<Account> getAccountsByUserName(String userName) {
+        return accountRepository.findByUserName(userName);
+    }
 }
