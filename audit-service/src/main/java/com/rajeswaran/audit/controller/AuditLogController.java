@@ -5,7 +5,10 @@ import com.rajeswaran.audit.service.AuditLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,19 +41,4 @@ public class AuditLogController {
         }
     }
 
-    @PostMapping
-    public AuditLog createLog(@RequestBody AuditLog logObj) {
-        log.info("Received request: createLog, payload={}", logObj);
-        AuditLog created = auditLogService.createLog(logObj);
-        log.info("Completed request: createLog, createdId={}", created.getId());
-        return created;
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLog(@PathVariable Long id) {
-        log.info("Received request: deleteLog, id={}", id);
-        auditLogService.deleteLog(id);
-        log.info("Completed request: deleteLog, id={}", id);
-        return ResponseEntity.noContent().build();
-    }
 }
