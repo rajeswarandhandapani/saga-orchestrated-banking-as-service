@@ -31,6 +31,13 @@ public class UserRegisteredEventListener {
     public Consumer<UserRegisteredEvent> userRegisteredEvent() {
         return event -> {
             log.info("Received UserRegisteredEvent for userId={}, username={}, email={}", event.getUserId(), event.getUsername(), event.getEmail());
+
+            // Check if the user has admin role using the dedicated roles field
+            if (event.getRoles() != null && event.getRoles().contains(AppConstants.ROLE_BAAS_ADMIN)) {
+                log.info("Skipping account creation for admin user: {}", event.getUsername());
+                return; // Skip account creation for admin users
+            }
+
             try {
                 // Create a new account for the registered user
                 Account account = new Account();
