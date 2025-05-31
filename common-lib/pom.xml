@@ -42,6 +42,19 @@
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- Spring Security for JWT and OAuth2 support -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-resource-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
