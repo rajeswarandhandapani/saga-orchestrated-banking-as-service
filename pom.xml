@@ -55,6 +55,23 @@
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot.version}</version>
+          <configuration>
+            <image>
+              <name>rajeswaran/baas-${project.artifactId}:${project.version}</name>
+              <env>
+                <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
+              </env>
+            </image>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>repackage</goal>
+                <goal>build-image</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
