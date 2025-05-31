@@ -21,6 +21,10 @@ public class TransactionService {
         return transactionRepository.findById(id);
     }
 
+    public List<Transaction> getTransactionsByUsername(String username) {
+        return transactionRepository.findByUsername(username);
+    }
+
     public Transaction createTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }

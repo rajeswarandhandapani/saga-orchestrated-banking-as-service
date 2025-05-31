@@ -23,5 +23,6 @@ public class Transaction {
     private String status;
     private String reference;
     private LocalDateTime timestamp;
+    private String username; // Added field to track which user owns this transaction
 }
 

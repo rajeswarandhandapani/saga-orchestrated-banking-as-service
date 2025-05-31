@@ -1,10 +1,12 @@
 package com.rajeswaran.transaction.controller;
 
+import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.transaction.entity.Transaction;
 import com.rajeswaran.transaction.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @GetMapping
     public List<Transaction> getAllTransactions() {
         log.info("Received request: getAllTransactions");
@@ -29,6 +32,7 @@ public class TransactionController {
         return transactions;
     }
 
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN) or hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
         log.info("Received request: getTransactionById, id={}", id);
@@ -42,6 +46,13 @@ public class TransactionController {
         }
     }
 
-
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
+    @GetMapping("/my-transactions")
+    public List<Transaction> getMyTransactions() {
+        log.info("Received request: getMyTransactions");
+        String username = SecurityUtil.getCurrentUsername();
+        List<Transaction> transactions = transactionService.getTransactionsByUsername(username);
+        log.info("User {} requesting their transactions, count={}", username, transactions.size());
+        return transactions;
+    }
 }
-
