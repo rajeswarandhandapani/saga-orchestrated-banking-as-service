@@ -42,6 +42,11 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - **Password Policy**: Minimum length 8, uppercase, number, special character
 - **JWT Authentication**: Custom JwtAuthenticationConverter for authority mapping
 - **Centralized Security Utilities**: Common SecurityUtil class for JWT role extraction and user information
+- **Service-Specific Access Controls**:
+  - **Audit Service**: All audit logs restricted to BAAS_ADMIN role only
+  - **Account Service**: Administrative functions restricted to BAAS_ADMIN, account-specific operations available to
+    both BAAS_ADMIN and ACCOUNT_HOLDER roles
+  - **User Service**: User management restricted to BAAS_ADMIN, self-service operations available to authenticated users
 
 ## Saga Choreography Pattern
 
