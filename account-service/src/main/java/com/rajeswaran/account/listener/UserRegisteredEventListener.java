@@ -36,6 +36,7 @@ public class UserRegisteredEventListener {
                 Account account = new Account();
                 account.setAccountNumber(generateAccountNumber());
                 account.setAccountType("SAVINGS");
+                account.setUserName(event.getUsername());
                 account.setUserId(event.getUserId());
                 account.setBalance(500.0);
                 account.setStatus("ACTIVE");
