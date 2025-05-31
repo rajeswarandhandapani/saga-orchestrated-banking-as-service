@@ -47,6 +47,9 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
   - **Account Service**: Administrative functions restricted to BAAS_ADMIN, account-specific operations available to
     both BAAS_ADMIN and ACCOUNT_HOLDER roles
   - **User Service**: User management restricted to BAAS_ADMIN, self-service operations available to authenticated users
+  - **Payment Service**: Payment creation restricted to ACCOUNT_HOLDER role only; separate endpoints for admin (all
+    payments) and users (my-payments)
+  - **Notification Service**: All notification endpoints restricted to BAAS_ADMIN role only
 
 ## Saga Choreography Pattern
 
