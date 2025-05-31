@@ -5,7 +5,11 @@ import com.rajeswaran.notification.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +17,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/api/notifications")
+@PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
 public class NotificationController {
     @Autowired
     private NotificationService notificationService;
@@ -38,19 +43,4 @@ public class NotificationController {
         }
     }
 
-    @PostMapping
-    public Notification createNotification(@RequestBody Notification notification) {
-        log.info("Received request: createNotification, payload={}", notification);
-        Notification created = notificationService.createNotification(notification);
-        log.info("Completed request: createNotification, createdId={}", created.getId());
-        return created;
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNotification(@PathVariable Long id) {
-        log.info("Received request: deleteNotification, id={}", id);
-        notificationService.deleteNotification(id);
-        log.info("Completed request: deleteNotification, id={}", id);
-        return ResponseEntity.noContent().build();
-    }
 }
