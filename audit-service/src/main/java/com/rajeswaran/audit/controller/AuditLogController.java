@@ -5,6 +5,7 @@ import com.rajeswaran.audit.service.AuditLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/api/audit-logs")
+@PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
 public class AuditLogController {
     @Autowired
     private AuditLogService auditLogService;
@@ -40,5 +42,4 @@ public class AuditLogController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }
