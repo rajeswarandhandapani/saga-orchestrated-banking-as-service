@@ -1,5 +1,6 @@
 package com.rajeswaran.user.controller;
 
+import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,28 +31,30 @@ public class UserController {
         return users;
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public User getCurrentUser() {
+        String username = SecurityUtil.getCurrentUsername();
+
+        return userService.getUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found in database"));
+    }
 
     @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN) or hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
     @PostMapping
     public User createUser() {
         log.info("Received request: createUser from JWT");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        String username = null;
+        String username = SecurityUtil.getCurrentUsername();
         String email = null;
         String fullName = null;
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
-            username = jwt.getClaimAsString("preferred_username");
             email = jwt.getClaimAsString("email");
             fullName = jwt.getClaimAsString("name");
         }
-
         User created = userService.createUserFromJwt(username, email, fullName);
         log.info("Completed request: createUser, createdId={}", created.getUserId());
         return created;
     }
-
-
 }
 
