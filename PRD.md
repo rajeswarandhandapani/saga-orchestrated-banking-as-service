@@ -37,9 +37,10 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 ## Security & Authentication
 
 - **Keycloak Integration**: OAuth 2.0, OpenID Connect, JWT-based access tokens
-- **Authorization**: Role-based access control (RBAC), scope-based authorization
-- **API Security**: Bearer token authentication, token validation at API Gateway
+- **Authorization**: Role-based access control (RBAC) with defined roles (BAAS_ADMIN, ACCOUNT_HOLDER)
+- **API Security**: Bearer token authentication, token validation at API Gateway, method-level security enabled
 - **Password Policy**: Minimum length 8, uppercase, number, special character
+- **JWT Authentication**: Custom JwtAuthenticationConverter for authority mapping
 
 ## Saga Choreography Pattern
 
@@ -157,7 +158,7 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 
 ## Implementation Status
 
-*Last Updated: May 29, 2025*
+*Last Updated: May 31, 2025*
 
 ### ✅ Completed Features
 
@@ -175,6 +176,13 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - ✅ API Gateway routing
 - ✅ Correlation ID tracking across services
 - ✅ Comprehensive audit logging
+
+#### User Service Endpoints
+
+- ✅ User registration and management
+- ✅ getCurrentUser endpoint for retrieving authenticated user information
+- ✅ Role-based access control using BAAS_ADMIN and ACCOUNT_HOLDER roles
+- ❌ No deleteUser endpoint (removed for security reasons)
 
 #### Saga Implementations
 
