@@ -3,8 +3,8 @@ echo =========================================
 echo Building microservices Docker images...
 echo =========================================
 
-REM Build all the Docker images using Maven
-call mvn clean spring-boot:build-image
+REM Build all the Docker images using Maven package goal
+call mvn clean package
 
 REM Check if the Maven build was successful
 if %ERRORLEVEL% NEQ 0 (

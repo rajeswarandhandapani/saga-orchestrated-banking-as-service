@@ -62,26 +62,10 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>repackage</id>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-          <execution>
-            <id>build-image</id>
-            <goals>
-              <goal>build-image</goal>
-            </goals>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
+        <configuration>
+          <skip>true</skip>
+          <classifier>exec</classifier>
+        </configuration>
       </plugin>
     </plugins>
   </build>

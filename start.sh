@@ -4,8 +4,8 @@ echo "========================================="
 echo "Building microservices Docker images..."
 echo "========================================="
 
-# Build all the Docker images using Maven
-mvn clean spring-boot:build-image
+# Build all the Docker images using Maven package goal
+mvn clean package
 
 # Check if the Maven build was successful
 if [ $? -ne 0 ]; then
