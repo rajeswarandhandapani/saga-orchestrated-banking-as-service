@@ -99,7 +99,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
-      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/auth/realms/baas
+      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -115,6 +115,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -128,6 +129,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -143,7 +145,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
-      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/auth/realms/baas
+      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
         condition: service_healthy
