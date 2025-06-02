@@ -94,7 +94,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "banking-service-secret",
       "redirectUris": [
-        "https://oauth.pstmn.io/v1/callback"
+        "*"
       ],
       "webOrigins": [
         "*"
