@@ -35,26 +35,6 @@ services:
     container_name: service-discovery
     ports:
       - "8761:8761"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  api-gateway:
-    image: rajeswaran/baas-api-gateway:1.0-SNAPSHOT
-    container_name: api-gateway
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
-      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
-    depends_on:
-      service-discovery:
-        condition: service_healthy
-      keycloak:
-        condition: service_started
 
   user-service:
     image: rajeswaran/baas-user-service:1.0-SNAPSHOT
@@ -142,3 +122,18 @@ services:
       broker:
         condition: service_started
 
+
+  api-gateway:
+    image: rajeswaran/baas-api-gateway:1.0-SNAPSHOT
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
+      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+    depends_on:
+      service-discovery:
+        condition: service_started
+      keycloak:
+        condition: service_started
