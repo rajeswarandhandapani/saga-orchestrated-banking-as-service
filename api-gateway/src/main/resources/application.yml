@@ -39,7 +39,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8089/realms/baas
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
 eureka:
   client:
     service-url:

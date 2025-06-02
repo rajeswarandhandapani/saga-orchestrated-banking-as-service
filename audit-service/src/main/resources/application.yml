@@ -23,18 +23,18 @@ spring:
           group: audit-service
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     function:
       definition: auditEvent
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8089/realms/baas
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
   instance:
     prefer-ip-address: true
     hostname: localhost
