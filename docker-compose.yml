@@ -142,3 +142,15 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_started
+      user-service:
+        condition: service_started
+      account-service:
+        condition: service_started
+      transaction-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+      audit-service:
+        condition: service_started
