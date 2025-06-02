@@ -57,18 +57,45 @@
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>${spring-boot.version}</version>
           <configuration>
-            <image>
-              <name>rajeswaran/baas-${project.artifactId}:${project.version}</name>
-              <env>
-                <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
-              </env>
-            </image>
+            <excludes>
+              <exclude>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+              </exclude>
+            </excludes>
           </configuration>
           <executions>
             <execution>
+              <id>default</id>
+              <phase>none</phase>
+            </execution>
+            <execution>
+              <id>repackage-only</id>
               <goals>
                 <goal>repackage</goal>
-                <goal>build-image</goal>
+              </goals>
+              <phase>package</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.google.cloud.tools</groupId>
+          <artifactId>jib-maven-plugin</artifactId>
+          <version>3.4.1</version>
+          <configuration>
+            <from>
+              <image>eclipse-temurin:21-jre</image>
+            </from>
+            <to>
+              <image>rajeswaran/baas-${project.artifactId}:${project.version}</image>
+            </to>
+          </configuration>
+          <executions>
+            <execution>
+              <id>build-docker-image</id>
+              <phase>package</phase>
+              <goals>
+                <goal>dockerBuild</goal>
               </goals>
             </execution>
           </executions>
