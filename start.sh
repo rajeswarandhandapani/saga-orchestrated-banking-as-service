@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Stop the running Docker Compose environment if it exists
+if docker-compose ps > /dev/null 2>&1; then
+  echo "Stopping existing Docker Compose environment..."
+  docker-compose down
+else
+  echo "No existing Docker Compose environment found."
+fi
+
 echo "========================================="
 echo "Building microservices Docker images..."
 echo "========================================="

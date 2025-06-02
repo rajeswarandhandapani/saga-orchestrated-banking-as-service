@@ -45,8 +45,6 @@ services:
   user-service:
     image: rajeswaran/baas-user-service:1.0-SNAPSHOT
     container_name: user-service
-    ports:
-      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
