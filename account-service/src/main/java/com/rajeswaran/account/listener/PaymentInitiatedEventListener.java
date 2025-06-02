@@ -28,8 +28,24 @@ public class PaymentInitiatedEventListener {
         return event -> {
             log.info("Received PaymentInitiatedEvent for paymentId={}, sourceAccountNumber={}, amount={}",
                     event.getPaymentId(), event.getSourceAccountNumber(), event.getAmount());
-            boolean valid = accountService.validateSourceAccount(event.getSourceAccountNumber(), event.getAmount());
-            if (valid) {
+
+            // First validate that the source account belongs to the logged-in user
+            boolean isAccountOwner = accountService.validateAccountOwnership(
+                    event.getSourceAccountNumber(), event.getUsername());
+
+            if (!isAccountOwner) {
+                log.error("Payment validation failed: Source account {} does not belong to user {}",
+                        event.getSourceAccountNumber(), event.getUsername());
+
+                String details = "Payment validation failed: Unauthorized access to account " + event.getSourceAccountNumber();
+                publishPaymentFailedEvent(event, details);
+                log.info("Published PaymentFailedEvent for paymentId={} due to unauthorized account access", event.getPaymentId());
+                return;
+            }
+
+            // Then validate if the account has sufficient balance
+            boolean hasSufficientBalance = accountService.validateSourceAccount(event.getSourceAccountNumber(), event.getAmount());
+            if (hasSufficientBalance) {
                 PaymentValidatedEvent validatedEvent = PaymentValidatedEvent.builder()
                         .paymentId(event.getPaymentId())
                         .valid(true)
@@ -79,19 +95,30 @@ public class PaymentInitiatedEventListener {
                     // Optionally, you may want to implement compensation logic here
                 }
             } else {
-                PaymentFailedEvent failedEvent = PaymentFailedEvent.builder()
-                        .paymentId(event.getPaymentId())
-                        .username(event.getUsername())
-                        .timestamp(java.time.Instant.now())
-                        .details("Payment validation failed due to insufficient balance for paymentId: " + event.getPaymentId())
-                        .correlationId(event.getCorrelationId())
-                        .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
-                        .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_FAILED)
-                        .build();
-                streamBridge.send("paymentFailedEvent-out-0", failedEvent);
-                streamBridge.send("auditEvent-out-0", failedEvent);
+                String details = "Payment validation failed due to insufficient balance for paymentId: " + event.getPaymentId();
+                publishPaymentFailedEvent(event, details);
                 log.info("Published PaymentFailedEvent for paymentId={}", event.getPaymentId());
             }
         };
+    }
+
+    /**
+     * Helper method to create and publish a PaymentFailedEvent
+     *
+     * @param event   The original PaymentInitiatedEvent
+     * @param details Details about the failure reason
+     */
+    private void publishPaymentFailedEvent(PaymentInitiatedEvent event, String details) {
+        PaymentFailedEvent failedEvent = PaymentFailedEvent.builder()
+                .paymentId(event.getPaymentId())
+                .username(event.getUsername())
+                .timestamp(java.time.Instant.now())
+                .details(details)
+                .correlationId(event.getCorrelationId())
+                .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
+                .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_FAILED)
+                .build();
+        streamBridge.send("paymentFailedEvent-out-0", failedEvent);
+        streamBridge.send("auditEvent-out-0", failedEvent);
     }
 }

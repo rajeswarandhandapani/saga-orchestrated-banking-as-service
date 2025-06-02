@@ -80,4 +80,14 @@ public class AccountService {
     public List<Account> getAccountsByUserName(String userName) {
         return accountRepository.findByUserName(userName);
     }
+
+    // Validate if account belongs to the specified user
+    public boolean validateAccountOwnership(String accountNumber, String userName) {
+        Optional<Account> accountOpt = getAccountByAccountNumber(accountNumber);
+        if (accountOpt.isPresent()) {
+            Account account = accountOpt.get();
+            return account.getUserName().equals(userName);
+        }
+        return false;
+    }
 }
