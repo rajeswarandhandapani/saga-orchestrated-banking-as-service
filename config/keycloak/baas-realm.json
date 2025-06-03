@@ -18,7 +18,7 @@
   },
   "users": [
     {
-      "username": "admin_user",
+      "username": "baas-admin",
       "enabled": true,
       "emailVerified": true,
       "firstName": "Admin",
@@ -78,7 +78,7 @@
       "enabled": true,
       "publicClient": true,
       "redirectUris": [
-        "http://localhost:3000/*"
+        "http://localhost:4200/*"
       ],
       "webOrigins": [
         "*"
