@@ -38,7 +38,7 @@ services:
       - "8761:8761"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
-      interval: 10s
+      interval: 20s
       timeout: 10s
       retries: 5
 
