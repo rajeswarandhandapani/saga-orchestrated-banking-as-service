@@ -49,6 +49,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
@@ -65,6 +66,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
@@ -81,6 +83,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
@@ -97,6 +100,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
@@ -113,6 +117,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
@@ -127,6 +132,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:
@@ -143,6 +149,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
     depends_on:
       service-discovery:

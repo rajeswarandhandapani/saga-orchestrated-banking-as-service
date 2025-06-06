@@ -46,7 +46,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8089/realms/baas/protocol/openid-connect/certs}
+#          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
 eureka:
   client:
     service-url:
