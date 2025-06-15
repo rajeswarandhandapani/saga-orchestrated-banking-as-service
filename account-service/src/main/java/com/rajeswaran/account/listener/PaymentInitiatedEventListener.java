@@ -72,6 +72,15 @@ public class PaymentInitiatedEventListener {
                         recipientUsername = destinationAccount.get().getUserName();
                     }
 
+                    Double sourceAccountBalance = null;
+                    Double destinationAccountBalance = null;
+                    Optional<Account> sourceAccount = accountService.getAccountByAccountNumber(event.getSourceAccountNumber());
+                    if (sourceAccount.isPresent()) {
+                        sourceAccountBalance = sourceAccount.get().getBalance();
+                    }
+                    if (destinationAccount.isPresent()) {
+                        destinationAccountBalance = destinationAccount.get().getBalance();
+                    }
                     // Publish AccountBalanceUpdatedEvent
                     AccountBalanceUpdatedEvent balanceUpdatedEvent = AccountBalanceUpdatedEvent.builder()
                             .paymentId(event.getPaymentId())
@@ -86,6 +95,8 @@ public class PaymentInitiatedEventListener {
                             .correlationId(event.getCorrelationId())
                             .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
                             .eventType(com.rajeswaran.common.AppConstants.SagaEventType.ACCOUNT_BALANCE_UPDATED)
+                            .sourceAccountBalance(sourceAccountBalance)
+                            .destinationAccountBalance(destinationAccountBalance)
                             .build();
                     streamBridge.send("accountBalanceUpdatedEvent-out-0", balanceUpdatedEvent);
                     streamBridge.send("auditEvent-out-0", balanceUpdatedEvent);

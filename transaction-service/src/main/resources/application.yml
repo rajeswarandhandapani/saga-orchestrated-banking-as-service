@@ -22,8 +22,8 @@ spring:
   cloud:
     stream:
       bindings:
-        paymentProcessedEvent-in-0:
-          destination: payment-processed
+        accountBalanceUpdatedEvent-in-0:
+          destination: account-balance-updated
           group: transaction-service
           content-type: application/json
         auditEvent-out-0:
@@ -34,7 +34,7 @@ spring:
           brokers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
           auto-create-topics: true
     function:
-      definition: paymentProcessedEvent
+      definition: accountBalanceUpdatedEvent
 
 eureka:
   client:

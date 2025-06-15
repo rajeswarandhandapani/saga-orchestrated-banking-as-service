@@ -24,5 +24,6 @@ public class Transaction {
     private String reference;
     private LocalDateTime timestamp;
     private String username; // Added field to track which user owns this transaction
+    private double balance; // Renamed from balanceAfterTransaction to balance
 }
 
