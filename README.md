@@ -167,6 +167,21 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 | Notify User                | notification-service | (notification sent)           | -                    |
 | Audit Logging              | all services         | All above events              | audit-service        |
 
+## Recent Changes (June 2025)
+
+### Transaction Recording and Account Balance
+- The `transaction-service` now records the current account balance for each transaction using a new `balance` field in the `Transaction` entity.
+- The `AccountBalanceUpdatedEvent` event now includes `sourceAccountBalance` and `destinationAccountBalance` fields, which are set by the `account-service` after updating balances.
+- The `transaction-service` listens for `AccountBalanceUpdatedEvent` and records both debit and credit transactions, including the updated balance for each account.
+- The old `PaymentProcessedEventListener` has been removed. All transaction recording is now event-driven and triggered only after account balances are updated.
+
+### Event and Data Model Updates
+- `Transaction` entity: Added `balance` field to store the account's balance after each transaction.
+- `AccountBalanceUpdatedEvent`: Now includes `sourceAccountBalance` and `destinationAccountBalance`.
+
+### Configuration
+- Spring Cloud Stream bindings and function definitions updated to use only `AccountBalanceUpdatedEvent` for transaction recording.
+
 ## Implementation Status
 
 *Last Updated: May 31, 2025*
