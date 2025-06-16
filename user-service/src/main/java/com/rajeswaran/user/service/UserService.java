@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -48,7 +48,7 @@ public class UserService {
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
                 .fullName(savedUser.getFullName())
-                .timestamp(Instant.now())
+                .timestamp(LocalDateTime.now())
                 .details("User registered: " + savedUser.getUsername())
                 .correlationId(SagaEventBuilderUtil.getCurrentCorrelationId())
                 .serviceName(AppConstants.ServiceName.USER_SERVICE)

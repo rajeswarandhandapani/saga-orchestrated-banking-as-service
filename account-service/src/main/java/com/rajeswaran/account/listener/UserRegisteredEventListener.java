@@ -13,7 +13,6 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 import java.time.Instant;
@@ -61,7 +60,7 @@ public class UserRegisteredEventListener {
                         .username(event.getUsername())
                         .email(event.getEmail())
                         .fullName(event.getFullName())
-                        .timestamp(Instant.now())
+                        .timestamp(LocalDateTime.now())
                         .details("Account opened for user: " + event.getUsername())
                         .correlationId(event.getCorrelationId())
                         .serviceName(AppConstants.ServiceName.ACCOUNT_SERVICE)
@@ -82,7 +81,7 @@ public class UserRegisteredEventListener {
                         .email(event.getEmail())
                         .fullName(event.getFullName())
                         .details(ex.getMessage())
-                        .timestamp(Instant.now())
+                        .timestamp(LocalDateTime.now())
                         .correlationId(event.getCorrelationId())
                         .serviceName(AppConstants.ServiceName.ACCOUNT_SERVICE)
                         .eventType(AppConstants.SagaEventType.ACCOUNT_OPEN_FAILED)

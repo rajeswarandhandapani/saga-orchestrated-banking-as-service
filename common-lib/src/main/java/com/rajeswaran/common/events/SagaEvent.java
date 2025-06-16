@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class SagaEvent {
     private String username;
     private String email;
     private String fullName;
-    private Instant timestamp;
+    private LocalDateTime timestamp;
     private String details;
     private String correlationId;
     private AppConstants.ServiceName serviceName;

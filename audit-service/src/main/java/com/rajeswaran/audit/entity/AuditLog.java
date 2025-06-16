@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "audit_logs")
@@ -23,7 +23,7 @@ public class AuditLog {
     private String username;
 
     @Column(nullable = false)
-    private Instant timestamp;
+    private LocalDateTime timestamp;
 
     @Column(length = 1024)
     private String details; // Summary or specific message from the event

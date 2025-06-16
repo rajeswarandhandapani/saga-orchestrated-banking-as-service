@@ -3,7 +3,7 @@ package com.rajeswaran.common.util;
 import com.rajeswaran.common.AppConstants;
 import org.slf4j.MDC;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class SagaEventBuilderUtil {
     private SagaEventBuilderUtil() {
@@ -13,8 +13,8 @@ public class SagaEventBuilderUtil {
         return MDC.get(AppConstants.CORRELATION_ID_MDC_KEY);
     }
 
-    public static Instant now() {
-        return Instant.now();
+    public static LocalDateTime now() {
+        return LocalDateTime.now();
     }
 }
 

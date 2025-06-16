@@ -12,7 +12,7 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -52,7 +52,7 @@ public class PaymentInitiatedEventListener {
                         .reason(null)
                         .userId(event.getUserId())
                         .username(event.getUsername())
-                        .timestamp(java.time.Instant.now())
+                        .timestamp(LocalDateTime.now())
                         .details("Payment validated for paymentId: " + event.getPaymentId())
                         .correlationId(event.getCorrelationId())
                         .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
@@ -90,7 +90,7 @@ public class PaymentInitiatedEventListener {
                             .userId(event.getUserId())
                             .username(event.getUsername())
                             .recipientUsername(recipientUsername) // Add recipient username
-                            .timestamp(Instant.now())
+                            .timestamp(LocalDateTime.now())
                             .details("Source and destination account balances updated for paymentId: " + event.getPaymentId())
                             .correlationId(event.getCorrelationId())
                             .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
@@ -123,7 +123,7 @@ public class PaymentInitiatedEventListener {
         PaymentFailedEvent failedEvent = PaymentFailedEvent.builder()
                 .paymentId(event.getPaymentId())
                 .username(event.getUsername())
-                .timestamp(java.time.Instant.now())
+                .timestamp(LocalDateTime.now())
                 .details(details)
                 .correlationId(event.getCorrelationId())
                 .serviceName(com.rajeswaran.common.AppConstants.ServiceName.ACCOUNT_SERVICE)
