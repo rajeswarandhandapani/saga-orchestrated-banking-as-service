@@ -16,11 +16,14 @@ spring:
   cloud:
     discovery:
       enabled: true
+    function:
+      definition: notificationEvent;accountBalanceUpdatedNotification;paymentFailedNotification
     stream:
       bindings:
         notificationEvent-in-0:
           destination: notification-events
           group: notification-service
+          content-type: application/json
         accountBalanceUpdatedNotification-in-0:
           destination: account-balance-updated
           group: notification-service

@@ -16,6 +16,8 @@ spring:
   cloud:
     discovery:
       enabled: true
+    function:
+      definition: accountOpenFailedEvent
     stream:
       bindings:
         userRegisteredEvent-out-0:
