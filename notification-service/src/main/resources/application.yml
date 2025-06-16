@@ -35,8 +35,6 @@ spring:
       kafka:
         binder:
           brokers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    function:
-      definition: notificationEvent;accountBalanceUpdatedNotification;paymentFailedNotification
   security:
     oauth2:
       resourceserver:
