@@ -45,6 +45,9 @@ server:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%X{correlationId}] %msg%n"
+  level:
+    org.apache.kafka: WARN
+    org.springframework.kafka: WARN
 management:
   endpoints:
     web:

@@ -17,3 +17,7 @@ management:
   endpoint:
     health:
       show-details: always
+logging:
+  level:
+    org.apache.kafka: WARN
+    org.springframework.kafka: WARN
