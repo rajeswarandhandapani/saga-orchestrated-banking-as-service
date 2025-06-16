@@ -16,6 +16,8 @@ spring:
   cloud:
     discovery:
       enabled: true
+    function:
+      definition: accountBalanceUpdatedEvent;paymentFailedEvent
     stream:
       default-binder: kafka
       bindings:
