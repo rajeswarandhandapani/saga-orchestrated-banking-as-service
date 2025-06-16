@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "accounts")
 @Data
@@ -25,4 +27,5 @@ public class Account {
     private String userName;
     private double balance;
     private String status;
+    private LocalDateTime createdTimestamp;
 }

@@ -5,6 +5,7 @@ import com.rajeswaran.account.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,11 @@ public class AccountService {
     }
 
     public Account createAccount(Account account) {
+        // Set created timestamp if not already set
+        if (account.getCreatedTimestamp() == null) {
+            account.setCreatedTimestamp(LocalDateTime.now());
+        }
+        
         // mimic exception for testing
          /*if (!account.getAccountNumber().equals("1234567890")) {
              throw new RuntimeException("Simulated exception for testing");

@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -49,6 +52,7 @@ public class UserRegisteredEventListener {
                 account.setUserId(event.getUserId());
                 account.setBalance(500.0);
                 account.setStatus("ACTIVE");
+                account.setCreatedTimestamp(LocalDateTime.now());
                 accountService.createAccount(account);
                 log.info("Created new account for userId={}, accountNumber={}", event.getUserId(), account.getAccountNumber());
 
