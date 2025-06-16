@@ -3,7 +3,10 @@ package com.rajeswaran.notification.listener;
 import com.rajeswaran.common.events.AccountBalanceUpdatedEvent;
 import com.rajeswaran.common.events.AccountOpenedEvent;
 import com.rajeswaran.common.events.PaymentFailedEvent;
+import com.rajeswaran.notification.entity.Notification;
+import com.rajeswaran.notification.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -12,12 +15,16 @@ import java.util.function.Consumer;
 @Slf4j
 @Component
 public class notificationEventListener {    
-    
+    @Autowired
+    private NotificationService notificationService;
+
     @Bean
     public Consumer<AccountOpenedEvent> notificationEvent() {
         return event -> {
             if (event.getEventType() == com.rajeswaran.common.AppConstants.SagaEventType.ACCOUNT_OPENED) {
                 log.info("Welcome {}, your new {} account (Account Number: {}) has been created with an initial balance of ${}.", event.getFullName(), event.getAccountType(), event.getAccountNumber(), event.getBalance());
+                Notification notification = new Notification(null, event.getUserId(), "ACCOUNT_OPENED", "Welcome " + event.getFullName() + ", your new " + event.getAccountType() + " account (Account Number: " + event.getAccountNumber() + ") has been created with an initial balance of $" + event.getBalance() + ".", "NEW", event.getAccountNumber());
+                notificationService.createNotification(notification);
             }
         };
     }
@@ -30,6 +37,8 @@ public class notificationEventListener {
                         event.getUsername(), event.getAmount(), event.getPaymentId());
                 log.info("Transfer Details: ${} transferred from account {} to account {}", 
                         event.getAmount(), event.getSourceAccountNumber(), event.getDestinationAccountNumber());
+                Notification notification = new Notification(null, event.getUserId(), "PAYMENT_PROCESSED", "Dear " + event.getUsername() + ", your payment of $" + event.getAmount() + " has been successfully processed. Payment ID: " + event.getPaymentId() + ".", "NEW", event.getPaymentId());
+                notificationService.createNotification(notification);
             }
         };
     }
@@ -40,6 +49,8 @@ public class notificationEventListener {
             if (event.getEventType() == com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_FAILED) {
                 log.info("Payment Failed Notification: Dear {}, your payment (ID: {}) could not be processed. Reason: {}", 
                         event.getUsername(), event.getPaymentId(), event.getDetails());
+                Notification notification = new Notification(null, event.getUserId(), "PAYMENT_FAILED", "Dear " + event.getUsername() + ", your payment (ID: " + event.getPaymentId() + ") could not be processed. Reason: " + event.getDetails(), "NEW", event.getPaymentId());
+                notificationService.createNotification(notification);
             }
         };
     }
