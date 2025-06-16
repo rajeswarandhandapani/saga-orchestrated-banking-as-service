@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "payments")
 @Data
@@ -19,5 +21,6 @@ public class Payment {
     private double amount;
     private String status;
     private String reference;
+    private LocalDateTime timestamp;
     private String createdBy; // Added field to track which user created this payment
 }

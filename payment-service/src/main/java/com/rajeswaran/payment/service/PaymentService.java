@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +39,12 @@ public class PaymentService {
 
         // Set the createdBy field to track which user created this payment
         payment.setCreatedBy(username);
+        
+        // Set the timestamp when creating the payment
+        payment.setTimestamp(LocalDateTime.now());
+        
+        // Set initial status as PENDING
+        payment.setStatus("PENDING");
 
         Payment created = paymentRepository.save(payment);
 

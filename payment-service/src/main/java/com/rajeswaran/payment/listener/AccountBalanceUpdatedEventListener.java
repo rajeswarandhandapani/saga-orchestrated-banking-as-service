@@ -12,6 +12,7 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -35,6 +36,7 @@ public class AccountBalanceUpdatedEventListener {
             if (paymentOpt.isPresent()) {
                 Payment payment = paymentOpt.get();
                 payment.setStatus("PROCESSED");
+                payment.setTimestamp(LocalDateTime.now()); // Update timestamp when payment is processed
                 paymentRepository.save(payment);
 
                 PaymentProcessedEvent processedEvent = PaymentProcessedEvent.builder()
