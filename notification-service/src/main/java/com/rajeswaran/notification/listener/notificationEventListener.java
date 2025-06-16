@@ -2,6 +2,7 @@ package com.rajeswaran.notification.listener;
 
 import com.rajeswaran.common.events.AccountBalanceUpdatedEvent;
 import com.rajeswaran.common.events.AccountOpenedEvent;
+import com.rajeswaran.common.events.PaymentFailedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,16 @@ public class notificationEventListener {
                         event.getUsername(), event.getAmount(), event.getPaymentId());
                 log.info("Transfer Details: ${} transferred from account {} to account {}", 
                         event.getAmount(), event.getSourceAccountNumber(), event.getDestinationAccountNumber());
+            }
+        };
+    }
+
+    @Bean
+    public Consumer<PaymentFailedEvent> paymentFailedNotification() {
+        return event -> {
+            if (event.getEventType() == com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_FAILED) {
+                log.info("Payment Failed Notification: Dear {}, your payment (ID: {}) could not be processed. Reason: {}", 
+                        event.getUsername(), event.getPaymentId(), event.getDetails());
             }
         };
     }
