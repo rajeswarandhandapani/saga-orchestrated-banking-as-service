@@ -13,8 +13,8 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @Component
@@ -26,6 +26,8 @@ public class UserRegisteredEventListener {
     private StreamBridge streamBridge;
 
     private static final Logger log = LoggerFactory.getLogger(UserRegisteredEventListener.class);
+
+    private static final AtomicInteger accountNumberSequence = new AtomicInteger(10001);
 
     @Bean
     public Consumer<UserRegisteredEvent> userRegisteredEvent() {
@@ -88,8 +90,8 @@ public class UserRegisteredEventListener {
     }
 
     private String generateAccountNumber() {
-        SecureRandom random = new SecureRandom();
-        int number = 100000 + random.nextInt(900000); // 6 digit number
-        return String.valueOf(number);
+        String accountNumber = String.valueOf(accountNumberSequence.getAndIncrement());
+        log.info("Generated account number: {}", accountNumber);
+        return accountNumber;
     }
 }
