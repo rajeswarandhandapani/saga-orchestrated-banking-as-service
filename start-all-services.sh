@@ -4,6 +4,8 @@
 # Kill all running Java processes before starting services
 pkill -f java || true
 
+docker ps -q | xargs -r docker kill
+
 # Set Java 21 as default if available
 if [ -x /usr/lib/jvm/java-21-amazon-corretto/bin/java ]; then
   echo "Setting Java 21 as default..."
@@ -12,6 +14,14 @@ if [ -x /usr/lib/jvm/java-21-amazon-corretto/bin/java ]; then
   export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
   export PATH=$JAVA_HOME/bin:$PATH
   echo "JAVA_HOME set to $JAVA_HOME"
+fi
+
+# Build and install common-lib first
+if [ -d "common-lib" ]; then
+  echo "Building and installing common-lib..."
+  (cd common-lib && mvn clean install)
+else
+  echo "common-lib directory not found! Skipping common-lib build."
 fi
 
 # Install parent POM first to resolve dependency issues
@@ -35,15 +45,6 @@ fi
 echo "Starting Apache Kafka container..."
 docker run -d --name kafka --rm -p 9092:9092 apache/kafka:latest
 sleep 10
-
-# Build and install common-lib first
-# if [ -d "common-lib" ]; then
-#   echo "Building and installing common-lib..."
-#   (cd common-lib && mvn clean install)
-# else
-#   echo "common-lib directory not found! Skipping common-lib build."
-# fi
-
 
 modules=(
   "service-discovery"
