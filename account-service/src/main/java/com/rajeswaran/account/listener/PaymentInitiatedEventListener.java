@@ -103,7 +103,9 @@ public class PaymentInitiatedEventListener {
                     log.info("Published AccountBalanceUpdatedEvent for paymentId={}", event.getPaymentId());
                 } else {
                     log.error("Failed to update both source and destination account balances for paymentId={}", event.getPaymentId());
-                    // Optionally, you may want to implement compensation logic here
+                    String details = "Failed to update both source and destination account balances for paymentId: " + event.getPaymentId();
+                    publishPaymentFailedEvent(event, details);
+                    log.info("Published PaymentFailedEvent for paymentId={}", event.getPaymentId());
                 }
             } else {
                 String details = "Payment validation failed due to insufficient balance for paymentId: " + event.getPaymentId();
