@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "notifications")
 @Data
@@ -19,4 +21,5 @@ public class Notification {
     private String message;
     private String status;
     private String reference;
+    private LocalDateTime timestamp;
 }
