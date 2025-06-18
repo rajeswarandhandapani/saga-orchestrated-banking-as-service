@@ -7,7 +7,7 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 ## Key Requirements
 
 - **Architecture**: Microservices using Spring Boot and Maven
-- **Database**: H2 per service (Database per Microservice pattern)
+- **Database**: MySQL shared database with service-specific schemas (Database per Microservice pattern)
 - **Authentication**: Keycloak with JWT tokens
 - **Communication**: REST APIs + Apache Kafka (event-driven)
 - **Transaction Management**: Saga Choreography Pattern
@@ -17,7 +17,7 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 
 - **Framework**: Spring Boot with Java 21
 - **Build Tool**: Maven (Multi-module project)
-- **Database**: H2 (Development/Testing) - Each microservice has its own database
+- **Database**: MySQL 8.0 - Shared database with service-specific schemas maintaining logical separation
 - **Authentication**: Keycloak (OAuth 2.0, OpenID Connect, JWT)
 - **Service Communication**: REST APIs + Apache Kafka for event-driven communication
 - **Pattern**: Saga Choreography Pattern for distributed transactions
@@ -169,6 +169,21 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 
 ## Recent Changes (June 2025)
 
+### Database Migration: H2 to MySQL (June 18, 2025)
+- **Complete migration** from H2 in-memory databases to MySQL 8.0 for all microservices
+- **Shared MySQL database** (`baas_db`) with logical service separation through table naming and schema organization
+- **Docker Compose updates**: Added MySQL service with ephemeral storage (data reset on container restart)
+- **Maven dependency management**: Centralized MySQL connector version (8.0.33) in parent POM
+- **Configuration updates**: All services now use MySQL connection settings with proper dialect configuration
+- **Java 21 compatibility**: Enhanced startup script with automatic Java 21 detection and installation
+- **Service startup sequencing**: MySQL starts before all other services with proper health checks
+- **Environment standardization**: Consistent database credentials and connection parameters across all services
+
+### Notification Service Enhancements
+- **User identification**: Changed from `userId` to `userName` for better user tracking in notifications
+- **Timestamp tracking**: Added automatic timestamp field to all notification records
+- **Event correlation**: Enhanced payment failure notifications to include proper user context
+
 ### Transaction Recording and Account Balance
 - The `transaction-service` now records the current account balance for each transaction using a new `balance` field in the `Transaction` entity.
 - The `AccountBalanceUpdatedEvent` event now includes `sourceAccountBalance` and `destinationAccountBalance` fields, which are set by the `account-service` after updating balances.
@@ -178,13 +193,22 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 ### Event and Data Model Updates
 - `Transaction` entity: Added `balance` field to store the account's balance after each transaction.
 - `AccountBalanceUpdatedEvent`: Now includes `sourceAccountBalance` and `destinationAccountBalance`.
+- `Notification` entity: Changed `userId` to `userName` and added `timestamp` field.
 
 ### Configuration
 - Spring Cloud Stream bindings and function definitions updated to use only `AccountBalanceUpdatedEvent` for transaction recording.
+- All microservices configured to use MySQL with connection pooling and optimized JPA settings
+- Maven parent POM manages MySQL connector version centrally (8.0.33)
+
+### Environment Setup
+- **Database**: MySQL 8.0 accessible at `localhost:3306/baas_db`
+- **Credentials**: `baas_user/baas_password` (configurable via environment variables)
+- **Java Runtime**: Auto-detection and setup of Java 21 with architecture-specific installation
+- **Container Orchestration**: Docker Compose with proper service dependencies and health checks
 
 ## Implementation Status
 
-*Last Updated: May 31, 2025*
+*Last Updated: June 18, 2025*
 
 ### ✅ Completed Features
 
@@ -192,16 +216,17 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 
 - ✅ Maven multi-module project structure
 - ✅ Spring Boot microservices (9 services)
-- ✅ H2 databases per service (Database per Microservice pattern)
+- ✅ MySQL database migration complete (Database per Microservice pattern with shared MySQL)
 - ✅ Kafka event-driven communication with Spring Cloud Stream
 - ✅ Saga Choreography Pattern implementation
 - ✅ Common-lib with shared events and utilities
-- ✅ Docker Compose configuration
+- ✅ Docker Compose configuration with MySQL service
 - ✅ Keycloak authentication setup
 - ✅ Service Discovery (Eureka)
 - ✅ API Gateway routing
 - ✅ Correlation ID tracking across services
 - ✅ Comprehensive audit logging
+- ✅ Java 21 environment setup and detection
 
 #### User Service Endpoints
 
@@ -264,7 +289,8 @@ Processing sagas fully functional with proper event choreography, compensation l
 - **Code Organization**: All common constants and utilities in `common-lib`
 - **Naming Conventions**: Standard Java conventions throughout
 - **Event Construction**: Use builder pattern for saga events
-- **Database Strategy**: Each service maintains its own H2 database
+- **Database Strategy**: Shared MySQL database with service-specific table organization
+- **Dependency Management**: Centralized version management in parent POM for consistency
 
 ### API & Communication
 
@@ -318,13 +344,16 @@ Processing sagas fully functional with proper event choreography, compensation l
 ### Local Development
 
 - [x] Docker Compose for local environment
-- [x] H2 in-memory databases for development
+- [x] MySQL database for persistent development data
 - [x] Kafka and Keycloak containerized
+- [x] Java 21 auto-detection and environment setup
+- [x] Service startup sequencing with dependency management
 
 ### Production Considerations
 
+- [x] MySQL database integration (ready for production MySQL clusters)
 - [ ] Container orchestration (Kubernetes)
-- [ ] External databases (PostgreSQL/MySQL)
+- [ ] Database clustering and high availability
 - [ ] Kafka cluster configuration
 - [ ] Load balancing and scaling
 - [ ] Monitoring and alerting
