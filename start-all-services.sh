@@ -7,13 +7,30 @@ pkill -f java || true
 docker ps -q | xargs -r docker kill
 
 # Set Java 21 as default if available
-if [ -x /usr/lib/jvm/java-21-amazon-corretto/bin/java ]; then
-  echo "Setting Java 21 as default..."
-  sudo alternatives --set java /usr/lib/jvm/java-21-amazon-corretto/bin/java
-  sudo alternatives --set javac /usr/lib/jvm/java-21-amazon-corretto/bin/javac
-  export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
-  export PATH=$JAVA_HOME/bin:$PATH
-  echo "JAVA_HOME set to $JAVA_HOME"
+echo "Detecting Java 21 installation..."
+ARCH=$(uname -m)
+if [ "$ARCH" = "aarch64" ]; then
+  JAVA_21_PATH="/usr/lib/jvm/java-21-amazon-corretto.aarch64"
+elif [ "$ARCH" = "x86_64" ]; then
+  JAVA_21_PATH="/usr/lib/jvm/java-21-amazon-corretto.x86_64"
+else
+  JAVA_21_PATH="/usr/lib/jvm/java-21-amazon-corretto"
+fi
+
+if [ -x "$JAVA_21_PATH/bin/java" ]; then
+  echo "Found Java 21 at: $JAVA_21_PATH"
+  export JAVA_HOME="$JAVA_21_PATH"
+  export PATH="$JAVA_HOME/bin:$PATH"
+  echo "JAVA_HOME set to: $JAVA_HOME"
+  echo "Java version: $(java -version 2>&1 | head -n 1)"
+else
+  echo "Java 21 not found at $JAVA_21_PATH, using system default"
+  echo "Current Java version: $(java -version 2>&1 | head -n 1)"
+  # Fallback to system JAVA_HOME if available
+  if [ -z "$JAVA_HOME" ] && [ -x "$(which java)" ]; then
+    export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+    echo "Fallback JAVA_HOME set to: $JAVA_HOME"
+  fi
 fi
 
 # Build and install common-lib first
@@ -30,6 +47,16 @@ if [ -f "pom.xml" ]; then
   mvn clean install -N
 else
   echo "Root pom.xml not found! Skipping parent POM installation."
+fi
+
+# Start MySQL service from docker-compose in detached mode
+if [ -f "docker-compose.yml" ]; then
+  echo "Starting MySQL service from docker-compose..."
+  docker-compose up -d mysql
+  echo "Waiting 15 seconds for MySQL to initialize..."
+  sleep 15
+else
+  echo "docker-compose.yml not found! Skipping MySQL startup."
 fi
 
 # Start Keycloak service from docker-compose in detached mode

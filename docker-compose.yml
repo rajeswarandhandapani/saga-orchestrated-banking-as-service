@@ -1,6 +1,22 @@
 # Banking as Service
 version: '3.8'
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: baas_db
+      MYSQL_USER: baas_user
+      MYSQL_PASSWORD: baas_password
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   broker:
     image: apache/kafka:latest
     hostname: broker
@@ -51,8 +67,13 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
       - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=baas_user
+      - SPRING_DATASOURCE_PASSWORD=baas_password
     depends_on:
       service-discovery:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
       broker:
         condition: service_started
@@ -68,8 +89,13 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
       - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=baas_user
+      - SPRING_DATASOURCE_PASSWORD=baas_password
     depends_on:
       service-discovery:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
       user-service:
         condition: service_started
@@ -85,8 +111,13 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
       - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=baas_user
+      - SPRING_DATASOURCE_PASSWORD=baas_password
     depends_on:
       service-discovery:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
       account-service:
         condition: service_started
@@ -102,8 +133,13 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
       - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=baas_user
+      - SPRING_DATASOURCE_PASSWORD=baas_password
     depends_on:
       service-discovery:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
       account-service:
         condition: service_started
@@ -119,8 +155,13 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
       - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=baas_user
+      - SPRING_DATASOURCE_PASSWORD=baas_password
     depends_on:
       service-discovery:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
       broker:
         condition: service_started
@@ -134,8 +175,13 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
       - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=baas_user
+      - SPRING_DATASOURCE_PASSWORD=baas_password
     depends_on:
       service-discovery:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
       broker:
         condition: service_started
