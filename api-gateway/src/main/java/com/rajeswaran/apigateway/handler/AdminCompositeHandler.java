@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Component
 @RequiredArgsConstructor
 public class AdminCompositeHandler {
@@ -37,7 +39,14 @@ public class AdminCompositeHandler {
                     return ServerResponse.ok()
                     .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                             .bodyValue(
-                            new Object[] { usersObj, accountsObj, transactionsObj, paymentsObj, auditLogsObj, notificationsObj }
+                            Map.of(
+                                "users", usersObj,
+                                "accounts", accountsObj,
+                                "transactions", transactionsObj,
+                                "payments", paymentsObj,
+                                "auditLogs", auditLogsObj,
+                                "notifications", notificationsObj
+                            )
                     );
                 });
     }
