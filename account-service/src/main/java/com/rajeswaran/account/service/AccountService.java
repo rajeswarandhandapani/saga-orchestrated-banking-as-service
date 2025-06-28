@@ -2,7 +2,7 @@ package com.rajeswaran.account.service;
 
 import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.repository.AccountRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();

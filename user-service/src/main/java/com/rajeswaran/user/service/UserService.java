@@ -6,7 +6,7 @@ import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +16,10 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private StreamBridge streamBridge;
+    private final UserRepository userRepository;
+    private final StreamBridge streamBridge;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();

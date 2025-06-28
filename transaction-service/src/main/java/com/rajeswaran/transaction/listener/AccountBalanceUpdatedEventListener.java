@@ -5,9 +5,9 @@ import com.rajeswaran.common.events.TransactionRecordedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.transaction.entity.Transaction;
 import com.rajeswaran.transaction.repository.TransactionRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -16,14 +16,12 @@ import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 @Component
+@RequiredArgsConstructor
 public class AccountBalanceUpdatedEventListener {
     private static final Logger log = LoggerFactory.getLogger(AccountBalanceUpdatedEventListener.class);
 
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
-    private StreamBridge streamBridge;
+    private final TransactionRepository transactionRepository;
+    private final StreamBridge streamBridge;
 
     @Bean
     public Consumer<AccountBalanceUpdatedEvent> accountBalanceUpdatedEvent() {

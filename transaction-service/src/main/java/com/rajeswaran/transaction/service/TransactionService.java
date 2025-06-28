@@ -2,16 +2,16 @@ package com.rajeswaran.transaction.service;
 
 import com.rajeswaran.transaction.entity.Transaction;
 import com.rajeswaran.transaction.repository.TransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();

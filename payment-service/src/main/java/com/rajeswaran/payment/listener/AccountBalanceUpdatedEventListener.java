@@ -5,9 +5,9 @@ import com.rajeswaran.common.events.PaymentProcessedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.payment.entity.Payment;
 import com.rajeswaran.payment.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -17,14 +17,12 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
+@RequiredArgsConstructor
 public class AccountBalanceUpdatedEventListener {
     private static final Logger log = LoggerFactory.getLogger(AccountBalanceUpdatedEventListener.class);
 
-    @Autowired
-    private PaymentRepository paymentRepository;
-
-    @Autowired
-    private StreamBridge streamBridge;
+    private final PaymentRepository paymentRepository;
+    private final StreamBridge streamBridge;
 
     @Bean
     public Consumer<AccountBalanceUpdatedEvent> accountBalanceUpdatedEvent() {

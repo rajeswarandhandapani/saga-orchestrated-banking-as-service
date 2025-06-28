@@ -3,8 +3,8 @@ package com.rajeswaran.transaction.controller;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.transaction.entity.Transaction;
 import com.rajeswaran.transaction.service.TransactionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +18,9 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/api/transactions")
+@RequiredArgsConstructor
 public class TransactionController {
-
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
     @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @GetMapping

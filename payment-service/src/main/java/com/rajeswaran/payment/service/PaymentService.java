@@ -5,7 +5,7 @@ import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.payment.entity.Payment;
 import com.rajeswaran.payment.repository.PaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +14,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
-    @Autowired
-    private PaymentRepository paymentRepository;
-
-    @Autowired
-    private StreamBridge streamBridge;
+    private final PaymentRepository paymentRepository;
+    private final StreamBridge streamBridge;
 
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();

@@ -5,8 +5,8 @@ import com.rajeswaran.common.events.AccountOpenedEvent;
 import com.rajeswaran.common.events.PaymentFailedEvent;
 import com.rajeswaran.notification.entity.Notification;
 import com.rajeswaran.notification.service.NotificationService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +15,9 @@ import java.util.function.Consumer;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class NotificationEventListener {
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Bean
     public Consumer<AccountOpenedEvent> notificationEvent() {

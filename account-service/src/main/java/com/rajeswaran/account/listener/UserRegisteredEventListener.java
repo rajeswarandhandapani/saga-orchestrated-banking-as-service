@@ -6,26 +6,22 @@ import com.rajeswaran.common.AppConstants;
 import com.rajeswaran.common.events.AccountOpenFailedEvent;
 import com.rajeswaran.common.events.AccountOpenedEvent;
 import com.rajeswaran.common.events.UserRegisteredEvent;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-
-import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @Component
+@RequiredArgsConstructor
 public class UserRegisteredEventListener {
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private StreamBridge streamBridge;
+    private final AccountService accountService;
+    private final StreamBridge streamBridge;
 
     private static final Logger log = LoggerFactory.getLogger(UserRegisteredEventListener.class);
 

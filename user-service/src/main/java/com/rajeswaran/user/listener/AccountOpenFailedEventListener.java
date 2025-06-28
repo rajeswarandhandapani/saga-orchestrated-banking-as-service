@@ -2,20 +2,20 @@ package com.rajeswaran.user.listener;
 
 import com.rajeswaran.common.events.AccountOpenFailedEvent;
 import com.rajeswaran.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
 
 @Component
+@RequiredArgsConstructor
 public class AccountOpenFailedEventListener {
     private static final Logger log = LoggerFactory.getLogger(AccountOpenFailedEventListener.class);
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Bean
     public Consumer<AccountOpenFailedEvent> accountOpenFailedEvent() {

@@ -2,16 +2,16 @@ package com.rajeswaran.audit.service;
 
 import com.rajeswaran.audit.entity.AuditLog;
 import com.rajeswaran.audit.repository.AuditLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuditLogService {
-    @Autowired
-    private AuditLogRepository auditLogRepository;
+    private final AuditLogRepository auditLogRepository;
 
     public List<AuditLog> getAllLogs() {
         return auditLogRepository.findAll();

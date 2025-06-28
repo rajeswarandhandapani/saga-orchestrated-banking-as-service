@@ -3,9 +3,9 @@ package com.rajeswaran.payment.listener;
 import com.rajeswaran.common.events.PaymentFailedEvent;
 import com.rajeswaran.payment.entity.Payment;
 import com.rajeswaran.payment.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +14,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
+@RequiredArgsConstructor
 public class PaymentFailedEventListener {
     private static final Logger log = LoggerFactory.getLogger(PaymentFailedEventListener.class);
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
 
     @Bean
     public Consumer<PaymentFailedEvent> paymentFailedEvent() {
