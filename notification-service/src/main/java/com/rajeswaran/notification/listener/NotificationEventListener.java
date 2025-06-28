@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 @Slf4j
 @Component
-public class notificationEventListener {    
+public class NotificationEventListener {
     @Autowired
     private NotificationService notificationService;
 
