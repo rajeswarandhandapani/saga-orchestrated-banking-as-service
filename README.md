@@ -384,3 +384,8 @@ Processing sagas fully functional with proper event choreography, compensation l
 
 ## [2025-06-30] Cleanup
 - Removed obsolete `UserRegisteredEventListener.java` from `account-service` as part of full migration to orchestrated user onboarding saga.
+
+## [2025-06-30] Build and verification
+- Ran full Maven build with Java 21 after removing old saga choreography code from user-service.
+- All modules built successfully with no errors.
+- Confirmed migration to central orchestrator flow is clean.

@@ -1,7 +1,6 @@
 package com.rajeswaran.user.service;
 
 import com.rajeswaran.common.AppConstants;
-import com.rajeswaran.common.events.UserRegisteredEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.user.entity.User;
@@ -37,25 +36,6 @@ public class UserService {
         user.setEmail(email);
         user.setFullName(fullName);
         User savedUser = userRepository.save(user);
-
-        // Extract roles from JWT using the common SecurityUtil method
-        Set<String> roles = SecurityUtil.extractRolesFromJwt();
-
-        UserRegisteredEvent event = UserRegisteredEvent.builder()
-                .userId(String.valueOf(savedUser.getUserId()))
-                .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .fullName(savedUser.getFullName())
-                .timestamp(LocalDateTime.now())
-                .details("User registered: " + savedUser.getUsername())
-                .correlationId(SagaEventBuilderUtil.getCurrentCorrelationId())
-                .serviceName(AppConstants.ServiceName.USER_SERVICE)
-                .eventType(AppConstants.SagaEventType.USER_REGISTERED)
-                .roles(roles) // Include roles in the event
-                .build();
-
-        streamBridge.send("userRegisteredEvent-out-0", event);
-        streamBridge.send("auditEvent-out-0", event);
 
         return savedUser;
     }

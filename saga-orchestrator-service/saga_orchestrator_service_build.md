@@ -65,3 +65,8 @@ Implement a central orchestration process for a user onboarding saga using the c
 - Removed obsolete `UserRegisteredEventListener.java` from `account-service` to complete the transition from saga choreography to orchestration for user onboarding.
 - Verified all saga participants, bindings, DTOs, and event contracts are consistent and up-to-date.
 - Build process now expects only orchestrated flow for user onboarding.
+
+### [2025-06-30] Build and verification
+- User requested full Maven build and verification after removing old saga choreography code from user-service.
+- Confirmed build success for all modules and no errors.
+- Migration to central orchestrator flow is now clean.
