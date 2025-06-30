@@ -4,6 +4,7 @@ import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -95,5 +96,10 @@ public class AccountService {
             return account.getUserName().equals(userName);
         }
         return false;
+    }
+
+    @Transactional
+    public void closeAccountByUserId(String userId) {
+        accountRepository.deleteByUserId(userId);
     }
 }
