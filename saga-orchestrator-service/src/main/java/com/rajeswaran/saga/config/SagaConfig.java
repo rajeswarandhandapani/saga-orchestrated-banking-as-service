@@ -26,21 +26,21 @@ public class SagaConfig {
                         SagaStepDefinition.builder()
                                 .commandDestination("createUserCommand-out-0")
                                 .replyDestination("userCreatedReply-in-0")
-                                .compensationDestination("userCreationFailedReply-in-0")
+                                .compensationDestination("deleteUserCommand-out-0") // Corrected
                                 .build(),
 
                         // Step 2: Open Account
                         SagaStepDefinition.builder()
                                 .commandDestination("accountOpenCommand-out-0")
                                 .replyDestination("accountOpenedReply-in-0")
-                                .compensationDestination("accountOpenFailedReply-in-0")
+                                .compensationDestination("closeAccountCommand-out-0") // Corrected
                                 .build(),
 
-                        // Step 3: Send Welcome Notification
+                        // Step 3: Send Welcome Notification (Compensation might be to log or do nothing)
                         SagaStepDefinition.builder()
                                 .commandDestination("sendNotificationCommand-out-0")
                                 .replyDestination("notificationSentReply-in-0")
-                                .compensationDestination("notificationFailedReply-in-0")
+                                .compensationDestination("cancelNotificationCommand-out-0") // Corrected
                                 .build()
                 ))
                 .build();

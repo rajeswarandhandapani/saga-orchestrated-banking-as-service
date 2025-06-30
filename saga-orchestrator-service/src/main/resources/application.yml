@@ -29,3 +29,46 @@ logging:
   level:
     org.apache.kafka: WARN
     org.springframework.kafka: WARN
+
+  cloud:
+    function:
+      definition: userCreatedReply;userCreationFailedReply;accountOpenedReply;accountOpenFailedReply;notificationSentReply;notificationFailedReply
+    stream:
+      bindings:
+        # Input bindings for saga replies
+        userCreatedReply-in-0:
+          destination: userCreatedReply-in-0
+          group: saga-orchestrator-group
+        userCreationFailedReply-in-0:
+          destination: userCreationFailedReply-in-0
+          group: saga-orchestrator-group
+        accountOpenedReply-in-0:
+          destination: accountOpenedReply-in-0
+          group: saga-orchestrator-group
+        accountOpenFailedReply-in-0:
+          destination: accountOpenFailedReply-in-0
+          group: saga-orchestrator-group
+        notificationSentReply-in-0:
+          destination: notificationSentReply-in-0
+          group: saga-orchestrator-group
+        notificationFailedReply-in-0:
+          destination: notificationFailedReply-in-0
+          group: saga-orchestrator-group
+
+        # Output bindings for saga commands (used by StreamBridge)
+        createUserCommand-out-0:
+          destination: createUserCommand-out-0
+        deleteUserCommand-out-0:
+          destination: deleteUserCommand-out-0
+        accountOpenCommand-out-0:
+          destination: accountOpenCommand-out-0
+        closeAccountCommand-out-0:
+          destination: closeAccountCommand-out-0
+        sendNotificationCommand-out-0:
+          destination: sendNotificationCommand-out-0
+        cancelNotificationCommand-out-0:
+          destination: cancelNotificationCommand-out-0
+
+      kafka:
+        binder:
+          brokers: ${KAFKA_BROKERS:localhost:9092}
