@@ -26,6 +26,9 @@ public class SagaInstance {
     @Column(name = "saga_name", nullable = false)
     private String sagaName;
 
+    @Column(name = "current_step")
+    private int currentStep;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private SagaStatus status;

@@ -1,7 +1,7 @@
 package com.rajeswaran.saga.model;
 
 public enum SagaStatus {
-    STARTED,
+    IN_PROGRESS,
     COMPLETED,
     FAILED
 }
