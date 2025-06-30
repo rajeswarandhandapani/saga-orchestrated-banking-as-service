@@ -177,7 +177,7 @@ I will start by creating the `SagaInstance` entity. This class will be a JPA ent
 *   `createdAt`: The timestamp when the saga was created.
 *   `updatedAt`: The timestamp when the saga was last updated.
 
-I will create the `SagaInstance.java` file in the `src/main/java/com/rajeswaran/` directory.
+I will create the `SagaInstance.java` file in the `src/main/java/com/rajeswaran` directory.
 
 Do you approve?
 
@@ -412,3 +412,33 @@ I will create a new package, `com.rajeswaran.saga.repository`, to house our repo
 This approach will provide us with a clean and standardized way to access our saga state data.
 
 Shall I proceed with creating the `repository` package and then the `SagaInstanceRepository`?
+
+---
+
+User: yes
+
+---
+
+Assistant: Of course. I will log our conversation and then proceed.
+
+First, I'll update `saga_orchestrator_service_build.md` to reflect your approval.
+
+Next, I will create the `com.rajeswaran.saga.repository` package as planned.
+
+Then, I will create the `SagaInstanceRepository.java` interface inside this new package. This interface will extend Spring Data's `JpaRepository`, providing us with standard database operations for the `SagaInstance` entity.
+
+Here is the code I will use for `SagaInstanceRepository.java`:
+
+```java
+package com.rajeswaran.saga.repository;
+
+import com.rajeswaran.saga.entity.SagaInstance;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface SagaInstanceRepository extends JpaRepository<SagaInstance, Long> {
+}
+```
+
+Do you approve?
