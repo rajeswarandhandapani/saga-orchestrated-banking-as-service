@@ -121,3 +121,62 @@ The next step in our action plan is to implement **State Management**. This invo
 I will now proceed with configuring the database connection for the `saga-orchestrator-service` in its `application.yml` file, mirroring the setup of other services in the project.
 
 Do you approve?
+
+---
+
+User: yes
+
+---
+
+Assistant: Excellent. I have analyzed the `account-service` configuration.
+
+Here is the database and JPA configuration from `account-service/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: baas_user
+    password: baas_password
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+```
+
+I will now add a similar configuration to the `saga-orchestrator-service`'s `application.yml` file. I will also include the Eureka client and logging configurations to ensure it integrates properly with the existing infrastructure.
+
+Specifically, I will add the following to `saga-orchestrator-service/src/main/resources/application.yml`:
+-   **Database connection details** (`spring.datasource`)
+-   **JPA configuration** (`spring.jpa`)
+-   **Eureka client settings** (`eureka.client`)
+-   **Logging configuration** (`logging`)
+
+Do you approve of these additions?
+
+---
+
+User: yes
+
+---
+
+Assistant: Great. I've updated the `application.yml` file for the `saga-orchestrator-service` with the database, Eureka, and logging configurations.
+
+Now that we have the database configuration in place, the next step is to define the entities that will represent the state of our sagas. We'll need to create two main entities:
+
+1.  `SagaInstance`: Represents a single run of a saga, tracking its overall status.
+2.  `SagaStepInstance`: Represents a single step within a saga, tracking its status and any associated data.
+
+I will start by creating the `SagaInstance` entity. This class will be a JPA entity with the following fields:
+
+*   `id`: A unique identifier for the saga instance.
+*   `sagaName`: The name of the saga definition.
+*   `status`: The current status of the saga (e.g., `STARTED`, `COMPLETED`, `FAILED`).
+*   `createdAt`: The timestamp when the saga was created.
+*   `updatedAt`: The timestamp when the saga was last updated.
+
+I will create the `SagaInstance.java` file in the `src/main/java/com/rajeswaran/` directory.
+
+Do you approve?
