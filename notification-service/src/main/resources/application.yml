@@ -15,20 +15,22 @@ spring:
     discovery:
       enabled: true
     function:
-      definition: notificationEvent;accountBalanceUpdatedNotification;paymentFailedNotification
+      definition: sendNotificationCommand;cancelNotificationCommand
     stream:
       bindings:
-        notificationEvent-in-0:
-          destination: notification-events
+        sendNotificationCommand-in-0:
+          destination: send-notification-command
           group: notification-service
           content-type: application/json
-        accountBalanceUpdatedNotification-in-0:
-          destination: account-balance-updated
+        sendNotificationCommand-out-0:
+          destination: saga-replies
+          content-type: application/json
+        cancelNotificationCommand-in-0:
+          destination: cancel-notification-command
           group: notification-service
           content-type: application/json
-        paymentFailedNotification-in-0:
-          destination: payment-failed
-          group: notification-service
+        cancelNotificationCommand-out-0:
+          destination: saga-replies
           content-type: application/json
       kafka:
         binder:

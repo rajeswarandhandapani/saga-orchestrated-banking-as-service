@@ -32,42 +32,27 @@ logging:
 
   cloud:
     function:
-      definition: userCreatedReply;userCreationFailedReply;accountOpenedReply;accountOpenFailedReply;notificationSentReply;notificationFailedReply
+      definition: sagaReplyListener
     stream:
       bindings:
-        # Input bindings for saga replies
-        userCreatedReply-in-0:
-          destination: userCreatedReply-in-0
+        sagaReplyListener-in-0:
+          destination: saga-replies
           group: saga-orchestrator-group
-        userCreationFailedReply-in-0:
-          destination: userCreationFailedReply-in-0
-          group: saga-orchestrator-group
-        accountOpenedReply-in-0:
-          destination: accountOpenedReply-in-0
-          group: saga-orchestrator-group
-        accountOpenFailedReply-in-0:
-          destination: accountOpenFailedReply-in-0
-          group: saga-orchestrator-group
-        notificationSentReply-in-0:
-          destination: notificationSentReply-in-0
-          group: saga-orchestrator-group
-        notificationFailedReply-in-0:
-          destination: notificationFailedReply-in-0
-          group: saga-orchestrator-group
+          content-type: application/json
 
         # Output bindings for saga commands (used by StreamBridge)
         createUserCommand-out-0:
-          destination: createUserCommand-out-0
+          destination: create-user-command
         deleteUserCommand-out-0:
-          destination: deleteUserCommand-out-0
+          destination: delete-user-command
         accountOpenCommand-out-0:
-          destination: accountOpenCommand-out-0
+          destination: account-open-command
         closeAccountCommand-out-0:
-          destination: closeAccountCommand-out-0
+          destination: close-account-command
         sendNotificationCommand-out-0:
-          destination: sendNotificationCommand-out-0
+          destination: send-notification-command
         cancelNotificationCommand-out-0:
-          destination: cancelNotificationCommand-out-0
+          destination: cancel-notification-command
 
       kafka:
         binder:
