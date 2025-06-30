@@ -75,3 +75,7 @@ Implement a central orchestration process for a user onboarding saga using the c
 - Added SecurityConfig.java to saga-orchestrator-service for OAuth2/JWT and method security, following the pattern from other services.
 - Ensures consistent security posture across all services.
 - User approved the plan and implementation.
+
+### [2025-06-30] Security property for JWT decoder
+- Added spring.security.oauth2.resourceserver.jwt.jwk-set-uri to saga-orchestrator-service/application.yml to resolve missing JwtDecoder bean and align with other services.
+- Used the same Keycloak JWK set URI pattern as other services.

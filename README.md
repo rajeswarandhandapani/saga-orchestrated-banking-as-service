@@ -393,3 +393,6 @@ Processing sagas fully functional with proper event choreography, compensation l
 ## [2025-06-30] Security configuration added to saga-orchestrator-service
 - Added SecurityConfig.java to enable OAuth2/JWT authentication and method security, matching other services.
 - Uses CommonJwtGrantedAuthoritiesConverter for consistent role mapping.
+
+## [2025-06-30] Security property added to saga-orchestrator-service
+- Added spring.security.oauth2.resourceserver.jwt.jwk-set-uri to application.yml for JWT decoder auto-configuration, matching other services.

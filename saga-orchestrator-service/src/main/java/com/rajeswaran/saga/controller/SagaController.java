@@ -46,7 +46,7 @@ public class SagaController {
         Map<String, Object> payload = new HashMap<>();
         payload.put("user", userDTO);
 
-        sagaOrchestrator.startSaga("user-onboarding", payload);
+        sagaOrchestrator.startSaga("user-onboarding-saga", payload);
 
         log.info("Saga 'user-onboarding' started for user: {}", username);
         return ResponseEntity.accepted().body("User onboarding process started.");
