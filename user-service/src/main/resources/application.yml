@@ -15,18 +15,22 @@ spring:
     discovery:
       enabled: true
     function:
-      definition: accountOpenFailedEvent
+      definition: createUserCommand;deleteUserCommand
     stream:
       bindings:
-        userRegisteredEvent-out-0:
-          destination: user-registered-events
-          content-type: application/json
-        auditEvent-out-0:
-          destination: audit-events
-          content-type: application/json
-        accountOpenFailedEvent-in-0:
-          destination: account-open-failed-events
+        createUserCommand-in-0:
+          destination: create-user-command
           group: user-service
+          content-type: application/json
+        createUserCommand-out-0:
+          destination: saga-replies
+          content-type: application/json
+        deleteUserCommand-in-0:
+          destination: delete-user-command
+          group: user-service
+          content-type: application/json
+        deleteUserCommand-out-0:
+          destination: saga-replies
           content-type: application/json
       kafka:
         binder:

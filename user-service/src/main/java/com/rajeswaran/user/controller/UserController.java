@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,23 +37,6 @@ public class UserController {
 
         return userService.getUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found in database"));
-    }
-
-    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN) or hasRole(T(com.rajeswaran.common.AppConstants).ROLE_ACCOUNT_HOLDER)")
-    @PostMapping
-    public User createUser() {
-        log.info("Received request: createUser from JWT");
-        String username = SecurityUtil.getCurrentUsername();
-        String email = null;
-        String fullName = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
-            email = jwt.getClaimAsString("email");
-            fullName = jwt.getClaimAsString("name");
-        }
-        User created = userService.createUserFromJwt(username, email, fullName);
-        log.info("Completed request: createUser, createdId={}", created.getUserId());
-        return created;
     }
 }
 

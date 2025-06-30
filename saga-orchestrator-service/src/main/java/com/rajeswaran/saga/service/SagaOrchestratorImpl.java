@@ -18,6 +18,7 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -33,10 +34,18 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
 
     @Override
     @Transactional
-    public SagaInstance startSaga(String sagaName, String payload) {
+    public SagaInstance startSaga(String sagaName, Map<String, Object> payload) {
         SagaDefinition sagaDefinition = sagaDefinitionRegistry.getSagaDefinition(sagaName);
         if (sagaDefinition == null) {
             throw new IllegalArgumentException("Saga not found: " + sagaName);
+        }
+
+        String payloadAsString;
+        try {
+            payloadAsString = objectMapper.writeValueAsString(payload);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize saga payload for saga: {}", sagaName, e);
+            throw new RuntimeException("Failed to serialize saga payload", e);
         }
 
         // 1. Create the main saga instance tracker
@@ -52,13 +61,13 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
                 .sagaInstance(savedInstance)
                 .stepName("SagaInitiated")
                 .status(SagaStepStatus.COMPLETED)
-                .payload(payload)
+                .payload(payloadAsString)
                 .build();
         sagaStepInstanceRepository.save(initialStep);
 
 
         // 3. Execute the first real step
-        executeStep(savedInstance, sagaDefinition, 0, payload);
+        executeStep(savedInstance, sagaDefinition, 0, payloadAsString);
 
         return savedInstance;
     }

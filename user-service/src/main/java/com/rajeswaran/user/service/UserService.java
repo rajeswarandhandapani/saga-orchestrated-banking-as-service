@@ -63,4 +63,8 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    public void deleteUserByUsername(String username) {
+        userRepository.findByUsername(username).ifPresent(userRepository::delete);
+    }
 }
