@@ -6,4 +6,6 @@ public interface SagaOrchestrator {
 
     SagaInstance startSaga(String sagaName, String payload);
 
+    void handleReply(String replyDestination, String payload, boolean isFailure);
+
 }
