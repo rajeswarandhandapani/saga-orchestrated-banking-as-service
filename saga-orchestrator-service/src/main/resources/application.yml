@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: saga-orchestrator-service
+server:
+  port: 8090
