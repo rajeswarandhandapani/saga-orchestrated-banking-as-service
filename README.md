@@ -206,6 +206,11 @@ A minimalist Banking as a Service (BaaS) platform demonstrating microservices ar
 - **Java Runtime**: Auto-detection and setup of Java 21 with architecture-specific installation
 - **Container Orchestration**: Docker Compose with proper service dependencies and health checks
 
+### Saga Orchestrator Service
+-   **State Management:**
+    -   Added `SagaInstance` and `SagaStepInstance` entities to track the state of saga workflows.
+    -   Configured a MySQL database connection for persistence.
+
 ## Implementation Status
 
 *Last Updated: June 18, 2025*

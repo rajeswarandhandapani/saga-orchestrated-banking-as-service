@@ -180,3 +180,235 @@ I will start by creating the `SagaInstance` entity. This class will be a JPA ent
 I will create the `SagaInstance.java` file in the `src/main/java/com/rajeswaran/` directory.
 
 Do you approve?
+
+---
+
+User: approved
+
+---
+
+Assistant: Excellent. Before I write the code, I'll create a few subdirectories to keep our code organized, following common Java best practices.
+
+I will create the following package structure:
+- `com.rajeswaran.saga.entity` for our JPA entities.
+- `com.rajeswaran.saga.model` for our data models and enums.
+
+This will help us maintain a clean and scalable codebase as we add more features.
+
+First, I'll create the `SagaStatus` enum, which will define the possible states of a saga. Then, I'll create the `SagaInstance` entity.
+
+Do you approve of this approach?
+
+---
+
+User: approved
+
+---
+
+Assistant: Great. I've created the `com.rajeswaran.saga.model` package.
+
+Now, I will create the `SagaStatus.java` enum within this package. This enum will define the possible states of a saga instance: `STARTED`, `COMPLETED`, and `FAILED`.
+
+Here is the code I will use:
+```java
+package com.rajeswaran.saga.model;
+
+public enum SagaStatus {
+    STARTED,
+    COMPLETED,
+    FAILED
+}
+```
+
+Do you approve?
+
+---
+
+User: approved
+
+---
+
+Assistant: Great. Now that we have the `SagaStatus` enum, I will create the `SagaInstance` entity.
+
+I will create the `com.rajeswaran.saga.entity` package and then, I will create the `SagaInstance.java` file inside it with the following code:
+
+```java
+package com.rajeswaran.saga.entity;
+
+import com.rajeswaran.saga.model.SagaStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "saga_instance")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SagaInstance {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "saga_name", nullable = false)
+    private String sagaName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private SagaStatus status;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+}
+```
+
+This code defines the `SagaInstance` entity with the fields we discussed earlier. It also includes standard JPA annotations for table mapping, ID generation, and timestamps.
+
+Do you approve?
+
+---
+
+User: approved
+
+---
+
+Assistant: Excellent. We have now created the `SagaInstance` entity.
+
+The next step is to create the `SagaStepInstance` entity, which will store the state of each individual step within a saga. This entity will have a many-to-one relationship with the `SagaInstance` entity.
+
+The `SagaStepInstance` entity will have the following fields:
+
+*   `id`: A unique identifier for the saga step instance.
+*   `sagaInstance`: A reference to the parent `SagaInstance`.
+*   `stepName`: The name of the saga step.
+*   `status`: The current status of the step (e.g., `STARTED`, `COMPLETED`, `FAILED`).
+*   `payload`: A JSON blob to store any data associated with the step.
+*   `createdAt`: The timestamp when the step was created.
+*   `updatedAt`: The timestamp when the step was last updated.
+
+First, I will create a `SagaStepStatus` enum, similar to `SagaStatus`, to represent the status of a saga step. Then, I will create the `SagaStepInstance` entity.
+
+Do you approve of this plan?
+
+---
+
+User: approved
+
+---
+
+Assistant: Excellent. I will first create the `SagaStepStatus.java` enum in the `com.rajeswaran.saga.model` package. This enum will represent the various states a saga step can be in.
+
+Here is the code for `SagaStepStatus.java`:
+
+```java
+package com.rajeswaran.saga.model;
+
+public enum SagaStepStatus {
+    STARTED,
+    COMPLETED,
+    FAILED,
+    COMPENSATING,
+    COMPENSATED
+}
+```
+
+This includes states for forward execution (`STARTED`, `COMPLETED`, `FAILED`) and for compensation (`COMPENSATING`, `COMPENSATED`).
+
+Do you approve?
+
+---
+
+User: approved
+
+---
+
+Assistant: Great. Now that we have the `SagaStepStatus` enum, I will create the `SagaStepInstance` entity in the `com.rajeswaran.saga.entity` package.
+
+Here is the code for `SagaStepInstance.java`:
+
+```java
+package com.rajeswaran.saga.entity;
+
+import com.rajeswaran.saga.model.SagaStepStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "saga_step_instance")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SagaStepInstance {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "saga_instance_id", nullable = false)
+    private SagaInstance sagaInstance;
+
+    @Column(name = "step_name", nullable = false)
+    private String stepName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private SagaStepStatus status;
+
+    @Lob
+    @Column(name = "payload", columnDefinition = "TEXT")
+    private String payload;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+}
+```
+
+This entity has a `@ManyToOne` relationship with `SagaInstance`, and it includes a `payload` field to store step-specific data.
+
+Do you approve?
+
+---
+
+User: approved
+
+---
+
+Assistant: Excellent. We have now defined both the `SagaInstance` and `SagaStepInstance` entities.
+
+With our entities in place, the next logical step is to create the Spring Data JPA repositories that will allow us to interact with the database.
+
+I will create a new package, `com.rajeswaran.saga.repository`, to house our repository interfaces. Inside this package, I will create two new interfaces:
+
+1.  `SagaInstanceRepository`: This will extend `JpaRepository<SagaInstance, Long>` and will be used for all database operations related to `SagaInstance` entities.
+2.  `SagaStepInstanceRepository`: This will extend `JpaRepository<SagaStepInstance, Long>` and will handle database operations for `SagaStepInstance` entities.
+
+This approach will provide us with a clean and standardized way to access our saga state data.
+
+Shall I proceed with creating the `repository` package and then the `SagaInstanceRepository`?
