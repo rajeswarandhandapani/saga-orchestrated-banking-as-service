@@ -389,3 +389,7 @@ Processing sagas fully functional with proper event choreography, compensation l
 - Ran full Maven build with Java 21 after removing old saga choreography code from user-service.
 - All modules built successfully with no errors.
 - Confirmed migration to central orchestrator flow is clean.
+
+## [2025-06-30] Security configuration added to saga-orchestrator-service
+- Added SecurityConfig.java to enable OAuth2/JWT authentication and method security, matching other services.
+- Uses CommonJwtGrantedAuthoritiesConverter for consistent role mapping.

@@ -70,3 +70,8 @@ Implement a central orchestration process for a user onboarding saga using the c
 - User requested full Maven build and verification after removing old saga choreography code from user-service.
 - Confirmed build success for all modules and no errors.
 - Migration to central orchestrator flow is now clean.
+
+### [2025-06-30] Security configuration for saga-orchestrator-service
+- Added SecurityConfig.java to saga-orchestrator-service for OAuth2/JWT and method security, following the pattern from other services.
+- Ensures consistent security posture across all services.
+- User approved the plan and implementation.
