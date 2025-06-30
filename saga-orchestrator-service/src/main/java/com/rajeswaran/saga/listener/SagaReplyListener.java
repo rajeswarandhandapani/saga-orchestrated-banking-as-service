@@ -4,6 +4,7 @@ import com.rajeswaran.saga.service.SagaOrchestrator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
 
 import java.util.function.Consumer;
 
@@ -13,50 +14,55 @@ public class SagaReplyListener {
 
     private final SagaOrchestrator sagaOrchestrator;
 
-    // Success replies
+    private static final String SPRING_CLOUD_STREAM_DESTINATION = "spring_cloud_stream_destination";
+
+    // --- User Onboarding Saga Replies ---
+
     @Bean
-    public Consumer<String> accountOpenedEvent() {
-        return payload -> sagaOrchestrator.handleReply("accountOpenedEvent-in-0", payload, false);
+    public Consumer<Message<String>> userCreatedReply() {
+        return message -> sagaOrchestrator.handleReply(
+                (String) message.getHeaders().get(SPRING_CLOUD_STREAM_DESTINATION),
+                message.getPayload(),
+                false);
     }
 
     @Bean
-    public Consumer<String> notificationSentEvent() {
-        return payload -> sagaOrchestrator.handleReply("notificationSentEvent-in-0", payload, false);
+    public Consumer<Message<String>> userCreationFailedReply() {
+        return message -> sagaOrchestrator.handleReply(
+                (String) message.getHeaders().get(SPRING_CLOUD_STREAM_DESTINATION),
+                message.getPayload(),
+                true);
     }
 
     @Bean
-    public Consumer<String> paymentValidatedEvent() {
-        return payload -> sagaOrchestrator.handleReply("paymentValidatedEvent-in-0", payload, false);
+    public Consumer<Message<String>> accountOpenedReply() {
+        return message -> sagaOrchestrator.handleReply(
+                (String) message.getHeaders().get(SPRING_CLOUD_STREAM_DESTINATION),
+                message.getPayload(),
+                false);
     }
 
     @Bean
-    public Consumer<String> paymentProcessedEvent() {
-        return payload -> sagaOrchestrator.handleReply("paymentProcessedEvent-in-0", payload, false);
+    public Consumer<Message<String>> accountOpenFailedReply() {
+        return message -> sagaOrchestrator.handleReply(
+                (String) message.getHeaders().get(SPRING_CLOUD_STREAM_DESTINATION),
+                message.getPayload(),
+                true);
     }
 
     @Bean
-    public Consumer<String> transactionRecordedEvent() {
-        return payload -> sagaOrchestrator.handleReply("transactionRecordedEvent-in-0", payload, false);
-    }
-
-    // Failure replies
-    @Bean
-    public Consumer<String> accountOpenFailedEvent() {
-        return payload -> sagaOrchestrator.handleReply("accountOpenFailedEvent-out-0", payload, true);
+    public Consumer<Message<String>> notificationSentReply() {
+        return message -> sagaOrchestrator.handleReply(
+                (String) message.getHeaders().get(SPRING_CLOUD_STREAM_DESTINATION),
+                message.getPayload(),
+                false);
     }
 
     @Bean
-    public Consumer<String> notificationCancelEvent() {
-        return payload -> sagaOrchestrator.handleReply("notificationCancelEvent-out-0", payload, true);
-    }
-
-    @Bean
-    public Consumer<String> paymentFailedEvent() {
-        return payload -> sagaOrchestrator.handleReply("paymentFailedEvent-out-0", payload, true);
-    }
-
-    @Bean
-    public Consumer<String> transactionRollbackEvent() {
-        return payload -> sagaOrchestrator.handleReply("transactionRollbackEvent-out-0", payload, true);
+    public Consumer<Message<String>> notificationFailedReply() {
+        return message -> sagaOrchestrator.handleReply(
+                (String) message.getHeaders().get(SPRING_CLOUD_STREAM_DESTINATION),
+                message.getPayload(),
+                true);
     }
 }

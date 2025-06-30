@@ -3,6 +3,7 @@ package com.rajeswaran.saga.definition;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -16,5 +17,13 @@ public class SagaDefinitionRegistry {
 
     public SagaDefinition getSagaDefinition(String sagaName) {
         return registry.get(sagaName);
+    }
+
+    public Optional<SagaDefinition> findSagaDefinitionByReplyDestination(String replyDestination) {
+        return registry.values().stream()
+                .filter(saga -> saga.getSteps().stream()
+                        .anyMatch(step -> step.getReplyDestination().equals(replyDestination) ||
+                                         step.getCompensationDestination().equals(replyDestination)))
+                .findFirst();
     }
 }
