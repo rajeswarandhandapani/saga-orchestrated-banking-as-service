@@ -11,3 +11,4 @@ Follow exisitng code structure and organization.
 Make sure to add dependencies to the parent pom.xml file for version mangement.
 If you need to add a new dependency, first check if it is already defined in the parent
 pom.xml file, if it is not, ask me for approval before adding it.
+Always make sure to add chat conversation to the saga_orchestrator_service_build.md file following the existing format after each conversation  so that I can continue the build process later
