@@ -30,6 +30,9 @@ Implement a central orchestration process for a user onboarding saga using the c
   - The `compensate` method iterates backward, sends compensation commands for completed steps, and updates step statuses to `COMPENSATED`.
   - Added `findFirstBySagaInstanceAndStepNameAndStatusOrderByCreatedAtDesc` to `SagaStepInstanceRepository` to support the compensation logic.
   - The saga status is set to `ROLLED_BACK` after a successful rollback.
+- [2025-06-30] Removed obsolete `UserRegisteredEventListener.java` from `account-service` to complete the transition from saga choreography to orchestration for user onboarding.
+- Verified all saga participants, bindings, DTOs, and event contracts are consistent and up-to-date.
+- Build process now expects only orchestrated flow for user onboarding.
 
 **PENDING:**
 - (None. The core user onboarding saga with happy path and compensation logic is complete.)
@@ -59,3 +62,6 @@ Implement a central orchestration process for a user onboarding saga using the c
   - Implement a full compensation and rollback mechanism in `handleFailure` and `compensate` methods.
 - Restored and implemented all relevant consumer beans in `SagaReplyListener` for the user onboarding saga.
 - Refactored `SagaReplyListener` to dynamically read the destination topic from message headers.
+- Removed obsolete `UserRegisteredEventListener.java` from `account-service` to complete the transition from saga choreography to orchestration for user onboarding.
+- Verified all saga participants, bindings, DTOs, and event contracts are consistent and up-to-date.
+- Build process now expects only orchestrated flow for user onboarding.

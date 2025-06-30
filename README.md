@@ -379,3 +379,8 @@ Processing sagas fully functional with proper event choreography, compensation l
 - [ ] Payment processing times
 - [ ] User onboarding completion rates
 - [ ] System availability and uptime
+
+## Changelog
+
+## [2025-06-30] Cleanup
+- Removed obsolete `UserRegisteredEventListener.java` from `account-service` as part of full migration to orchestrated user onboarding saga.
