@@ -119,24 +119,52 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
     }
 
     private void handleFailure(SagaInstance sagaInstance, SagaStepDefinition currentStepDefinition, String payload) {
-        log.error("Saga {} failed at step {}. Initiating compensation.", sagaInstance.getId(), sagaInstance.getCurrentStep());
+        log.error("Saga {} failed at step {}. Initiating compensation.", sagaInstance.getId(), currentStepDefinition.getReplyDestination());
 
-        // Record the failed step
-        SagaStepInstance stepInstance = SagaStepInstance.builder()
+        // 1. Record the failed step
+        SagaStepInstance failedStepInstance = SagaStepInstance.builder()
                 .sagaInstance(sagaInstance)
-                .stepName(currentStepDefinition.getCompensationDestination())
+                .stepName(currentStepDefinition.getReplyDestination()) // Use reply destination to identify the step
                 .status(SagaStepStatus.FAILED)
-                .payload(payload)
+                .payload(payload) // This is the error payload
                 .build();
-        sagaStepInstanceRepository.save(stepInstance);
+        sagaStepInstanceRepository.save(failedStepInstance);
 
-        sagaInstance.setStatus(SagaStatus.FAILED);
+        // 2. Start compensation process
+        compensate(sagaInstance);
+    }
+
+    @Transactional
+    public void compensate(SagaInstance sagaInstance) {
+        SagaDefinition sagaDefinition = sagaDefinitionRegistry.getSagaDefinition(sagaInstance.getSagaName());
+        int currentStepIndex = sagaInstance.getCurrentStep();
+
+        // Iterate backwards from the current (failed) step to compensate completed steps
+        for (int i = currentStepIndex; i >= 0; i--) {
+            SagaStepDefinition stepToCompensate = sagaDefinition.getSteps().get(i);
+
+            // Find the corresponding completed step instance to get the original payload
+            Optional<SagaStepInstance> stepInstanceOpt = sagaStepInstanceRepository
+                    .findFirstBySagaInstanceAndStepNameAndStatusOrderByCreatedAtDesc(
+                            sagaInstance, stepToCompensate.getReplyDestination(), SagaStepStatus.COMPLETED);
+
+            if (stepInstanceOpt.isPresent()) {
+                SagaStepInstance completedStep = stepInstanceOpt.get();
+                log.info("Compensating step: '{}' for saga: {}", stepToCompensate.getReplyDestination(), sagaInstance.getId());
+
+                // Send compensation command with the *original* payload of that step
+                streamBridge.send(stepToCompensate.getCompensationDestination(), completedStep.getPayload());
+
+                // Mark the original step as compensated
+                completedStep.setStatus(SagaStepStatus.COMPENSATED);
+                sagaStepInstanceRepository.save(completedStep);
+            }
+        }
+
+        // 3. Mark the saga as rolled back
+        sagaInstance.setStatus(SagaStatus.ROLLED_BACK);
         sagaInstanceRepository.save(sagaInstance);
-
-        // In a real-world scenario, you would iterate backwards from the current step
-        // and send compensation commands for all completed steps.
-        log.info("Executing compensation for step: {}", currentStepDefinition.getCompensationDestination());
-        streamBridge.send(currentStepDefinition.getCompensationDestination(), payload);
+        log.info("Saga {} has been successfully rolled back.", sagaInstance.getId());
     }
 
 

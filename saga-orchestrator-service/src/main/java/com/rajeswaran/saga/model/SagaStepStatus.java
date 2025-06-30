@@ -4,6 +4,5 @@ public enum SagaStepStatus {
     STARTED,
     COMPLETED,
     FAILED,
-    COMPENSATING,
     COMPENSATED
 }
