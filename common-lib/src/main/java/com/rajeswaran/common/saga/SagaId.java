@@ -1,48 +1,23 @@
 package com.rajeswaran.common.saga;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 /**
- * Type-safe saga identifier using Java 21 record.
- * Prevents mixing up saga IDs with other string values.
+ * Simple saga identifier wrapper.
  */
-public record SagaId(
-    @NotBlank
-    String value,
-    
-    @NotNull
-    SagaType type
-) {
+public record SagaId(@NotBlank String value) {
     
     /**
-     * Creates a new SagaId with validation.
+     * Creates a new unique SagaId.
      */
-    public SagaId {
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("Saga ID value cannot be null or empty");
-        }
-        if (type == null) {
-            throw new IllegalArgumentException("Saga type cannot be null");
-        }
+    public static SagaId generate() {
+        return new SagaId(java.util.UUID.randomUUID().toString());
     }
     
     /**
-     * Creates a SagaId from a string value and type.
+     * Creates a SagaId from a string value.
      */
-    public static SagaId of(String value, SagaType type) {
-        return new SagaId(value.trim(), type);
-    }
-    
-    /**
-     * Creates a new unique SagaId for the given type.
-     */
-    public static SagaId generate(SagaType type) {
-        return new SagaId(java.util.UUID.randomUUID().toString(), type);
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("%s[%s]", type, value);
+    public static SagaId of(String value) {
+        return new SagaId(value);
     }
 }

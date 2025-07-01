@@ -1,4 +1,4 @@
-package com.rajeswaran.common.command;
+package com.rajeswaran.common.event;
 
 import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotNull;
@@ -6,12 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 
 /**
- * Simple command interface for saga operations.
+ * Simple event interface for saga operations.
  */
-public interface Command {
+public interface Event {
     
     @NotNull
-    String commandId();
+    String eventId();
     
     @NotNull
     SagaId sagaId();
@@ -23,5 +23,9 @@ public interface Command {
     Instant timestamp();
     
     @NotNull
-    String commandType();
+    String eventType();
+    
+    boolean isSuccess();
+    
+    String errorMessage();
 }
