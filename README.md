@@ -396,3 +396,7 @@ Processing sagas fully functional with proper event choreography, compensation l
 
 ## [2025-06-30] Security property added to saga-orchestrator-service
 - Added spring.security.oauth2.resourceserver.jwt.jwk-set-uri to application.yml for JWT decoder auto-configuration, matching other services.
+
+### 2025-07-01
+- Fixed compilation issue in `common-lib`: Removed duplicate and malformed code from `AccountOpenFailedEvent.java`.
+- Refactored all event classes in `common-lib` to use Lombok `@Getter` and manual constructors for superclass compatibility. Removed unsupported `@AllArgsConstructor(callSuper = true)` usage. Build now passes successfully.

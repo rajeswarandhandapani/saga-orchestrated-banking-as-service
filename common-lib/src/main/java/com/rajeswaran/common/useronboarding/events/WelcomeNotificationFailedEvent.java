@@ -12,30 +12,29 @@ import java.time.Instant;
  */
 @Getter
 public class WelcomeNotificationFailedEvent extends BaseEvent {
-    
     @NotBlank
     private final String userId;
-    
     @NotBlank
     private final String email;
-    
+
     public WelcomeNotificationFailedEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp,
-                                        String userId, String email, String errorMessage) {
-        super(eventId, sagaId, correlationId, timestamp, false, errorMessage);
+                                          boolean success, String errorMessage, String userId, String email) {
+        super(eventId, sagaId, correlationId, timestamp, success, errorMessage);
         this.userId = userId;
         this.email = email;
     }
-    
+
     public static WelcomeNotificationFailedEvent create(SagaId sagaId, String correlationId,
-                                                      String userId, String email, String errorMessage) {
+                                                       String userId, String email, String errorMessage) {
         return new WelcomeNotificationFailedEvent(
             java.util.UUID.randomUUID().toString(),
             sagaId,
             correlationId,
             Instant.now(),
+            false,
+            errorMessage,
             userId,
-            email,
-            errorMessage
+            email
         );
     }
 }

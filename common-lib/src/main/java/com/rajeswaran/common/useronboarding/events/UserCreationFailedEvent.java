@@ -9,19 +9,20 @@ import java.time.Instant;
 /**
  * Event indicating user creation failed.
  */
+@Getter
 public class UserCreationFailedEvent extends BaseEvent {
-    
     public UserCreationFailedEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp,
-                                 String errorMessage) {
-        super(eventId, sagaId, correlationId, timestamp, false, errorMessage);
+                                   boolean success, String errorMessage) {
+        super(eventId, sagaId, correlationId, timestamp, success, errorMessage);
     }
-    
+
     public static UserCreationFailedEvent create(SagaId sagaId, String correlationId, String errorMessage) {
         return new UserCreationFailedEvent(
             java.util.UUID.randomUUID().toString(),
             sagaId,
             correlationId,
             Instant.now(),
+            false,
             errorMessage
         );
     }
