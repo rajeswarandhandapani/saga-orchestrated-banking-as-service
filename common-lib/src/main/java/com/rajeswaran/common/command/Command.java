@@ -11,17 +11,17 @@ import java.time.Instant;
 public interface Command {
     
     @NotNull
-    String commandId();
+    String getCommandId();
     
     @NotNull
-    SagaId sagaId();
+    SagaId getSagaId();
     
     @NotNull
-    String correlationId();
+    String getCorrelationId();
     
     @NotNull
-    Instant timestamp();
+    Instant getTimestamp();
     
     @NotNull
-    String commandType();
+    String getCommandType();
 }

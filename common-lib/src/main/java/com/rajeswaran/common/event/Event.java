@@ -11,21 +11,21 @@ import java.time.Instant;
 public interface Event {
     
     @NotNull
-    String eventId();
+    String getEventId();
     
     @NotNull
-    SagaId sagaId();
+    SagaId getSagaId();
     
     @NotNull
-    String correlationId();
+    String getCorrelationId();
     
     @NotNull
-    Instant timestamp();
+    Instant getTimestamp();
     
     @NotNull
-    String eventType();
+    String getEventType();
     
     boolean isSuccess();
     
-    String errorMessage();
+    String getErrorMessage();
 }
