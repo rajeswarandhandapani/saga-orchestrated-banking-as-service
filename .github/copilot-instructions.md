@@ -13,3 +13,4 @@ If you need to add a new dependency, first check if it is already defined in the
 pom.xml file, if it is not, ask me for approval before adding it.
 Make sure to user latest Java 21 features and best practices.
 dont over complicate the code, keep it simple and readable. Only generate code that is necessary for the feature.
+Use lombok annotations to reduce boilerplate code.

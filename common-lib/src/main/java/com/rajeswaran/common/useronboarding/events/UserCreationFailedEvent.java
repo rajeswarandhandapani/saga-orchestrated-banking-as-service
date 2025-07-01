@@ -2,6 +2,7 @@ package com.rajeswaran.common.useronboarding.events;
 
 import com.rajeswaran.common.event.BaseEvent;
 import com.rajeswaran.common.saga.SagaId;
+import lombok.Getter;
 
 import java.time.Instant;
 
