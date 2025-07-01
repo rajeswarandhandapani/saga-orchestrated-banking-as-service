@@ -17,6 +17,12 @@
   </properties>
 
   <dependencies>
+    <!-- Spring Boot Starter Validation for Command/Event Framework -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- Spring Boot Starter Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
