@@ -48,17 +48,15 @@ public class UserOnboardingSaga {
     private void triggerCreateUserCommand(Long sagaId, UserDTO userDto) {
         log.info("Triggering CreateUserCommand for saga {} and user: {}", sagaId, userDto.getUsername());
         
-        // Record step as STARTED before publishing command
-        sagaStateManager.startStep(sagaId, UserOnboardingSteps.CREATE_USER.getStepName(), userDto);
         
         CreateUserCommand command = CreateUserCommand.create(
             SagaId.of(String.valueOf(sagaId)),
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            userDto.getUsername(),
-            userDto.getEmail(),
-            userDto.getFullName(),
-            "defaultPassword123" // In real scenario, this would come from the request
+            userDto
         );
+
+        // Record step as STARTED before publishing command
+        sagaStateManager.startStep(sagaId, UserOnboardingSteps.CREATE_USER.getStepName(), command);
         
         streamBridge.send("createUserCommand-out-0", command);
     }
@@ -66,24 +64,21 @@ public class UserOnboardingSaga {
     private void triggerOpenAccountCommand(Long sagaId, String userId) {
         log.info("Triggering OpenAccountCommand for saga {} and userId: {}", sagaId, userId);
         
-        // Record step as STARTED before publishing command
-        sagaStateManager.startStep(sagaId, UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), userId);
-        
         OpenAccountCommand command = OpenAccountCommand.create(
             SagaId.of(String.valueOf(sagaId)),
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             userId,
             "SAVINGS"
         );
-        
+
+        // Record step as STARTED before publishing command
+        sagaStateManager.startStep(sagaId, UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), command);
+
         streamBridge.send("openAccountCommand-out-0", command);
     }
     
     private void triggerSendWelcomeNotificationCommand(Long sagaId, String userId, String email, String fullName) {
         log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userId);
-        
-        // Record step as STARTED before publishing command
-        sagaStateManager.startStep(sagaId, UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), String.format("Sending welcome email to: %s (%s)", email, fullName));
         
         SendWelcomeNotificationCommand command = SendWelcomeNotificationCommand.create(
             SagaId.of(String.valueOf(sagaId)),
@@ -92,6 +87,9 @@ public class UserOnboardingSaga {
             email,
             fullName
         );
+
+        // Record step as STARTED before publishing command
+        sagaStateManager.startStep(sagaId, UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), command);
         
         streamBridge.send("sendWelcomeNotificationCommand-out-0", command);
     }

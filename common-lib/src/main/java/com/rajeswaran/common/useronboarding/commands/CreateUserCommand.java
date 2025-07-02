@@ -1,10 +1,11 @@
 package com.rajeswaran.common.useronboarding.commands;
 
 import com.rajeswaran.common.command.BaseCommand;
+import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.saga.SagaId;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.Instant;
 
@@ -12,40 +13,24 @@ import java.time.Instant;
  * Command to create a new user in the user service.
  */
 @Getter
+@ToString
 public class CreateUserCommand extends BaseCommand {
     
     @NotBlank
-    private final String username;
+    private final UserDTO user;
     
-    @Email
-    private final String email;
-    
-    @NotBlank
-    private final String fullName;
-    
-    @NotBlank
-    private final String password;
-    
-    public CreateUserCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp,
-                           String username, String email, String fullName, String password) {
+    public CreateUserCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp, UserDTO user) {
         super(commandId, sagaId, correlationId, timestamp);
-        this.username = username;
-        this.email = email;
-        this.fullName = fullName;
-        this.password = password;
+        this.user = user;
     }
     
-    public static CreateUserCommand create(SagaId sagaId, String correlationId, 
-                                         String username, String email, String fullName, String password) {
+    public static CreateUserCommand create(SagaId sagaId, String correlationId, UserDTO user) {
         return new CreateUserCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
             correlationId,
             Instant.now(),
-            username,
-            email,
-            fullName,
-            password
+            user
         );
     }
 }
