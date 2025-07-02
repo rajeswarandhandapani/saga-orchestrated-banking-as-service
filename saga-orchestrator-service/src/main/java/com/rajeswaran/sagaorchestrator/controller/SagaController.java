@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ public class SagaController {
     private final UserOnboardingSaga userOnboardingSaga;
 
     @PostMapping("/start/user-onboarding")
-    public ResponseEntity<String> startUserOnboardingSaga() {
+    public ResponseEntity<String> startUserOnboardingSaga(@RequestBody User user) {
         log.info("Received request to start user onboarding saga");
 
         // String username = SecurityUtil.getCurrentUsername();
@@ -32,19 +33,11 @@ public class SagaController {
         //     fullName = jwt.getClaimAsString("name");
         // }
 
-        String username = "user1";
-        String email = "user1@example.com";
-        String fullName = "User One";
-
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setFullName(fullName);
 
         // Use Saga interface to start saga with payload - this will automatically trigger the first command
         SagaInstance sagaInstance = userOnboardingSaga.startSaga(user);
 
-        log.info("User onboarding saga {} started for user: {}", sagaInstance.getId(), username);
+        log.info("User onboarding saga {} started for user: {}", sagaInstance.getId(), user);
         return ResponseEntity.accepted().body("User onboarding process started with saga ID: " + sagaInstance.getId());
     }
 }
