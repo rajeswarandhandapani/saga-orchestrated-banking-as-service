@@ -40,12 +40,6 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
 
     @Override
     @Transactional
-    public void recordStep(Long sagaId, String stepName, SagaStepStatus status) {
-        recordStep(sagaId, stepName, status, null);
-    }
-    
-    @Override
-    @Transactional
     public void recordStep(Long sagaId, String stepName, SagaStepStatus status, String payload) {
         log.info("Recording step '{}' with status '{}' for saga {}", stepName, status, sagaId);
         

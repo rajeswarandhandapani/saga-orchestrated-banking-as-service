@@ -57,7 +57,7 @@ public class UserOnboardingSaga {
         log.info("Triggering CreateUserCommand for saga {} and user: {}", sagaId, userDto.getUsername());
         
         // Record step as STARTED before publishing command
-        sagaOrchestrator.recordStep(sagaId, "CreateUser", SagaStepStatus.STARTED);
+        sagaOrchestrator.recordStep(sagaId, "CreateUser", SagaStepStatus.STARTED, "");
         
         CreateUserCommand command = CreateUserCommand.create(
             SagaId.of(String.valueOf(sagaId)),
@@ -75,7 +75,7 @@ public class UserOnboardingSaga {
         log.info("Triggering OpenAccountCommand for saga {} and userId: {}", sagaId, userId);
         
         // Record step as STARTED before publishing command
-        sagaOrchestrator.recordStep(sagaId, "OpenAccount", SagaStepStatus.STARTED);
+        sagaOrchestrator.recordStep(sagaId, "OpenAccount", SagaStepStatus.STARTED, "");
         
         OpenAccountCommand command = OpenAccountCommand.create(
             SagaId.of(String.valueOf(sagaId)),
@@ -91,7 +91,7 @@ public class UserOnboardingSaga {
         log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userId);
         
         // Record step as STARTED before publishing command
-        sagaOrchestrator.recordStep(sagaId, "SendNotification", SagaStepStatus.STARTED);
+        sagaOrchestrator.recordStep(sagaId, "SendNotification", SagaStepStatus.STARTED, "");
         
         SendWelcomeNotificationCommand command = SendWelcomeNotificationCommand.create(
             SagaId.of(String.valueOf(sagaId)),

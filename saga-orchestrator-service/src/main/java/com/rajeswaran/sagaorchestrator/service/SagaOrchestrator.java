@@ -11,8 +11,6 @@ public interface SagaOrchestrator {
     SagaInstance startSaga(String sagaName, Map<String, Object> payload);
     
     // Methods for UserOnboardingSaga support
-    void recordStep(Long sagaId, String stepName, SagaStepStatus status);
-    
     void recordStep(Long sagaId, String stepName, SagaStepStatus status, String payload);
     
     void updateStepStatus(Long sagaId, String stepName, SagaStepStatus status);
