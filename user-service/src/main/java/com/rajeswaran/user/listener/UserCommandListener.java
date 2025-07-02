@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
@@ -27,9 +26,8 @@ public class UserCommandListener {
     private final StreamBridge streamBridge;
 
     @Bean
-    public Consumer<Message<CreateUserCommand>> createUserCommand() {
-        return message -> {
-            CreateUserCommand command = message.getPayload();
+    public Consumer<CreateUserCommand> createUserCommand() {
+        return command -> {
             UserDTO userDTO = command.getUser();
             log.info("Received createUserCommand for saga {} and user: {}", command.getSagaId().value(), userDTO.getUsername());
             
@@ -64,9 +62,8 @@ public class UserCommandListener {
     }
 
     @Bean
-    public Consumer<Message<DeleteUserCommand>> deleteUserCommand() {
-        return message -> {
-            DeleteUserCommand command = message.getPayload();
+    public Consumer<DeleteUserCommand> deleteUserCommand() {
+        return command -> {
             String username = command.getUsername();
             log.info("Received deleteUserCommand for saga {} and user: {} (compensation)", command.getSagaId().value(), username);
             
