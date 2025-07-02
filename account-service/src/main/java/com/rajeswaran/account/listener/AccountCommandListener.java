@@ -27,7 +27,7 @@ public class AccountCommandListener {
     private static final AtomicInteger accountNumberSequence = new AtomicInteger(10001);
 
     @Bean
-    public Consumer<Message<OpenAccountCommand>> openAccountCommand() {
+    public Consumer<Message<OpenAccountCommand>> accountOpenCommand() {
         return message -> {
             OpenAccountCommand command = message.getPayload();
             User user = command.getUser();
