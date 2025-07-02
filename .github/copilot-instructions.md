@@ -5,7 +5,6 @@ Always write code in small steps.
 This project uses Java 21, so make sure to use the correct version.
 If you need to use a library, first check if it is available in the Maven Central Repository
 and if it is not, ask me for approval before using it.
-after writing the code add the changelog entry in the `README.md` file
 when implementing a new feature, always make sure to follow the existing code style and patterns.
 Follow exisitng code structure and organization.
 Make sure to add dependencies to the parent pom.xml file for version mangement.

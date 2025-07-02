@@ -429,3 +429,12 @@ Processing sagas fully functional with proper event choreography, compensation l
   - ✅ **Single pattern approach** - now uses only modern command/event pattern, removed dual approach complexity
   - ✅ **Command framework cleanup** - removed unused local Command interface (saga uses `common-lib` commands instead)
   - ✅ **Package restructuring** - moved all saga components into `com.rajeswaran.sagaorchestrator` package for better organization
+
+### 2025-07-02 - Development Security Configuration Added
+- **FEATURE**: ✅ Added `DevSecurityConfig.java` for development environment
+  - ✅ **Profile-based security** - Uses `@Profile("dev")` to activate only in development mode
+  - ✅ **Disables authentication** - Permits all requests without JWT authentication for easier development
+  - ✅ **Maintains production security** - Original `SecurityConfig.java` remains active for production profiles
+  - ✅ **Easy activation** - Start with `-Dspring.profiles.active=dev` to use development mode
+  - ✅ **Development convenience** - Allows testing endpoints without Keycloak setup during development
+  - ✅ **Profile exclusion** - Updated `SecurityConfig.java` with `@Profile("!dev")` to ensure no conflicts between dev and production security configurations
