@@ -3,7 +3,7 @@ package com.rajeswaran.payment.service;
 import com.rajeswaran.common.events.PaymentInitiatedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.payment.entity.Payment;
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.function.StreamBridge;

@@ -1,9 +1,9 @@
 package com.rajeswaran.user.service;
 
 import com.rajeswaran.common.AppConstants;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.function.StreamBridge;

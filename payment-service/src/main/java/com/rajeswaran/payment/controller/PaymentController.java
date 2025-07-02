@@ -1,7 +1,7 @@
 package com.rajeswaran.payment.controller;
 
 import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.payment.entity.Payment;
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.payment.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.rajeswaran.transaction.controller;
 
 import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.transaction.entity.Transaction;
+import com.rajeswaran.common.entity.Transaction;
 import com.rajeswaran.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

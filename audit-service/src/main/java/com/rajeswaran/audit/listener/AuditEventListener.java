@@ -1,6 +1,6 @@
 package com.rajeswaran.audit.listener;
 
-import com.rajeswaran.audit.entity.AuditLog;
+import com.rajeswaran.common.entity.AuditLog;
 import com.rajeswaran.audit.service.AuditLogService;
 import com.rajeswaran.common.events.SagaEvent;
 import org.slf4j.Logger;

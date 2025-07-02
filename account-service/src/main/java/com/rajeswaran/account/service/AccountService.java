@@ -1,7 +1,7 @@
 package com.rajeswaran.account.service;
 
-import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.repository.AccountRepository;
+import com.rajeswaran.common.entity.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

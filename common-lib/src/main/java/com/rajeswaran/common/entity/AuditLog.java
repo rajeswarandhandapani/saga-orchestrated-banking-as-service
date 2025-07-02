@@ -1,4 +1,4 @@
-package com.rajeswaran.audit.entity;
+package com.rajeswaran.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,5 +35,4 @@ public class AuditLog {
 
     @Column(nullable = false)
     private String eventType; // e.g., AccountOpenedEvent, AccountOpeningFailedEvent
-
 }

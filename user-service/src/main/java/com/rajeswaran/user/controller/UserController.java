@@ -1,7 +1,7 @@
 package com.rajeswaran.user.controller;
 
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.rajeswaran.payment.entity;
+package com.rajeswaran.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

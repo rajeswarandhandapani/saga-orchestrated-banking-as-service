@@ -1,6 +1,6 @@
 package com.rajeswaran.user.repository;
 
-import com.rajeswaran.user.entity.User;
+import com.rajeswaran.common.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

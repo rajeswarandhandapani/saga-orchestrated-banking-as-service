@@ -3,7 +3,7 @@ package com.rajeswaran.transaction.listener;
 import com.rajeswaran.common.events.AccountBalanceUpdatedEvent;
 import com.rajeswaran.common.events.TransactionRecordedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
-import com.rajeswaran.transaction.entity.Transaction;
+import com.rajeswaran.common.entity.Transaction;
 import com.rajeswaran.transaction.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

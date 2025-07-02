@@ -1,6 +1,6 @@
 package com.rajeswaran.audit.controller;
 
-import com.rajeswaran.audit.entity.AuditLog;
+import com.rajeswaran.common.entity.AuditLog;
 import com.rajeswaran.audit.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

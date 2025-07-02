@@ -1,4 +1,4 @@
-package com.rajeswaran.account.entity;
+package com.rajeswaran.common.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -2,7 +2,7 @@ package com.rajeswaran.notification.service;
 
 import com.rajeswaran.common.model.command.CancelNotificationCommand;
 import com.rajeswaran.common.model.command.SendNotificationCommand;
-import com.rajeswaran.notification.entity.Notification;
+import com.rajeswaran.common.entity.Notification;
 import com.rajeswaran.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;

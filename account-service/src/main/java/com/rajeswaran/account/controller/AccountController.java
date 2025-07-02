@@ -1,7 +1,7 @@
 package com.rajeswaran.account.controller;
 
-import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
+import com.rajeswaran.common.entity.Account;
 import com.rajeswaran.common.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;

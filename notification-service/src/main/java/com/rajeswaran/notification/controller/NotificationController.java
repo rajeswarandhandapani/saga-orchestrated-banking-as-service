@@ -1,6 +1,6 @@
 package com.rajeswaran.notification.controller;
 
-import com.rajeswaran.notification.entity.Notification;
+import com.rajeswaran.common.entity.Notification;
 import com.rajeswaran.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
 package com.rajeswaran.account.listener;
 
-import com.rajeswaran.account.entity.Account;
 import com.rajeswaran.account.service.AccountService;
+import com.rajeswaran.common.entity.Account;
 import com.rajeswaran.common.useronboarding.commands.OpenAccountCommand;
 import com.rajeswaran.common.useronboarding.events.AccountOpenedEvent;
 import com.rajeswaran.common.useronboarding.events.AccountOpenFailedEvent;

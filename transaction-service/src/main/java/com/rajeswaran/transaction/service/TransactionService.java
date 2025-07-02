@@ -1,6 +1,6 @@
 package com.rajeswaran.transaction.service;
 
-import com.rajeswaran.transaction.entity.Transaction;
+import com.rajeswaran.common.entity.Transaction;
 import com.rajeswaran.transaction.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

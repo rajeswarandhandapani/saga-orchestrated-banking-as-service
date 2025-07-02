@@ -1,4 +1,4 @@
-package com.rajeswaran.transaction.entity;
+package com.rajeswaran.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,4 +26,3 @@ public class Transaction {
     private String username; // Added field to track which user owns this transaction
     private double balance; // Renamed from balanceAfterTransaction to balance
 }
-

@@ -1,6 +1,6 @@
 package com.rajeswaran.audit.service;
 
-import com.rajeswaran.audit.entity.AuditLog;
+import com.rajeswaran.common.entity.AuditLog;
 import com.rajeswaran.audit.repository.AuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

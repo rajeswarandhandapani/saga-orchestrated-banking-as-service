@@ -1,7 +1,7 @@
 package com.rajeswaran.payment.listener;
 
 import com.rajeswaran.common.events.PaymentFailedEvent;
-import com.rajeswaran.payment.entity.Payment;
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

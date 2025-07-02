@@ -1,6 +1,6 @@
 package com.rajeswaran.account.repository;
 
-import com.rajeswaran.account.entity.Account;
+import com.rajeswaran.common.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

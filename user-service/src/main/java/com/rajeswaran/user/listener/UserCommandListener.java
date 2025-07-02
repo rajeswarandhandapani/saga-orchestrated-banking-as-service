@@ -1,5 +1,6 @@
 package com.rajeswaran.user.listener;
 
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
 import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
@@ -7,7 +8,6 @@ import com.rajeswaran.common.useronboarding.events.UserCreatedEvent;
 import com.rajeswaran.common.useronboarding.events.UserCreationFailedEvent;
 import com.rajeswaran.common.useronboarding.events.UserDeletedEvent;
 import com.rajeswaran.common.useronboarding.events.UserDeletionFailedEvent;
-import com.rajeswaran.user.entity.User;
 import com.rajeswaran.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
