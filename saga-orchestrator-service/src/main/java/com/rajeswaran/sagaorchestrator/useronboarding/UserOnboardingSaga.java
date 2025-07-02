@@ -66,7 +66,7 @@ public class UserOnboardingSaga extends Saga {
     // === COMMAND PRODUCERS (Triggers commands to other services) ===
     
     private void triggerCreateUserCommand(Long sagaId, User user) {
-        log.info("Triggering CreateUserCommand for saga {} and user: {}", sagaId, user.getUsername());
+        log.info("Triggering CreateUserCommand for saga {} and user: {}", sagaId, user);
         
         
         CreateUserCommand command = CreateUserCommand.create(
@@ -97,15 +97,16 @@ public class UserOnboardingSaga extends Saga {
         streamBridge.send("accountOpenCommand-out-0", command);
     }
     
-    private void triggerSendWelcomeNotificationCommand(Long sagaId, String userId, String email, String fullName) {
-        log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userId);
+    private void triggerSendWelcomeNotificationCommand(Long sagaId, String userName, String email, String fullName, String accountNumber) {
+        log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userName);
         
         SendWelcomeNotificationCommand command = SendWelcomeNotificationCommand.create(
             SagaId.of(String.valueOf(sagaId)),
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            userId,
+            userName,
             email,
-            fullName
+            fullName,
+            accountNumber
         );
 
         // Record step as STARTED before publishing command
@@ -135,7 +136,7 @@ public class UserOnboardingSaga extends Saga {
 
             UserCreatedEvent event = message.getPayload();
 
-            log.info("User created successfully for saga {}, userId: {}", event.getSagaId().value(), event.getUserId());
+            log.info("User created successfully for saga {}, event: {}", event.getSagaId().value(), event);
             
             completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.CREATE_USER.getStepName(), event);
             
@@ -159,13 +160,14 @@ public class UserOnboardingSaga extends Saga {
         return message -> {
             AccountOpenedEvent event = message.getPayload();
 
-            log.info("Account opened successfully for saga {}, accountId: {}", event.getSagaId().value(), event.getAccountId());
+            log.info("Account opened successfully for saga {}, event: {}", event.getSagaId().value(), event);
             
             completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), event);
             
             // Proceed to next step: Send Welcome Notification
             // We need email and fullName, but they're not in AccountOpenedEvent, so we'll use userId for now
-            triggerSendWelcomeNotificationCommand(Long.valueOf(event.getSagaId().value()), event.getUserId(), "user@example.com", "User Name");
+            User user = event.getUser();
+            triggerSendWelcomeNotificationCommand(Long.valueOf(event.getSagaId().value()), user.getUsername(), user.getFullName(), user.getEmail(), event.getAccount().getAccountNumber());
         };
     }
 

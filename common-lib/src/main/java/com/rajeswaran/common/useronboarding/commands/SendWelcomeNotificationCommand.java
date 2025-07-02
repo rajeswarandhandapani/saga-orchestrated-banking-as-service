@@ -29,17 +29,21 @@ public class SendWelcomeNotificationCommand extends BaseCommand {
     
     @NotBlank
     private String fullName;
+
+    @NotBlank
+    private String accountNumber;
     
     public SendWelcomeNotificationCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp,
-                                        String userId, String email, String fullName) {
+                                        String userId, String email, String fullName, String accountNumber) {
         super(commandId, sagaId, correlationId, timestamp);
         this.userId = userId;
         this.email = email;
         this.fullName = fullName;
+        this.accountNumber = accountNumber;
     }
     
     public static SendWelcomeNotificationCommand create(SagaId sagaId, String correlationId, 
-                                                      String userId, String email, String fullName) {
+                                                      String userId, String email, String fullName, String accountNumber) {
         return new SendWelcomeNotificationCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
@@ -47,7 +51,8 @@ public class SendWelcomeNotificationCommand extends BaseCommand {
             Instant.now(),
             userId,
             email,
-            fullName
+            fullName,
+            accountNumber
         );
     }
 }

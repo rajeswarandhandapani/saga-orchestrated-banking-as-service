@@ -2,6 +2,7 @@ package com.rajeswaran.account.listener;
 
 import com.rajeswaran.account.service.AccountService;
 import com.rajeswaran.common.entity.Account;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.useronboarding.commands.OpenAccountCommand;
 import com.rajeswaran.common.useronboarding.events.AccountOpenedEvent;
 import com.rajeswaran.common.useronboarding.events.AccountOpenFailedEvent;
@@ -29,16 +30,17 @@ public class AccountCommandListener {
     public Consumer<Message<OpenAccountCommand>> openAccountCommand() {
         return message -> {
             OpenAccountCommand command = message.getPayload();
-            log.info("Received OpenAccountCommand for saga {} and userId: {}", 
-                    command.getSagaId().value(), command.getUser().getUserId());
+            User user = command.getUser();
+            log.info("Received OpenAccountCommand for saga {} and userId: {}",
+                    command.getSagaId().value(), user.getUserId());
 
             try {
                 // Create account
                 Account account = new Account();
                 account.setAccountNumber(generateAccountNumber());
                 account.setAccountType(command.getAccountType());
-                account.setUserId(String.valueOf(command.getUser().getUserId()));
-                account.setUserName(command.getUser().getUsername());
+                account.setUserId(String.valueOf(user.getUserId()));
+                account.setUserName(user.getUsername());
                 account.setBalance(500.0); // Initial balance
                 account.setStatus("ACTIVE");
                 account.setCreatedTimestamp(LocalDateTime.now());
@@ -52,10 +54,8 @@ public class AccountCommandListener {
                 AccountOpenedEvent event = AccountOpenedEvent.create(
                     command.getSagaId(),
                     command.getCorrelationId(),
-                    savedAccount.getId().toString(),
-                    String.valueOf(command.getUser().getUserId()),
-                    command.getAccountType(),
-                    savedAccount.getAccountNumber()
+                    savedAccount,
+                    user
                 );
                 
                 streamBridge.send("accountOpenedEvent-out-0", event);
@@ -63,14 +63,14 @@ public class AccountCommandListener {
                 
             } catch (Exception e) {
                 log.error("Failed to create account for saga {}, userId: {}", 
-                         command.getSagaId().value(), command.getUser().getUserId(), e);
+                         command.getSagaId().value(), user.getUserId(), e);
                 
                 // Publish failure event
                 AccountOpenFailedEvent event = AccountOpenFailedEvent.create(
                     command.getSagaId(),
                     command.getCorrelationId(),
-                    String.valueOf(command.getUser().getUserId()),
-                    command.getUser().getUsername(),
+                    String.valueOf(user.getUserId()),
+                    user.getUsername(),
                     "Failed to create account: " + e.getMessage()
                 );
                 

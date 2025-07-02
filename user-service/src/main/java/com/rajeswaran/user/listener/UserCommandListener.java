@@ -37,7 +37,6 @@ public class UserCommandListener {
                 UserCreatedEvent event = UserCreatedEvent.create(
                     command.getSagaId(),
                     command.getCorrelationId(),
-                    String.valueOf(createdUser.getUserId()),
                     createdUser
                 );
                 

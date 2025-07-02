@@ -1,5 +1,7 @@
 package com.rajeswaran.common.useronboarding.events;
 
+import com.rajeswaran.common.entity.Account;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.event.BaseEvent;
 import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +12,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Event indicating an account was successfully opened.
@@ -20,28 +23,21 @@ import java.time.Instant;
 @NoArgsConstructor
 @SuperBuilder
 public class AccountOpenedEvent extends BaseEvent {
-    @NotBlank
-    private String accountId;
-    @NotBlank
-    private String userId;
-    @NotBlank
-    private String accountType;
-    @NotBlank
-    private String accountNumber;
 
-    public static AccountOpenedEvent create(SagaId sagaId, String correlationId,
-                                            String accountId, String userId, String accountType, String accountNumber) {
+    Account account;
+
+    User user;
+
+    public static AccountOpenedEvent create(SagaId sagaId, String correlationId, Account account, User user) {
         return AccountOpenedEvent.builder()
-            .eventId(java.util.UUID.randomUUID().toString())
+            .eventId(UUID.randomUUID().toString())
             .sagaId(sagaId)
             .correlationId(correlationId)
             .timestamp(Instant.now())
             .success(true)
             .errorMessage(null)
-            .accountId(accountId)
-            .userId(userId)
-            .accountType(accountType)
-            .accountNumber(accountNumber)
+            .account(account)
+            .user(user)
             .build();
     }
 }

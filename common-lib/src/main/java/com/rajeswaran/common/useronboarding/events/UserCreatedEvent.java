@@ -22,12 +22,10 @@ import java.time.Instant;
 @NoArgsConstructor
 @SuperBuilder
 public class UserCreatedEvent extends BaseEvent {
-    @NotBlank
-    private String userId;
     @NotNull
     private User user;
 
-    public static UserCreatedEvent create(SagaId sagaId, String correlationId, String userId, User user) {
+    public static UserCreatedEvent create(SagaId sagaId, String correlationId, User user) {
         return UserCreatedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
@@ -35,7 +33,6 @@ public class UserCreatedEvent extends BaseEvent {
             .timestamp(Instant.now())
             .success(true)
             .errorMessage(null)
-            .userId(userId)
             .user(user)
             .build();
     }
