@@ -37,14 +37,11 @@ public class UserCommandListener {
                 User createdUser = userService.createUserFromJwt(userDTO.getUsername(), userDTO.getEmail(), userDTO.getFullName());
                 log.info("User {} created successfully for saga {}", userDTO.getUsername(), command.getSagaId().value());
                 
-                // Publish UserCreatedEvent
                 UserCreatedEvent event = UserCreatedEvent.create(
                     command.getSagaId(),
                     command.getCorrelationId(),
                     String.valueOf(createdUser.getUserId()),
-                    createdUser.getUsername(),
-                    createdUser.getEmail(),
-                    createdUser.getFullName()
+                    userDTO
                 );
                 
                 streamBridge.send("userCreatedEvent-out-0", event);
