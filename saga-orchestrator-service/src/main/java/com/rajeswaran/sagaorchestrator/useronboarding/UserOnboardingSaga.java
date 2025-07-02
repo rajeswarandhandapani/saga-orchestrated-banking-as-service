@@ -44,6 +44,12 @@ public class UserOnboardingSaga {
     
     public void startUserOnboarding(Long sagaId, UserDTO userDto) {
         log.info("Starting user onboarding saga {} for user: {}", sagaId, userDto.getUsername());
+        
+        // Record the initial step with user payload
+        sagaOrchestrator.recordStep(sagaId, "SagaInitiated", SagaStepStatus.COMPLETED, 
+            String.format("User: %s, Email: %s, FullName: %s", 
+                userDto.getUsername(), userDto.getEmail(), userDto.getFullName()));
+        
         triggerCreateUserCommand(sagaId, userDto);
     }
     

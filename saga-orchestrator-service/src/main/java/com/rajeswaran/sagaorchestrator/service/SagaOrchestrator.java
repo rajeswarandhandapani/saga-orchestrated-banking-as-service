@@ -13,6 +13,8 @@ public interface SagaOrchestrator {
     // Methods for UserOnboardingSaga support
     void recordStep(Long sagaId, String stepName, SagaStepStatus status);
     
+    void recordStep(Long sagaId, String stepName, SagaStepStatus status, String payload);
+    
     void updateSagaState(Long sagaId, SagaStatus status);
     
     void compensate(Long sagaId);

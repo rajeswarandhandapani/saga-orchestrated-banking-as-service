@@ -1,7 +1,5 @@
 package com.rajeswaran.sagaorchestrator.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 import com.rajeswaran.sagaorchestrator.entity.SagaStepInstance;
 import com.rajeswaran.sagaorchestrator.model.SagaStatus;
@@ -22,20 +20,11 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
 
     private final SagaInstanceRepository sagaInstanceRepository;
     private final SagaStepInstanceRepository sagaStepInstanceRepository;
-    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
     public SagaInstance startSaga(String sagaName, Map<String, Object> payload) {
         log.info("Starting saga: {} with payload keys: {}", sagaName, payload.keySet());
-
-        String payloadAsString;
-        try {
-            payloadAsString = objectMapper.writeValueAsString(payload);
-        } catch (JsonProcessingException e) {
-            log.error("Failed to serialize saga payload for saga: {}", sagaName, e);
-            throw new RuntimeException("Failed to serialize saga payload", e);
-        }
 
         // Create the main saga instance tracker
         SagaInstance sagaInstance = SagaInstance.builder()
@@ -45,15 +34,6 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
                 .build();
         SagaInstance savedInstance = sagaInstanceRepository.save(sagaInstance);
 
-        // Create a step instance for the initial payload
-        SagaStepInstance initialStep = SagaStepInstance.builder()
-                .sagaInstance(savedInstance)
-                .stepName("SagaInitiated")
-                .status(SagaStepStatus.COMPLETED)
-                .payload(payloadAsString)
-                .build();
-        sagaStepInstanceRepository.save(initialStep);
-
         log.info("Saga {} created successfully with ID: {}", sagaName, savedInstance.getId());
         return savedInstance;
     }
@@ -61,6 +41,12 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
     @Override
     @Transactional
     public void recordStep(Long sagaId, String stepName, SagaStepStatus status) {
+        recordStep(sagaId, stepName, status, null);
+    }
+    
+    @Override
+    @Transactional
+    public void recordStep(Long sagaId, String stepName, SagaStepStatus status, String payload) {
         log.info("Recording step '{}' with status '{}' for saga {}", stepName, status, sagaId);
         
         SagaInstance sagaInstance = sagaInstanceRepository.findById(sagaId)
@@ -70,7 +56,7 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
                 .sagaInstance(sagaInstance)
                 .stepName(stepName)
                 .status(status)
-                .payload("") // Empty payload for now
+                .payload(payload != null ? payload : "")
                 .build();
         
         sagaStepInstanceRepository.save(stepInstance);
