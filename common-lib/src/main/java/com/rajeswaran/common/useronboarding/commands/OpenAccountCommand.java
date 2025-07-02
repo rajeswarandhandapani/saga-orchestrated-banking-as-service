@@ -3,7 +3,11 @@ package com.rajeswaran.common.useronboarding.commands;
 import com.rajeswaran.common.command.BaseCommand;
 import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
@@ -11,13 +15,17 @@ import java.time.Instant;
  * Command to open an account for a user.
  */
 @Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class OpenAccountCommand extends BaseCommand {
     
     @NotBlank
-    private final String userId;
+    private String userId;
     
     @NotBlank
-    private final String accountType;
+    private String accountType;
     
     public OpenAccountCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp,
                             String userId, String accountType) {

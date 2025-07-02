@@ -4,8 +4,11 @@ import com.rajeswaran.common.command.BaseCommand;
 import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
@@ -14,10 +17,13 @@ import java.time.Instant;
  */
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class CreateUserCommand extends BaseCommand {
     
     @NotBlank
-    private final UserDTO user;
+    private UserDTO user;
     
     public CreateUserCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp, UserDTO user) {
         super(commandId, sagaId, correlationId, timestamp);

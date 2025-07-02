@@ -4,6 +4,9 @@ import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
@@ -12,24 +15,27 @@ import java.time.Instant;
  * Provides shared functionality and ensures Spring Cloud Stream compatibility.
  */
 @Getter
+@ToString
 @AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public abstract class BaseEvent implements Event {
     
     @NotNull
-    private final String eventId;
+    private String eventId;
     
     @NotNull
-    private final SagaId sagaId;
+    private SagaId sagaId;
     
     @NotNull
-    private final String correlationId;
+    private String correlationId;
     
     @NotNull
-    private final Instant timestamp;
+    private Instant timestamp;
     
-    private final boolean success;
+    private boolean success;
     
-    private final String errorMessage;
+    private String errorMessage;
     
     @Override
     public String getEventType() {

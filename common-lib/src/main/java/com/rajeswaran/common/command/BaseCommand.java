@@ -4,6 +4,9 @@ import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
@@ -12,20 +15,23 @@ import java.time.Instant;
  * Provides shared functionality and ensures Spring Cloud Stream compatibility.
  */
 @Getter
+@ToString
 @AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public abstract class BaseCommand implements Command {
     
     @NotNull
-    private final String commandId;
+    private String commandId;
     
     @NotNull
-    private final SagaId sagaId;
+    private SagaId sagaId;
     
     @NotNull
-    private final String correlationId;
+    private String correlationId;
     
     @NotNull
-    private final Instant timestamp;
+    private Instant timestamp;
     
     @Override
     public String getCommandType() {

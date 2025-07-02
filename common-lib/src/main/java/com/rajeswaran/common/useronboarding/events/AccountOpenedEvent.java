@@ -3,7 +3,11 @@ package com.rajeswaran.common.useronboarding.events;
 import com.rajeswaran.common.event.BaseEvent;
 import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
@@ -11,38 +15,33 @@ import java.time.Instant;
  * Event indicating an account was successfully opened.
  */
 @Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class AccountOpenedEvent extends BaseEvent {
     @NotBlank
-    private final String accountId;
+    private String accountId;
     @NotBlank
-    private final String userId;
+    private String userId;
     @NotBlank
-    private final String accountType;
+    private String accountType;
     @NotBlank
-    private final String accountNumber;
-
-    public AccountOpenedEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp,
-                              boolean success, String errorMessage, String accountId, String userId, String accountType, String accountNumber) {
-        super(eventId, sagaId, correlationId, timestamp, success, errorMessage);
-        this.accountId = accountId;
-        this.userId = userId;
-        this.accountType = accountType;
-        this.accountNumber = accountNumber;
-    }
+    private String accountNumber;
 
     public static AccountOpenedEvent create(SagaId sagaId, String correlationId,
                                             String accountId, String userId, String accountType, String accountNumber) {
-        return new AccountOpenedEvent(
-            java.util.UUID.randomUUID().toString(),
-            sagaId,
-            correlationId,
-            Instant.now(),
-            true,
-            null,
-            accountId,
-            userId,
-            accountType,
-            accountNumber
-        );
+        return AccountOpenedEvent.builder()
+            .eventId(java.util.UUID.randomUUID().toString())
+            .sagaId(sagaId)
+            .correlationId(correlationId)
+            .timestamp(Instant.now())
+            .success(true)
+            .errorMessage(null)
+            .accountId(accountId)
+            .userId(userId)
+            .accountType(accountType)
+            .accountNumber(accountNumber)
+            .build();
     }
 }
