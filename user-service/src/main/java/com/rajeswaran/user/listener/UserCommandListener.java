@@ -2,6 +2,7 @@ package com.rajeswaran.user.listener;
 
 import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
+import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
 import com.rajeswaran.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
