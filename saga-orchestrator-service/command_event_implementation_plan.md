@@ -57,6 +57,33 @@
 - ✅ **Documented rationale** for lightweight approach and dependency choices
 - ✅ **Marked plan as IMPLEMENTED** with completion status
 
+### **Phase 7: Legacy Code Cleanup (✅ COMPLETED - July 2, 2025)**
+- ✅ **Simplified SagaOrchestratorImpl**:
+  - Removed all legacy command/reply handling code
+  - Removed `handleReply()`, `handleSuccess()`, `handleFailure()`, `executeStep()` methods
+  - Kept only state management functions: `startSaga()`, `recordStep()`, `updateSagaState()`, `compensate()`
+  - Removed dependencies on `SagaDefinition`, `SagaDefinitionRegistry`, `SagaStepDefinition`
+- ✅ **Updated SagaOrchestrator interface**:
+  - Removed legacy `handleReply()` method
+  - Kept only methods needed for new command/event pattern
+- ✅ **Removed legacy components**:
+  - `SagaConfig.java` - Legacy saga definition configuration
+  - `SagaDefinition.java` - Legacy saga definition model
+  - `SagaDefinitionRegistry.java` - Legacy saga definition registry
+  - `SagaStepDefinition.java` - Legacy saga step definition model
+  - `SagaReplyListener.java` - Legacy reply listener
+  - `StartSagaRequest.java` - Unused DTO
+- ✅ **Cleaned up directory structure**:
+  - Removed empty `definition/`, `listener/`, `dto/`, `config/`, `base/`, `orchestrator/` directories
+- ✅ **Updated application.yml**:
+  - Removed legacy `sagaReplyListener-in-0` binding
+  - Kept only modern event listener bindings for UserOnboardingSaga
+- ✅ **Verified build success** after cleanup - reduced from 18 to 12 Java files
+- ✅ **Architecture simplification**:
+  - **Before**: Complex legacy command/reply pattern + new command/event pattern (dual approach)
+  - **After**: Clean, simple command/event pattern only (single approach)
+  - **Result**: 33% reduction in codebase complexity while maintaining full functionality
+
 ## **🔧 SPECIFIC CHANGES MADE**
 
 ### **Files Modified:**
@@ -384,7 +411,7 @@ public class SagaOrchestrator {
 │ Command Producers:           │ Event Listeners:                │
 │ • triggerCreateUserCommand   │ • userCreatedEvent              │
 │ • triggerOpenAccountCommand  │ • userCreationFailedEvent       │
-│ • triggerSendNotification... │ • accountOpenedEvent            │
+│ • triggerSendNotification   │ • accountOpenedEvent            │
 │                              │ • accountOpenFailedEvent        │
 │                              │ • notificationSentEvent         │
 │                              │ • notificationFailedEvent       │
@@ -576,6 +603,39 @@ Instead of building complex framework, we leveraged existing `common-lib`:
   - `welcomeNotificationSentEvent-in-0`, `welcomeNotificationFailedEvent-in-0`
 - ✅ Command producer bindings already existed
 - ✅ Spring Cloud Stream function definition updated
+
+### **✅ Step 6: Documentation and Cleanup - COMPLETED**
+- ✅ Updated implementation plan with actual progress and decisions
+- ✅ Updated README.md with changelog entry for new command/event pattern
+- ✅ Documented rationale for lightweight approach and dependency choices
+- ✅ Marked plan as IMPLEMENTED with completion status
+
+### **✅ Step 7: Legacy Code Cleanup - COMPLETED**  
+- ✅ Simplified `SagaOrchestratorImpl`:
+  - Removed all legacy command/reply handling code
+  - Removed `handleReply()`, `handleSuccess()`, `handleFailure()`, `executeStep()` methods
+  - Kept only state management functions: `startSaga()`, `recordStep()`, `updateSagaState()`, `compensate()`
+  - Removed dependencies on `SagaDefinition`, `SagaDefinitionRegistry`, `SagaStepDefinition`
+- ✅ Updated `SagaOrchestrator` interface:
+  - Removed legacy `handleReply()` method
+  - Kept only methods needed for new command/event pattern
+- ✅ Removed legacy components:
+  - `SagaConfig.java` - Legacy saga definition configuration
+  - `SagaDefinition.java` - Legacy saga definition model
+  - `SagaDefinitionRegistry.java` - Legacy saga definition registry
+  - `SagaStepDefinition.java` - Legacy saga step definition model
+  - `SagaReplyListener.java` - Legacy reply listener
+  - `StartSagaRequest.java` - Unused DTO
+- ✅ Cleaned up directory structure:
+  - Removed empty `definition/`, `listener/`, `dto/`, `config/`, `base/`, `orchestrator/` directories
+- ✅ Updated application.yml:
+  - Removed legacy `sagaReplyListener-in-0` binding
+  - Kept only modern event listener bindings for UserOnboardingSaga
+- ✅ Verified build success after cleanup - reduced from 18 to 12 Java files
+- ✅ Architecture simplification:
+  - **Before**: Complex legacy command/reply pattern + new command/event pattern (dual approach)
+  - **After**: Clean, simple command/event pattern only (single approach)
+  - **Result**: 33% reduction in codebase complexity while maintaining full functionality
 
 ### **🚫 Steps We Skipped (Kept It Simple)**
 - 🚫 **Complex Event Store** - Used existing saga step persistence instead

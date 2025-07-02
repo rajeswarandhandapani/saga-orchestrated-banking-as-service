@@ -416,3 +416,14 @@ Processing sagas fully functional with proper event choreography, compensation l
   - ✅ Leveraged existing command/event framework from `common-lib` - kept implementation simple and lightweight
   - ✅ Updated documentation: `command_event_implementation_plan.md` marked as IMPLEMENTED with detailed progress tracking
   - ✅ Verified full project builds successfully with Maven
+
+### 2025-07-02 - Legacy Code Cleanup Complete  
+- **CLEANUP**: ✅ **COMPLETED** major cleanup of saga-orchestrator-service - removed legacy command/reply pattern:
+  - ✅ **Simplified SagaOrchestratorImpl** - removed all legacy command/reply handling, kept only state management
+  - ✅ **Updated SagaOrchestrator interface** - removed legacy `handleReply()` method
+  - ✅ **Removed legacy components**: `SagaConfig`, `SagaDefinition`, `SagaDefinitionRegistry`, `SagaStepDefinition`, `SagaReplyListener`, `StartSagaRequest` 
+  - ✅ **Cleaned up directory structure** - removed 6 empty directories (`definition/`, `listener/`, `dto/`, `config/`, `base/`, `orchestrator/`)
+  - ✅ **Updated application.yml** - removed legacy `sagaReplyListener-in-0` binding, kept only modern event listeners
+  - ✅ **Architecture simplification** - 33% reduction in codebase (18→12 Java files) while maintaining full functionality
+  - ✅ **Verified build success** - saga-orchestrator-service compiles cleanly after cleanup
+  - ✅ **Single pattern approach** - now uses only modern command/event pattern, removed dual approach complexity

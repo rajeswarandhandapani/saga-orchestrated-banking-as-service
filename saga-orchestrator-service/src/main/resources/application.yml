@@ -19,15 +19,9 @@ spring:
           # issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
   cloud:
     function:
-      definition: sagaReplyListener;userCreatedEvent;userCreationFailedEvent;accountOpenedEvent;accountOpenFailedEvent;welcomeNotificationSentEvent;welcomeNotificationFailedEvent
+      definition: userCreatedEvent;userCreationFailedEvent;accountOpenedEvent;accountOpenFailedEvent;welcomeNotificationSentEvent;welcomeNotificationFailedEvent
     stream:
       bindings:
-        # Legacy saga reply listener (keep for backward compatibility)
-        sagaReplyListener-in-0:
-          destination: saga-replies
-          group: saga-orchestrator-group
-          content-type: application/json
-
         # Event listeners for UserOnboardingSaga
         userCreatedEvent-in-0:
           destination: user-created-event
