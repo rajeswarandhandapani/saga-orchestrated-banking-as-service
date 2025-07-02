@@ -81,14 +81,15 @@ public class UserOnboardingSaga extends Saga {
         streamBridge.send("createUserCommand-out-0", command);
     }
     
-    private void triggerOpenAccountCommand(Long sagaId, String userId) {
+    private void triggerOpenAccountCommand(Long sagaId, String userId, UserDTO userDto) {
         log.info("Triggering OpenAccountCommand for saga {} and userId: {}", sagaId, userId);
         
         OpenAccountCommand command = OpenAccountCommand.create(
             SagaId.of(String.valueOf(sagaId)),
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             userId,
-            "SAVINGS"
+            "SAVINGS",
+            userDto
         );
 
         // Record step as STARTED before publishing command
@@ -140,7 +141,7 @@ public class UserOnboardingSaga extends Saga {
             completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.CREATE_USER.getStepName(), event);
             
             // Proceed to next step: Open Account
-            triggerOpenAccountCommand(Long.valueOf(event.getSagaId().value()), event.getUserId());
+            triggerOpenAccountCommand(Long.valueOf(event.getSagaId().value()), event.getUserId(), event.getUser());
         };
     }
 
