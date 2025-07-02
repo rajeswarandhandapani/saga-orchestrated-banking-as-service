@@ -12,4 +12,7 @@ import java.util.Optional;
 public interface SagaStepInstanceRepository extends JpaRepository<SagaStepInstance, Long> {
     Optional<SagaStepInstance> findFirstBySagaInstanceAndStepNameAndStatusOrderByCreatedAtDesc(
             SagaInstance sagaInstance, String stepName, SagaStepStatus status);
+    
+    Optional<SagaStepInstance> findFirstBySagaInstanceAndStepNameOrderByCreatedAtDesc(
+            SagaInstance sagaInstance, String stepName);
 }

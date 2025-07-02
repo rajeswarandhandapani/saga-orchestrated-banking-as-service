@@ -15,6 +15,8 @@ public interface SagaOrchestrator {
     
     void recordStep(Long sagaId, String stepName, SagaStepStatus status, String payload);
     
+    void updateStepStatus(Long sagaId, String stepName, SagaStepStatus status);
+    
     void updateSagaState(Long sagaId, SagaStatus status);
     
     void compensate(Long sagaId);

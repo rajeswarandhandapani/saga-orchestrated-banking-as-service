@@ -64,6 +64,22 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
     
     @Override
     @Transactional
+    public void updateStepStatus(Long sagaId, String stepName, SagaStepStatus status) {
+        log.info("Updating step '{}' to status '{}' for saga {}", stepName, status, sagaId);
+        
+        SagaInstance sagaInstance = sagaInstanceRepository.findById(sagaId)
+                .orElseThrow(() -> new RuntimeException("Saga instance not found: " + sagaId));
+        
+        // Find the most recent step with the given name
+        SagaStepInstance stepInstance = sagaStepInstanceRepository.findFirstBySagaInstanceAndStepNameOrderByCreatedAtDesc(sagaInstance, stepName)
+                .orElseThrow(() -> new RuntimeException("Step instance not found for saga " + sagaId + " and step: " + stepName));
+        
+        stepInstance.setStatus(status);
+        sagaStepInstanceRepository.save(stepInstance);
+    }
+    
+    @Override
+    @Transactional
     public void updateSagaState(Long sagaId, SagaStatus status) {
         log.info("Updating saga {} status to: {}", sagaId, status);
         
