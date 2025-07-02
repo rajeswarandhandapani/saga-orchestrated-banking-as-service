@@ -44,10 +44,10 @@ public class UserOnboardingSaga {
         log.info("Starting user onboarding saga {} for user: {}", sagaId, userDto.getUsername());
         
         // Record the initial step with user payload
-        sagaOrchestrator.startStep(sagaId, "SagaInitiated", 
+        sagaOrchestrator.startStep(sagaId, UserOnboardingSteps.SAGA_INITIATED.getStepName(), 
             String.format("User: %s, Email: %s, FullName: %s", 
                 userDto.getUsername(), userDto.getEmail(), userDto.getFullName()));
-        sagaOrchestrator.completeStep(sagaId, "SagaInitiated", "Saga initialization completed successfully");
+        sagaOrchestrator.completeStep(sagaId, UserOnboardingSteps.SAGA_INITIATED.getStepName(), "Saga initialization completed successfully");
         
         triggerCreateUserCommand(sagaId, userDto);
     }
@@ -56,7 +56,7 @@ public class UserOnboardingSaga {
         log.info("Triggering CreateUserCommand for saga {} and user: {}", sagaId, userDto.getUsername());
         
         // Record step as STARTED before publishing command
-        sagaOrchestrator.startStep(sagaId, "CreateUser", 
+        sagaOrchestrator.startStep(sagaId, UserOnboardingSteps.CREATE_USER.getStepName(), 
             String.format("Creating user: %s with email: %s", userDto.getUsername(), userDto.getEmail()));
         
         CreateUserCommand command = CreateUserCommand.create(
@@ -75,7 +75,7 @@ public class UserOnboardingSaga {
         log.info("Triggering OpenAccountCommand for saga {} and userId: {}", sagaId, userId);
         
         // Record step as STARTED before publishing command
-        sagaOrchestrator.startStep(sagaId, "OpenAccount", 
+        sagaOrchestrator.startStep(sagaId, UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), 
             String.format("Opening SAVINGS account for user: %s", userId));
         
         OpenAccountCommand command = OpenAccountCommand.create(
@@ -92,7 +92,7 @@ public class UserOnboardingSaga {
         log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userId);
         
         // Record step as STARTED before publishing command
-        sagaOrchestrator.startStep(sagaId, "SendNotification", 
+        sagaOrchestrator.startStep(sagaId, UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), 
             String.format("Sending welcome email to: %s (%s)", email, fullName));
         
         SendWelcomeNotificationCommand command = SendWelcomeNotificationCommand.create(
@@ -113,7 +113,7 @@ public class UserOnboardingSaga {
             UserCreatedEvent event = message.getPayload();
             log.info("User created successfully for saga {}, userId: {}", event.getSagaId().value(), event.getUserId());
             
-            sagaOrchestrator.completeStep(Long.valueOf(event.getSagaId().value()), "CreateUser", 
+            sagaOrchestrator.completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.CREATE_USER.getStepName(), 
                 String.format("User created successfully with ID: %s", event.getUserId()));
             
             // Proceed to next step: Open Account
@@ -127,7 +127,7 @@ public class UserOnboardingSaga {
             UserCreationFailedEvent event = message.getPayload();
             log.error("User creation failed for saga {}: {}", event.getSagaId().value(), event.getErrorMessage());
             
-            sagaOrchestrator.failStep(Long.valueOf(event.getSagaId().value()), "CreateUser", event.getErrorMessage());
+            sagaOrchestrator.failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.CREATE_USER.getStepName(), event.getErrorMessage());
             sagaOrchestrator.failSaga(Long.valueOf(event.getSagaId().value()));
         };
     }
@@ -137,7 +137,7 @@ public class UserOnboardingSaga {
             AccountOpenedEvent event = message.getPayload();
             log.info("Account opened successfully for saga {}, accountId: {}", event.getSagaId().value(), event.getAccountId());
             
-            sagaOrchestrator.completeStep(Long.valueOf(event.getSagaId().value()), "OpenAccount", 
+            sagaOrchestrator.completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), 
                 String.format("Account created successfully with ID: %s for user: %s", event.getAccountId(), event.getUserId()));
             
             // Proceed to next step: Send Welcome Notification
@@ -152,7 +152,7 @@ public class UserOnboardingSaga {
             AccountOpenFailedEvent event = message.getPayload();
             log.error("Account opening failed for saga {}: {}", event.getSagaId().value(), event.getErrorMessage());
             
-            sagaOrchestrator.failStep(Long.valueOf(event.getSagaId().value()), "OpenAccount", event.getErrorMessage());
+            sagaOrchestrator.failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), event.getErrorMessage());
             sagaOrchestrator.failSaga(Long.valueOf(event.getSagaId().value()));
         };
     }
@@ -162,7 +162,7 @@ public class UserOnboardingSaga {
             WelcomeNotificationSentEvent event = message.getPayload();
             log.info("Welcome notification sent for saga {}", event.getSagaId().value());
             
-            sagaOrchestrator.completeStep(Long.valueOf(event.getSagaId().value()), "SendNotification", 
+            sagaOrchestrator.completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), 
                 "Welcome notification sent successfully");
             
             // Saga completed successfully
@@ -179,7 +179,7 @@ public class UserOnboardingSaga {
             
             // Note: Notification failure might not require compensation
             // depending on business requirements - mark as completed with warnings
-            sagaOrchestrator.failStep(Long.valueOf(event.getSagaId().value()), "SendNotification", event.getErrorMessage());
+            sagaOrchestrator.failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), event.getErrorMessage());
             sagaOrchestrator.completeSaga(Long.valueOf(event.getSagaId().value()));
             log.info("User onboarding saga {} completed with notification failure (non-critical)", event.getSagaId().value());
         };
