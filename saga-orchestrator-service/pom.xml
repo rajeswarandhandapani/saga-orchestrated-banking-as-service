@@ -81,7 +81,7 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     
-    <!-- Command/Event Framework (added incrementally) -->
+    <!-- Command/Event Framework Dependencies (lightweight - using common-lib framework) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>

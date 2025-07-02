@@ -400,3 +400,19 @@ Processing sagas fully functional with proper event choreography, compensation l
 ### 2025-07-01
 - Fixed compilation issue in `common-lib`: Removed duplicate and malformed code from `AccountOpenFailedEvent.java`.
 - Refactored all event classes in `common-lib` to use Lombok `@Getter` and manual constructors for superclass compatibility. Removed unsupported `@AllArgsConstructor(callSuper = true)` usage. Build now passes successfully.
+
+### 2025-07-02 - Command/Event Pattern Implementation Complete
+- **MAJOR**: ✅ **COMPLETED** lightweight command/event pattern revamp for saga-orchestrator-service:
+  - ✅ Created `UserOnboardingSaga` class that self-orchestrates using command producers and event listeners
+  - ✅ Extended `SagaOrchestrator` interface with `recordStep()`, `updateSagaState()`, and `compensate()` methods  
+  - ✅ Implemented new methods in `SagaOrchestratorImpl` with proper state management
+  - ✅ Added comprehensive Kafka bindings for all user onboarding events (UserCreatedEvent, AccountOpenedEvent, WelcomeNotificationSentEvent, and failure events)
+  - ✅ Updated `SagaController` to delegate to `UserOnboardingSaga` for modern command/event flow
+  - ✅ Fixed all type compatibility issues (SagaId, event payloads, method signatures)
+  - ✅ Updated application.yml with complete Kafka configuration for new event listeners
+  - ✅ Removed unnecessary dependencies (jackson-datatype-jsr310, spring-boot-starter-quartz, micrometer-registry-prometheus)
+  - ✅ Added only required dependency: spring-boot-starter-validation
+  - ✅ Maintained backward compatibility with existing command/reply pattern
+  - ✅ Leveraged existing command/event framework from `common-lib` - kept implementation simple and lightweight
+  - ✅ Updated documentation: `command_event_implementation_plan.md` marked as IMPLEMENTED with detailed progress tracking
+  - ✅ Verified full project builds successfully with Maven

@@ -19,11 +19,38 @@ spring:
           # issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
   cloud:
     function:
-      definition: sagaReplyListener
+      definition: sagaReplyListener;userCreatedEvent;userCreationFailedEvent;accountOpenedEvent;accountOpenFailedEvent;welcomeNotificationSentEvent;welcomeNotificationFailedEvent
     stream:
       bindings:
+        # Legacy saga reply listener (keep for backward compatibility)
         sagaReplyListener-in-0:
           destination: saga-replies
+          group: saga-orchestrator-group
+          content-type: application/json
+
+        # Event listeners for UserOnboardingSaga
+        userCreatedEvent-in-0:
+          destination: user-created-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        userCreationFailedEvent-in-0:
+          destination: user-creation-failed-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        accountOpenedEvent-in-0:
+          destination: account-opened-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        accountOpenFailedEvent-in-0:
+          destination: account-open-failed-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        welcomeNotificationSentEvent-in-0:
+          destination: welcome-notification-sent-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        welcomeNotificationFailedEvent-in-0:
+          destination: welcome-notification-failed-event
           group: saga-orchestrator-group
           content-type: application/json
 
@@ -38,6 +65,8 @@ spring:
           destination: close-account-command
         sendNotificationCommand-out-0:
           destination: send-notification-command
+        sendWelcomeNotificationCommand-out-0:
+          destination: send-welcome-notification-command
         cancelNotificationCommand-out-0:
           destination: cancel-notification-command
 

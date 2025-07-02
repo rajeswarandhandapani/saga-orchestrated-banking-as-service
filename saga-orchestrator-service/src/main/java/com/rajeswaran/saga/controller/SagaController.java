@@ -2,7 +2,9 @@ package com.rajeswaran.saga.controller;
 
 import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.util.SecurityUtil;
+import com.rajeswaran.saga.entity.SagaInstance;
 import com.rajeswaran.saga.service.SagaOrchestrator;
+import com.rajeswaran.saga.useronboarding.UserOnboardingSaga;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.Map;
 public class SagaController {
 
     private final SagaOrchestrator sagaOrchestrator;
+    private final UserOnboardingSaga userOnboardingSaga;
 
     @PostMapping("/start/user-onboarding")
     public ResponseEntity<String> startUserOnboardingSaga() {
@@ -43,12 +46,16 @@ public class SagaController {
                 .fullName(fullName)
                 .build();
 
+        // Use new command/event pattern
         Map<String, Object> payload = new HashMap<>();
         payload.put("user", userDTO);
+        
+        SagaInstance sagaInstance = sagaOrchestrator.startSaga("user-onboarding-saga", payload);
+        
+        // Delegate to UserOnboardingSaga for command/event orchestration
+        userOnboardingSaga.startUserOnboarding(sagaInstance.getId(), userDTO);
 
-        sagaOrchestrator.startSaga("user-onboarding-saga", payload);
-
-        log.info("Saga 'user-onboarding' started for user: {}", username);
-        return ResponseEntity.accepted().body("User onboarding process started.");
+        log.info("User onboarding saga {} started for user: {}", sagaInstance.getId(), username);
+        return ResponseEntity.accepted().body("User onboarding process started with saga ID: " + sagaInstance.getId());
     }
 }

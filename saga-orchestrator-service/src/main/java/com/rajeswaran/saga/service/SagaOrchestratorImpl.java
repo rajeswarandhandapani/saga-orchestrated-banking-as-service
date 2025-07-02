@@ -182,4 +182,48 @@ public class SagaOrchestratorImpl implements SagaOrchestrator {
         log.info("Executing step {} for saga instance {}", stepIndex, sagaInstance.getId());
         streamBridge.send(currentStep.getCommandDestination(), payload);
     }
+
+    // === NEW METHODS FOR USERONBOARDINGSAGA SUPPORT ===
+    
+    @Override
+    @Transactional
+    public void recordStep(Long sagaId, String stepName, SagaStepStatus status) {
+        log.info("Recording step '{}' with status '{}' for saga {}", stepName, status, sagaId);
+        
+        SagaInstance sagaInstance = sagaInstanceRepository.findById(sagaId)
+                .orElseThrow(() -> new RuntimeException("Saga instance not found: " + sagaId));
+        
+        SagaStepInstance stepInstance = SagaStepInstance.builder()
+                .sagaInstance(sagaInstance)
+                .stepName(stepName)
+                .status(status)
+                .payload("") // Empty payload for now
+                .build();
+        
+        sagaStepInstanceRepository.save(stepInstance);
+    }
+    
+    @Override
+    @Transactional
+    public void updateSagaState(Long sagaId, SagaStatus status) {
+        log.info("Updating saga {} status to: {}", sagaId, status);
+        
+        SagaInstance sagaInstance = sagaInstanceRepository.findById(sagaId)
+                .orElseThrow(() -> new RuntimeException("Saga instance not found: " + sagaId));
+        
+        sagaInstance.setStatus(status);
+        sagaInstanceRepository.save(sagaInstance);
+    }
+    
+    @Override
+    @Transactional
+    public void compensate(Long sagaId) {
+        log.info("Starting compensation for saga {}", sagaId);
+        
+        SagaInstance sagaInstance = sagaInstanceRepository.findById(sagaId)
+                .orElseThrow(() -> new RuntimeException("Saga instance not found: " + sagaId));
+        
+        // Call existing compensation method
+        compensate(sagaInstance);
+    }
 }

@@ -63,7 +63,7 @@
         <scope>runtime</scope>
       </dependency>
       
-      <!-- Command/Event Framework Dependencies (added incrementally) -->
+      <!-- Command/Event Framework Dependencies (lightweight approach) -->
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-validation</artifactId>
