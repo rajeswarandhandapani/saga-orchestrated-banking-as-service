@@ -16,8 +16,6 @@ import java.time.Instant;
  */
 @Getter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
 @SuperBuilder
 public abstract class BaseEvent implements Event {
     
@@ -40,5 +38,17 @@ public abstract class BaseEvent implements Event {
     @Override
     public String getEventType() {
         return this.getClass().getSimpleName();
+    }
+
+    public BaseEvent() {
+    }
+
+    public BaseEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
+        this.eventId = eventId;
+        this.sagaId = sagaId;
+        this.correlationId = correlationId;
+        this.timestamp = timestamp;
+        this.success = success;
+        this.errorMessage = errorMessage;
     }
 }

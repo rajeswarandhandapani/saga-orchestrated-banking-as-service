@@ -16,10 +16,15 @@ import java.time.Instant;
  */
 @Getter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
 @SuperBuilder
 public class UserCreationFailedEvent extends BaseEvent {
+
+    public UserCreationFailedEvent() {
+    }
+
+    public UserCreationFailedEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
+        super(eventId, sagaId, correlationId, timestamp, success, errorMessage);
+    }
 
     public static UserCreationFailedEvent create(SagaId sagaId, String correlationId, String errorMessage) {
         return UserCreationFailedEvent.builder()
