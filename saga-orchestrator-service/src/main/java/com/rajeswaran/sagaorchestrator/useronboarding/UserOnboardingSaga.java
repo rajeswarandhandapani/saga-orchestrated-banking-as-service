@@ -5,15 +5,8 @@ import com.rajeswaran.common.saga.SagaId;
 import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
 import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
 import com.rajeswaran.common.useronboarding.commands.OpenAccountCommand;
-import com.rajeswaran.common.useronboarding.commands.SendWelcomeNotificationCommand;
-import com.rajeswaran.common.useronboarding.events.AccountOpenedEvent;
-import com.rajeswaran.common.useronboarding.events.AccountOpenFailedEvent;
-import com.rajeswaran.common.useronboarding.events.UserCreatedEvent;
-import com.rajeswaran.common.useronboarding.events.UserCreationFailedEvent;
-import com.rajeswaran.common.useronboarding.events.UserDeletedEvent;
-import com.rajeswaran.common.useronboarding.events.UserDeletionFailedEvent;
-import com.rajeswaran.common.useronboarding.events.WelcomeNotificationSentEvent;
-import com.rajeswaran.common.useronboarding.events.WelcomeNotificationFailedEvent;
+import com.rajeswaran.common.useronboarding.commands.SendNotificationCommand;
+import com.rajeswaran.common.useronboarding.events.*;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import com.rajeswaran.sagaorchestrator.saga.Saga;
@@ -100,19 +93,20 @@ public class UserOnboardingSaga extends Saga {
     private void triggerSendWelcomeNotificationCommand(Long sagaId, String userName, String email, String fullName, String accountNumber) {
         log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userName);
         
-        SendWelcomeNotificationCommand command = SendWelcomeNotificationCommand.create(
+       SendNotificationCommand command = SendNotificationCommand.create(
             SagaId.of(String.valueOf(sagaId)),
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            userName,
             email,
-            fullName,
-            accountNumber
-        );
+            "Welcome to BaaS Banking Service",
+            String.format("Hello %s,\n\nWelcome to  BaaS Banking service! Your account number is %s.\n\nBest regards,\nYour Company", fullName, accountNumber)
+       );
 
         // Record step as STARTED before publishing command
         startStep(sagaId, UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), command);
+        completeStep(sagaId, UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), command);
+        completeSaga(sagaId);
         
-        streamBridge.send("sendWelcomeNotificationCommand-out-0", command);
+        streamBridge.send("sendNotificationCommand-out-0", command);
     }
     
     private void triggerDeleteUserCommand(Long sagaId, String username) {
@@ -181,33 +175,6 @@ public class UserOnboardingSaga extends Saga {
             
             // Trigger compensation: Delete the user that was created earlier using username
             triggerDeleteUserCommand(Long.valueOf(event.getSagaId().value()), event.getUsername());
-        };
-    }
-     @Bean
-    public Consumer<Message<WelcomeNotificationSentEvent>> welcomeNotificationSentEvent() {
-        return message -> {
-            WelcomeNotificationSentEvent event = message.getPayload();
-            log.info("Welcome notification sent for saga {}", event.getSagaId().value());
-            
-            completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), event);
-            
-            // Saga completed successfully
-            completeSaga(Long.valueOf(event.getSagaId().value()));
-            log.info("User onboarding saga {} completed successfully", event.getSagaId().value());
-        };
-    }
-
-    @Bean
-    public Consumer<Message<WelcomeNotificationFailedEvent>> welcomeNotificationFailedEvent() {
-        return message -> {
-            WelcomeNotificationFailedEvent event = message.getPayload();
-            log.warn("Welcome notification failed for saga {}: {}", event.getSagaId().value(), event.getErrorMessage());
-            
-            // Note: Notification failure might not require compensation
-            // depending on business requirements - mark as completed with warnings
-            failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), event);
-            completeSaga(Long.valueOf(event.getSagaId().value()));
-            log.info("User onboarding saga {} completed with notification failure (non-critical)", event.getSagaId().value());
         };
     }
 

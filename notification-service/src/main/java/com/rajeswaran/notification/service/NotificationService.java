@@ -1,8 +1,7 @@
 package com.rajeswaran.notification.service;
 
-import com.rajeswaran.common.model.command.CancelNotificationCommand;
-import com.rajeswaran.common.model.command.SendNotificationCommand;
 import com.rajeswaran.common.entity.Notification;
+import com.rajeswaran.common.useronboarding.commands.SendNotificationCommand;
 import com.rajeswaran.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
@@ -37,28 +36,13 @@ public class NotificationService {
     public void sendNotification(SendNotificationCommand command) {
         Notification notification = new Notification(
                 null,
-                command.getUser().getUsername(),
-                command.getNotificationType(),
+                command.getEmail(),
+                command.getSubject(),
                 command.getMessage(),
-                "NEW",
-                command.getReferenceId(),
                 LocalDateTime.now()
         );
         notificationRepository.save(notification);
     }
 
-    public void cancelNotification(CancelNotificationCommand command) {
-        notificationRepository.findByReferenceId(command.getReferenceId()).ifPresent(notification -> {
-            notification.setStatus("CANCELLED");
-            notificationRepository.save(notification);
-        });
-    }
 
-    public <T> Message<String> buildReply(Message<T> message, String replyType) {
-        String correlationId = (String) message.getHeaders().get("correlationId");
-        return MessageBuilder.withPayload("SUCCESS")
-                .setHeader("correlationId", correlationId)
-                .setHeader("replyType", replyType)
-                .build();
-    }
 }

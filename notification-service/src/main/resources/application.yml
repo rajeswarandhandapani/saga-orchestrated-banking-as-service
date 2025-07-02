@@ -15,22 +15,12 @@ spring:
     discovery:
       enabled: true
     function:
-      definition: sendNotificationCommand;cancelNotificationCommand
+      definition: sendNotificationCommand
     stream:
       bindings:
         sendNotificationCommand-in-0:
           destination: send-notification-command
           group: notification-service
-          content-type: application/json
-        sendNotificationCommand-out-0:
-          destination: saga-replies
-          content-type: application/json
-        cancelNotificationCommand-in-0:
-          destination: cancel-notification-command
-          group: notification-service
-          content-type: application/json
-        cancelNotificationCommand-out-0:
-          destination: saga-replies
           content-type: application/json
       kafka:
         binder:

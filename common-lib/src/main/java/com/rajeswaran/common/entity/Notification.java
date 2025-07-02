@@ -16,10 +16,8 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userName;
-    private String type;
+    private String email;
+    private String subject;
     private String message;
-    private String status;
-    private String reference;
     private LocalDateTime timestamp;
 }
