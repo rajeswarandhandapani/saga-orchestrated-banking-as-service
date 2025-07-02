@@ -14,15 +14,19 @@ import java.time.Instant;
 public class AccountOpenFailedEvent extends BaseEvent {
     @NotBlank
     private final String userId;
+    
+    @NotBlank
+    private final String username;
 
     public AccountOpenFailedEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp,
-                                  boolean success, String errorMessage, String userId) {
+                                  boolean success, String errorMessage, String userId, String username) {
         super(eventId, sagaId, correlationId, timestamp, success, errorMessage);
         this.userId = userId;
+        this.username = username;
     }
 
     public static AccountOpenFailedEvent create(SagaId sagaId, String correlationId,
-                                                String userId, String errorMessage) {
+                                                String userId, String username, String errorMessage) {
         return new AccountOpenFailedEvent(
             java.util.UUID.randomUUID().toString(),
             sagaId,
@@ -30,7 +34,8 @@ public class AccountOpenFailedEvent extends BaseEvent {
             Instant.now(),
             false,
             errorMessage,
-            userId
+            userId,
+            username
         );
     }
 }

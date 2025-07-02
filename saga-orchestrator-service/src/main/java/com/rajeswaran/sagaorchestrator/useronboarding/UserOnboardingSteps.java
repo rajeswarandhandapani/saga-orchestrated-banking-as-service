@@ -34,7 +34,12 @@ public enum UserOnboardingSteps {
     /**
      * Step for sending welcome notification to the user.
      */
-    SEND_NOTIFICATION("SendNotification");
+    SEND_NOTIFICATION("SendNotification"),
+    
+    /**
+     * Compensation step for deleting user when account opening fails.
+     */
+    DELETE_USER("DeleteUser");
     
     /**
      * The actual step name used in the database and logs.

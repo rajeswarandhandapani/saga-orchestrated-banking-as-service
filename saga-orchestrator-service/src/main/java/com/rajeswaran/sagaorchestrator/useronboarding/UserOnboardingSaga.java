@@ -3,12 +3,15 @@ package com.rajeswaran.sagaorchestrator.useronboarding;
 import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.saga.SagaId;
 import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
+import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
 import com.rajeswaran.common.useronboarding.commands.OpenAccountCommand;
 import com.rajeswaran.common.useronboarding.commands.SendWelcomeNotificationCommand;
 import com.rajeswaran.common.useronboarding.events.AccountOpenedEvent;
 import com.rajeswaran.common.useronboarding.events.AccountOpenFailedEvent;
 import com.rajeswaran.common.useronboarding.events.UserCreatedEvent;
 import com.rajeswaran.common.useronboarding.events.UserCreationFailedEvent;
+import com.rajeswaran.common.useronboarding.events.UserDeletedEvent;
+import com.rajeswaran.common.useronboarding.events.UserDeletionFailedEvent;
 import com.rajeswaran.common.useronboarding.events.WelcomeNotificationSentEvent;
 import com.rajeswaran.common.useronboarding.events.WelcomeNotificationFailedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
@@ -94,6 +97,20 @@ public class UserOnboardingSaga {
         streamBridge.send("sendWelcomeNotificationCommand-out-0", command);
     }
     
+    private void triggerDeleteUserCommand(Long sagaId, String username) {
+        log.info("Triggering DeleteUserCommand for saga {} and username: {} (compensation)", sagaId, username);
+        
+        DeleteUserCommand command = DeleteUserCommand.create(
+            SagaId.of(String.valueOf(sagaId)),
+            SagaEventBuilderUtil.getCurrentCorrelationId(),
+            username
+        );
+
+        // Record step as STARTED before publishing command
+        sagaStateManager.startStep(sagaId, UserOnboardingSteps.DELETE_USER.getStepName(), command);
+        
+        streamBridge.send("deleteUserCommand-out-0", command);
+    }
     // === EVENT LISTENERS (Consumes events from other services) ===
      @Bean
     public Consumer<Message<UserCreatedEvent>> userCreatedEvent() {
@@ -142,7 +159,9 @@ public class UserOnboardingSaga {
             log.error("Account opening failed for saga {}: {}", event.getSagaId().value(), event.getErrorMessage());
             
             sagaStateManager.failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), event);
-            sagaStateManager.failSaga(Long.valueOf(event.getSagaId().value()));
+            
+            // Trigger compensation: Delete the user that was created earlier using username
+            triggerDeleteUserCommand(Long.valueOf(event.getSagaId().value()), event.getUsername());
         };
     }
      @Bean
@@ -170,6 +189,30 @@ public class UserOnboardingSaga {
             sagaStateManager.failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), event);
             sagaStateManager.completeSaga(Long.valueOf(event.getSagaId().value()));
             log.info("User onboarding saga {} completed with notification failure (non-critical)", event.getSagaId().value());
+        };
+    }
+
+    @Bean
+    public Consumer<Message<UserDeletedEvent>> userDeletedEvent() {
+        return message -> {
+            UserDeletedEvent event = message.getPayload();
+            log.info("User deleted successfully for saga {} (compensation completed)", event.getSagaId().value());
+            
+            sagaStateManager.completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.DELETE_USER.getStepName(), event);
+            sagaStateManager.failSaga(Long.valueOf(event.getSagaId().value()));
+            log.info("User onboarding saga {} failed and compensation completed", event.getSagaId().value());
+        };
+    }
+
+    @Bean
+    public Consumer<Message<UserDeletionFailedEvent>> userDeletionFailedEvent() {
+        return message -> {
+            UserDeletionFailedEvent event = message.getPayload();
+            log.error("User deletion failed for saga {} (compensation failed): {}", event.getSagaId().value(), event.getErrorMessage());
+            
+            sagaStateManager.failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.DELETE_USER.getStepName(), event);
+            sagaStateManager.failSaga(Long.valueOf(event.getSagaId().value()));
+            log.error("User onboarding saga {} failed and compensation also failed - manual intervention required", event.getSagaId().value());
         };
     }
 }
