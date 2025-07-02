@@ -421,9 +421,10 @@ Processing sagas fully functional with proper event choreography, compensation l
 - **CLEANUP**: ✅ **COMPLETED** major cleanup of saga-orchestrator-service - removed legacy command/reply pattern:
   - ✅ **Simplified SagaOrchestratorImpl** - removed all legacy command/reply handling, kept only state management
   - ✅ **Updated SagaOrchestrator interface** - removed legacy `handleReply()` method
-  - ✅ **Removed legacy components**: `SagaConfig`, `SagaDefinition`, `SagaDefinitionRegistry`, `SagaStepDefinition`, `SagaReplyListener`, `StartSagaRequest` 
-  - ✅ **Cleaned up directory structure** - removed 6 empty directories (`definition/`, `listener/`, `dto/`, `config/`, `base/`, `orchestrator/`)
+  - ✅ **Removed legacy components**: `SagaConfig`, `SagaDefinition`, `SagaDefinitionRegistry`, `SagaStepDefinition`, `SagaReplyListener`, `StartSagaRequest`, unused `Command.java` interface
+  - ✅ **Cleaned up directory structure** - removed 7 empty directories (`definition/`, `listener/`, `dto/`, `config/`, `base/`, `orchestrator/`, `command/`)
   - ✅ **Updated application.yml** - removed legacy `sagaReplyListener-in-0` binding, kept only modern event listeners
-  - ✅ **Architecture simplification** - 33% reduction in codebase (18→12 Java files) while maintaining full functionality
+  - ✅ **Architecture simplification** - 39% reduction in codebase (19→12 Java files) while maintaining full functionality
   - ✅ **Verified build success** - saga-orchestrator-service compiles cleanly after cleanup
   - ✅ **Single pattern approach** - now uses only modern command/event pattern, removed dual approach complexity
+  - ✅ **Command framework cleanup** - removed unused local Command interface (saga uses `common-lib` commands instead)
