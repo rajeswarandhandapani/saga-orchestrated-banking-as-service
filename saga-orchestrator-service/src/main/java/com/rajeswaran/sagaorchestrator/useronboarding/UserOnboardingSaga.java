@@ -1,4 +1,4 @@
-package com.rajeswaran.saga.useronboarding;
+package com.rajeswaran.sagaorchestrator.useronboarding;
 
 import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.saga.SagaId;
@@ -12,9 +12,9 @@ import com.rajeswaran.common.useronboarding.events.UserCreationFailedEvent;
 import com.rajeswaran.common.useronboarding.events.WelcomeNotificationSentEvent;
 import com.rajeswaran.common.useronboarding.events.WelcomeNotificationFailedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
-import com.rajeswaran.saga.model.SagaStepStatus;
-import com.rajeswaran.saga.model.SagaStatus;
-import com.rajeswaran.saga.service.SagaOrchestrator;
+import com.rajeswaran.sagaorchestrator.model.SagaStepStatus;
+import com.rajeswaran.sagaorchestrator.model.SagaStatus;
+import com.rajeswaran.sagaorchestrator.service.SagaOrchestrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;

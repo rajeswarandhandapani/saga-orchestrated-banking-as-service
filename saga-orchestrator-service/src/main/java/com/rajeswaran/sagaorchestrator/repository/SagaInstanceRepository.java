@@ -1,6 +1,6 @@
-package com.rajeswaran.saga.repository;
+package com.rajeswaran.sagaorchestrator.repository;
 
-import com.rajeswaran.saga.entity.SagaInstance;
+import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

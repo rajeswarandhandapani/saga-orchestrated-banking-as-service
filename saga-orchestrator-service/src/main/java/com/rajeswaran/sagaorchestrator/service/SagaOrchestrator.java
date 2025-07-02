@@ -1,8 +1,8 @@
-package com.rajeswaran.saga.service;
+package com.rajeswaran.sagaorchestrator.service;
 
-import com.rajeswaran.saga.entity.SagaInstance;
-import com.rajeswaran.saga.model.SagaStatus;
-import com.rajeswaran.saga.model.SagaStepStatus;
+import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
+import com.rajeswaran.sagaorchestrator.model.SagaStatus;
+import com.rajeswaran.sagaorchestrator.model.SagaStepStatus;
 
 import java.util.Map;
 

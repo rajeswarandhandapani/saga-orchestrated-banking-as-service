@@ -1,8 +1,8 @@
-package com.rajeswaran.saga.repository;
+package com.rajeswaran.sagaorchestrator.repository;
 
-import com.rajeswaran.saga.entity.SagaInstance;
-import com.rajeswaran.saga.entity.SagaStepInstance;
-import com.rajeswaran.saga.model.SagaStepStatus;
+import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
+import com.rajeswaran.sagaorchestrator.entity.SagaStepInstance;
+import com.rajeswaran.sagaorchestrator.model.SagaStepStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

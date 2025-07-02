@@ -1,6 +1,6 @@
-package com.rajeswaran.saga.entity;
+package com.rajeswaran.sagaorchestrator.entity;
 
-import com.rajeswaran.saga.model.SagaStepStatus;
+import com.rajeswaran.sagaorchestrator.model.SagaStepStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

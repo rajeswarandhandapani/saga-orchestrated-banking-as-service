@@ -1,10 +1,10 @@
-package com.rajeswaran.saga.controller;
+package com.rajeswaran.sagaorchestrator.controller;
 
 import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.saga.entity.SagaInstance;
-import com.rajeswaran.saga.service.SagaOrchestrator;
-import com.rajeswaran.saga.useronboarding.UserOnboardingSaga;
+import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
+import com.rajeswaran.sagaorchestrator.service.SagaOrchestrator;
+import com.rajeswaran.sagaorchestrator.useronboarding.UserOnboardingSaga;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

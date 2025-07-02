@@ -1,4 +1,4 @@
-package com.rajeswaran.saga.model;
+package com.rajeswaran.sagaorchestrator.model;
 
 public enum SagaStepStatus {
     STARTED,
