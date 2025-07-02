@@ -2,7 +2,7 @@ package com.rajeswaran.sagaorchestrator.service;
 
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 
-public interface SagaOrchestrator {
+public interface SagaStateManager {
 
     // Saga lifecycle
     SagaInstance startSaga(String sagaName);

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SagaOrchestratorImpl implements SagaOrchestrator {
+public class SagaStateManagerImpl implements SagaStateManager {
 
     private final SagaInstanceRepository sagaInstanceRepository;
     private final SagaStepInstanceRepository sagaStepInstanceRepository;
