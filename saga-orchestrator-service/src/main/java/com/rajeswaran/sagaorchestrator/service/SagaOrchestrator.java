@@ -1,22 +1,17 @@
 package com.rajeswaran.sagaorchestrator.service;
 
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
-import com.rajeswaran.sagaorchestrator.model.SagaStatus;
-import com.rajeswaran.sagaorchestrator.model.SagaStepStatus;
-
-import java.util.Map;
 
 public interface SagaOrchestrator {
 
-    SagaInstance startSaga(String sagaName, Map<String, Object> payload);
+    // Saga lifecycle
+    SagaInstance startSaga(String sagaName);
+    void completeSaga(Long sagaId);
+    void failSaga(Long sagaId);
     
-    // Methods for UserOnboardingSaga support
-    void recordStep(Long sagaId, String stepName, SagaStepStatus status, String payload);
-    
-    void updateStepStatus(Long sagaId, String stepName, SagaStepStatus status);
-    
-    void updateSagaState(Long sagaId, SagaStatus status);
-    
-    void compensate(Long sagaId);
+    // Step lifecycle (with mandatory payload for audit trail)
+    void startStep(Long sagaId, String stepName, String payload);
+    void completeStep(Long sagaId, String stepName, String payload);
+    void failStep(Long sagaId, String stepName, String errorMessage);
 
 }
