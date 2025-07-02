@@ -22,15 +22,21 @@ spring:
           destination: create-user-command
           group: user-service
           content-type: application/json
-        createUserCommand-out-0:
-          destination: saga-replies
-          content-type: application/json
         deleteUserCommand-in-0:
           destination: delete-user-command
           group: user-service
           content-type: application/json
-        deleteUserCommand-out-0:
-          destination: saga-replies
+        userCreatedEvent-out-0:
+          destination: user-created-event
+          content-type: application/json
+        userCreationFailedEvent-out-0:
+          destination: user-creation-failed-event
+          content-type: application/json
+        userDeletedEvent-out-0:
+          destination: user-deleted-event
+          content-type: application/json
+        userDeletionFailedEvent-out-0:
+          destination: user-deletion-failed-event
           content-type: application/json
       kafka:
         binder:

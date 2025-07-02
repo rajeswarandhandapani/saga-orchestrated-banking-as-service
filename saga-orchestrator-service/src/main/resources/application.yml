@@ -22,7 +22,7 @@ spring:
           # issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
   cloud:
     function:
-      definition: userCreatedEvent;userCreationFailedEvent;accountOpenedEvent;accountOpenFailedEvent;welcomeNotificationSentEvent;welcomeNotificationFailedEvent
+      definition: userCreatedEvent;userCreationFailedEvent;accountOpenedEvent;accountOpenFailedEvent;welcomeNotificationSentEvent;welcomeNotificationFailedEvent;userDeletedEvent;userDeletionFailedEvent
     stream:
       bindings:
         # Event listeners for UserOnboardingSaga
@@ -48,6 +48,14 @@ spring:
           content-type: application/json
         welcomeNotificationFailedEvent-in-0:
           destination: welcome-notification-failed-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        userDeletedEvent-in-0:
+          destination: user-deleted-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        userDeletionFailedEvent-in-0:
+          destination: user-deletion-failed-event
           group: saga-orchestrator-group
           content-type: application/json
 
