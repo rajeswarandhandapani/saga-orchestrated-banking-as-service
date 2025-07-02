@@ -1,9 +1,9 @@
 package com.rajeswaran.common.useronboarding.commands;
 
 import com.rajeswaran.common.command.BaseCommand;
-import com.rajeswaran.common.model.dto.UserDTO;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.SagaId;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,15 +22,15 @@ import java.time.Instant;
 @SuperBuilder
 public class CreateUserCommand extends BaseCommand {
     
-    @NotBlank
-    private UserDTO user;
+    @NotNull
+    private User user;
     
-    public CreateUserCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp, UserDTO user) {
+    public CreateUserCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp, User user) {
         super(commandId, sagaId, correlationId, timestamp);
         this.user = user;
     }
     
-    public static CreateUserCommand create(SagaId sagaId, String correlationId, UserDTO user) {
+    public static CreateUserCommand create(SagaId sagaId, String correlationId, User user) {
         return new CreateUserCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,

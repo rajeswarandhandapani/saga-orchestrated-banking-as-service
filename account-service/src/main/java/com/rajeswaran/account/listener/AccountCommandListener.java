@@ -30,15 +30,15 @@ public class AccountCommandListener {
         return message -> {
             OpenAccountCommand command = message.getPayload();
             log.info("Received OpenAccountCommand for saga {} and userId: {}", 
-                    command.getSagaId().value(), command.getUserId());
+                    command.getSagaId().value(), command.getUser().getUserId());
 
             try {
                 // Create account
                 Account account = new Account();
                 account.setAccountNumber(generateAccountNumber());
                 account.setAccountType(command.getAccountType());
-                account.setUserId(command.getUserId());
-                account.setUserName(command.getUserDto().getUsername());
+                account.setUserId(String.valueOf(command.getUser().getUserId()));
+                account.setUserName(command.getUser().getUsername());
                 account.setBalance(500.0); // Initial balance
                 account.setStatus("ACTIVE");
                 account.setCreatedTimestamp(LocalDateTime.now());
@@ -53,7 +53,7 @@ public class AccountCommandListener {
                     command.getSagaId(),
                     command.getCorrelationId(),
                     savedAccount.getId().toString(),
-                    command.getUserId(),
+                    String.valueOf(command.getUser().getUserId()),
                     command.getAccountType(),
                     savedAccount.getAccountNumber()
                 );
@@ -63,14 +63,14 @@ public class AccountCommandListener {
                 
             } catch (Exception e) {
                 log.error("Failed to create account for saga {}, userId: {}", 
-                         command.getSagaId().value(), command.getUserId(), e);
+                         command.getSagaId().value(), command.getUser().getUserId(), e);
                 
                 // Publish failure event
                 AccountOpenFailedEvent event = AccountOpenFailedEvent.create(
                     command.getSagaId(),
                     command.getCorrelationId(),
-                    command.getUserId(),
-                    command.getUserDto().getUsername(),
+                    String.valueOf(command.getUser().getUserId()),
+                    command.getUser().getUsername(),
                     "Failed to create account: " + e.getMessage()
                 );
                 

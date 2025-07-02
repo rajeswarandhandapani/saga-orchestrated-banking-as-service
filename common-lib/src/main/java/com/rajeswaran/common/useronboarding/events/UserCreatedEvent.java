@@ -1,7 +1,7 @@
 package com.rajeswaran.common.useronboarding.events;
 
 import com.rajeswaran.common.event.BaseEvent;
-import com.rajeswaran.common.model.dto.UserDTO;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,9 +25,9 @@ public class UserCreatedEvent extends BaseEvent {
     @NotBlank
     private String userId;
     @NotNull
-    private UserDTO user;
+    private User user;
 
-    public static UserCreatedEvent create(SagaId sagaId, String correlationId, String userId, UserDTO user) {
+    public static UserCreatedEvent create(SagaId sagaId, String correlationId, String userId, User user) {
         return UserCreatedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)

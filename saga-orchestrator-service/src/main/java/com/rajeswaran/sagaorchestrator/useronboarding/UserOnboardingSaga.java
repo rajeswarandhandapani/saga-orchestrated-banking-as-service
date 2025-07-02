@@ -1,6 +1,6 @@
 package com.rajeswaran.sagaorchestrator.useronboarding;
 
-import com.rajeswaran.common.model.dto.UserDTO;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.SagaId;
 import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
 import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
@@ -49,11 +49,11 @@ public class UserOnboardingSaga extends Saga {
     
     @Override
     public void startSagaFlow(Long sagaId, Object payload) {
-        if (payload instanceof UserDTO userDto) {
-            log.info("Starting user onboarding saga flow {} for user: {}", sagaId, userDto.getUsername());
-            triggerCreateUserCommand(sagaId, userDto);
+        if (payload instanceof User user) {
+            log.info("Starting user onboarding saga flow {} for user: {}", sagaId, user.getUsername());
+            triggerCreateUserCommand(sagaId, user);
         } else {
-            throw new IllegalArgumentException("UserOnboardingSaga requires UserDTO as payload, got: " + 
+            throw new IllegalArgumentException("UserOnboardingSaga requires User as payload, got: " + 
                 (payload != null ? payload.getClass().getSimpleName() : "null"));
         }
     }
@@ -65,14 +65,14 @@ public class UserOnboardingSaga extends Saga {
     
     // === COMMAND PRODUCERS (Triggers commands to other services) ===
     
-    private void triggerCreateUserCommand(Long sagaId, UserDTO userDto) {
-        log.info("Triggering CreateUserCommand for saga {} and user: {}", sagaId, userDto.getUsername());
+    private void triggerCreateUserCommand(Long sagaId, User user) {
+        log.info("Triggering CreateUserCommand for saga {} and user: {}", sagaId, user.getUsername());
         
         
         CreateUserCommand command = CreateUserCommand.create(
             SagaId.of(String.valueOf(sagaId)),
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            userDto
+            user
         );
 
         // Record step as STARTED before publishing command
@@ -81,15 +81,14 @@ public class UserOnboardingSaga extends Saga {
         streamBridge.send("createUserCommand-out-0", command);
     }
     
-    private void triggerOpenAccountCommand(Long sagaId, String userId, UserDTO userDto) {
-        log.info("Triggering OpenAccountCommand for saga {} and userId: {}", sagaId, userId);
+    private void triggerOpenAccountCommand(Long sagaId, User user) {
+        log.info("Triggering OpenAccountCommand for saga {} and userId: {}", sagaId, user.getUserId());
         
         OpenAccountCommand command = OpenAccountCommand.create(
             SagaId.of(String.valueOf(sagaId)),
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            userId,
             "SAVINGS",
-            userDto
+            user
         );
 
         // Record step as STARTED before publishing command
@@ -141,7 +140,7 @@ public class UserOnboardingSaga extends Saga {
             completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.CREATE_USER.getStepName(), event);
             
             // Proceed to next step: Open Account
-            triggerOpenAccountCommand(Long.valueOf(event.getSagaId().value()), event.getUserId(), event.getUser());
+            triggerOpenAccountCommand(Long.valueOf(event.getSagaId().value()), event.getUser());
         };
     }
 

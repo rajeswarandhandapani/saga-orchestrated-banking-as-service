@@ -1,7 +1,7 @@
 package com.rajeswaran.common.useronboarding.commands;
 
 import com.rajeswaran.common.command.BaseCommand;
-import com.rajeswaran.common.model.dto.UserDTO;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,32 +24,27 @@ import java.time.Instant;
 public class OpenAccountCommand extends BaseCommand {
     
     @NotBlank
-    private String userId;
-    
-    @NotBlank
     private String accountType;
     
     @NotNull
-    private UserDTO userDto;
+    private User user;
     
     public OpenAccountCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp,
-                            String userId, String accountType, UserDTO userDto) {
+                            String accountType, User user) {
         super(commandId, sagaId, correlationId, timestamp);
-        this.userId = userId;
         this.accountType = accountType;
-        this.userDto = userDto;
+        this.user = user;
     }
     
     public static OpenAccountCommand create(SagaId sagaId, String correlationId, 
-                                          String userId, String accountType, UserDTO userDto) {
+                                          String accountType, User user) {
         return new OpenAccountCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
             correlationId,
             Instant.now(),
-            userId,
             accountType,
-            userDto
+            user
         );
     }
 }

@@ -1,7 +1,7 @@
 package com.rajeswaran.payment.listener;
 
-import com.rajeswaran.common.events.AccountBalanceUpdatedEvent;
-import com.rajeswaran.common.events.PaymentProcessedEvent;
+import com.rajeswaran.common.payment.events.AccountBalanceUpdatedEvent;
+import com.rajeswaran.common.payment.events.PaymentProcessedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.payment.repository.PaymentRepository;

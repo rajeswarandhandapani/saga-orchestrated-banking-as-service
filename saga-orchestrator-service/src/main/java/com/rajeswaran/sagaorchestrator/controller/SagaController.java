@@ -1,6 +1,6 @@
 package com.rajeswaran.sagaorchestrator.controller;
 
-import com.rajeswaran.common.model.dto.UserDTO;
+import com.rajeswaran.common.entity.User;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 import com.rajeswaran.sagaorchestrator.useronboarding.UserOnboardingSaga;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +36,13 @@ public class SagaController {
         String email = "user1@example.com";
         String fullName = "User One";
 
-        UserDTO userDTO = UserDTO.builder()
-                .username(username)
-                .email(email)
-                .fullName(fullName)
-                .build();
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setFullName(fullName);
 
         // Use Saga interface to start saga with payload - this will automatically trigger the first command
-        SagaInstance sagaInstance = userOnboardingSaga.startSaga(userDTO);
+        SagaInstance sagaInstance = userOnboardingSaga.startSaga(user);
 
         log.info("User onboarding saga {} started for user: {}", sagaInstance.getId(), username);
         return ResponseEntity.accepted().body("User onboarding process started with saga ID: " + sagaInstance.getId());

@@ -1,7 +1,6 @@
 package com.rajeswaran.user.listener;
 
 import com.rajeswaran.common.entity.User;
-import com.rajeswaran.common.model.dto.UserDTO;
 import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
 import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
 import com.rajeswaran.common.useronboarding.events.UserCreatedEvent;
@@ -28,25 +27,25 @@ public class UserCommandListener {
     @Bean
     public Consumer<CreateUserCommand> createUserCommand() {
         return command -> {
-            UserDTO userDTO = command.getUser();
-            log.info("Received createUserCommand for saga {} and user: {}", command.getSagaId().value(), userDTO.getUsername());
+            User user = command.getUser();
+            log.info("Received createUserCommand for saga {} and user: {}", command.getSagaId().value(), user.getUsername());
             
             try {
-                User createdUser = userService.createUserFromJwt(userDTO.getUsername(), userDTO.getEmail(), userDTO.getFullName());
-                log.info("User {} created successfully for saga {}", userDTO.getUsername(), command.getSagaId().value());
+                User createdUser = userService.createUserFromJwt(user.getUsername(), user.getEmail(), user.getFullName());
+                log.info("User {} created successfully for saga {}", user.getUsername(), command.getSagaId().value());
                 
                 UserCreatedEvent event = UserCreatedEvent.create(
                     command.getSagaId(),
                     command.getCorrelationId(),
                     String.valueOf(createdUser.getUserId()),
-                    userDTO
+                    createdUser
                 );
                 
                 streamBridge.send("userCreatedEvent-out-0", event);
                 log.info("Published UserCreatedEvent for saga {} and userId: {}", command.getSagaId().value(), createdUser.getUserId());
                 
             } catch (Exception e) {
-                log.error("Failed to create user {} for saga {}: {}", userDTO.getUsername(), command.getSagaId().value(), e.getMessage(), e);
+                log.error("Failed to create user {} for saga {}: {}", user.getUsername(), command.getSagaId().value(), e.getMessage(), e);
                 
                 // Publish UserCreationFailedEvent
                 UserCreationFailedEvent event = UserCreationFailedEvent.create(
@@ -56,7 +55,7 @@ public class UserCommandListener {
                 );
                 
                 streamBridge.send("userCreationFailedEvent-out-0", event);
-                log.info("Published UserCreationFailedEvent for saga {} and user: {}", command.getSagaId().value(), userDTO.getUsername());
+                log.info("Published UserCreationFailedEvent for saga {} and user: {}", command.getSagaId().value(), user.getUsername());
             }
         };
     }
