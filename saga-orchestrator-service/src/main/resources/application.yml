@@ -66,14 +66,8 @@ spring:
           destination: delete-user-command
         accountOpenCommand-out-0:
           destination: account-open-command
-        closeAccountCommand-out-0:
-          destination: close-account-command
-        sendNotificationCommand-out-0:
-          destination: send-notification-command
         sendWelcomeNotificationCommand-out-0:
           destination: send-welcome-notification-command
-        cancelNotificationCommand-out-0:
-          destination: cancel-notification-command
 
       kafka:
         binder:

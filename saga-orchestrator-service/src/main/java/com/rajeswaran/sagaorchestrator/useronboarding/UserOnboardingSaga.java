@@ -94,7 +94,7 @@ public class UserOnboardingSaga extends Saga {
         // Record step as STARTED before publishing command
         startStep(sagaId, UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), command);
 
-        streamBridge.send("openAccountCommand-out-0", command);
+        streamBridge.send("accountOpenCommand-out-0", command);
     }
     
     private void triggerSendWelcomeNotificationCommand(Long sagaId, String userId, String email, String fullName) {
