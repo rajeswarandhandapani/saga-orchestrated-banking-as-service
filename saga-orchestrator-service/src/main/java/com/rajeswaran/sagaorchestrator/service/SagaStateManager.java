@@ -10,8 +10,8 @@ public interface SagaStateManager {
     void failSaga(Long sagaId);
     
     // Step lifecycle (with mandatory payload for audit trail)
-    void startStep(Long sagaId, String stepName, String payload);
-    void completeStep(Long sagaId, String stepName, String payload);
-    void failStep(Long sagaId, String stepName, String errorMessage);
+    void startStep(Long sagaId, String stepName, Object payload);
+    void completeStep(Long sagaId, String stepName, Object payload);
+    void failStep(Long sagaId, String stepName, Object errorMessage);
 
 }

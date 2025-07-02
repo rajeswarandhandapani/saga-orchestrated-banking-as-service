@@ -51,23 +51,23 @@ public class SagaStateManagerImpl implements SagaStateManager {
 
     @Override
     @Transactional
-    public void startStep(Long sagaId, String stepName, String payload) {
+    public void startStep(Long sagaId, String stepName, Object payload) {
         log.info("Starting step '{}' for saga {}", stepName, sagaId);
-        recordStep(sagaId, stepName, SagaStepStatus.STARTED, payload);
+        recordStep(sagaId, stepName, SagaStepStatus.STARTED, payload != null ? payload.toString() : "");
     }
 
     @Override
     @Transactional
-    public void completeStep(Long sagaId, String stepName, String payload) {
+    public void completeStep(Long sagaId, String stepName, Object payload) {
         log.info("Completing step '{}' for saga {}", stepName, sagaId);
-        updateStepStatus(sagaId, stepName, SagaStepStatus.COMPLETED, payload);
+        updateStepStatus(sagaId, stepName, SagaStepStatus.COMPLETED, payload != null ? payload.toString() : "");
     }
 
     @Override
     @Transactional
-    public void failStep(Long sagaId, String stepName, String errorMessage) {
+    public void failStep(Long sagaId, String stepName, Object errorMessage) {
         log.info("Failing step '{}' for saga {} with error: {}", stepName, sagaId, errorMessage);
-        updateStepStatus(sagaId, stepName, SagaStepStatus.FAILED, errorMessage);
+        updateStepStatus(sagaId, stepName, SagaStepStatus.FAILED, errorMessage != null ? errorMessage.toString() : "");
     }
 
     // Private helper methods
