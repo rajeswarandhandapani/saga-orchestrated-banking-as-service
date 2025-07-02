@@ -1,15 +1,14 @@
-We use Maven for managing our Java dependencies, not Maven.
-Always first exmplain me the solution before writing the code.
-Write code only after my approval.
-Always write code in small steps.
-This project uses Java 21, so make sure to use the correct version.
-If you need to use a library, first check if it is available in the Maven Central Repository
-and if it is not, ask me for approval before using it.
-when implementing a new feature, always make sure to follow the existing code style and patterns.
-Follow exisitng code structure and organization.
-Make sure to add dependencies to the parent pom.xml file for version mangement.
-If you need to add a new dependency, first check if it is already defined in the parent
-pom.xml file, if it is not, ask me for approval before adding it.
-Make sure to user latest Java 21 features and best practices.
-dont over complicate the code, keep it simple and readable. Only generate code that is necessary for the feature.
-Use lombok annotations to reduce boilerplate code.
+**Instructions for Code Generation and Contribution**
+
+1. We use Maven for managing Java dependencies.
+2. Always explain your solution before writing any code.
+3. Write code only after receiving my approval.
+4. Implement code in very small and incremental steps.
+5. Ensure all code is compatible with Java 21 and uses its latest features and best practices.
+6. Before using a library, verify that it is available in the Maven Central Repository. If it is not, request my approval before proceeding.
+7. When implementing new features, always follow the existing code style, structure, and patterns.
+8. Add new dependencies to the parent `pom.xml` file for version management.
+9. Before adding a new dependency, check if it is already defined in the parent `pom.xml`. If not, ask for my approval before adding it.
+10. Keep the code simple, readable, and only generate what is necessary for the feature.
+11. Use Lombok annotations to reduce boilerplate code.
+12. Don't over-engineer solutions; keep them straightforward and maintainable.
