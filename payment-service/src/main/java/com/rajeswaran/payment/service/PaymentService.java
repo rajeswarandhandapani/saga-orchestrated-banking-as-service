@@ -45,7 +45,7 @@ public class PaymentService {
         payment.setStatus("PENDING");
 
         Payment created = paymentRepository.save(payment);
-
+/* 
         PaymentInitiatedEvent event = PaymentInitiatedEvent.builder()
                 .paymentId(String.valueOf(created.getId()))
                 .sourceAccountNumber(created.getSourceAccountNumber())
@@ -59,7 +59,7 @@ public class PaymentService {
                 .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_INITIATED)
                 .build();
         streamBridge.send("paymentInitiatedEvent-out-0", event);
-        streamBridge.send("auditEvent-out-0", event);
+        streamBridge.send("auditEvent-out-0", event); */
         return created;
     }
 

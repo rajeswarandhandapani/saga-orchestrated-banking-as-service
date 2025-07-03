@@ -1,4 +1,4 @@
-package com.rajeswaran.audit.listener;
+/* package com.rajeswaran.audit.listener;
 
 import com.rajeswaran.common.entity.AuditLog;
 import com.rajeswaran.audit.service.AuditLogService;
@@ -37,3 +37,4 @@ public class AuditEventListener {
         };
     }
 }
+ */
