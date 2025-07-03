@@ -1,18 +1,18 @@
 package com.rajeswaran.user.controller;
 
-import com.rajeswaran.common.entity.User;
-import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.user.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.rajeswaran.common.entity.User;
+import com.rajeswaran.common.util.SecurityUtil;
+import com.rajeswaran.user.service.UserService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController

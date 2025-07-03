@@ -1,14 +1,13 @@
 package com.rajeswaran.common.event;
 
+import java.time.Instant;
+
 import com.rajeswaran.common.saga.SagaId;
+
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import java.time.Instant;
 
 /**
  * Base abstract class for all events with common fields.

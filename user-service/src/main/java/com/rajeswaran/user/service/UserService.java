@@ -1,24 +1,19 @@
 package com.rajeswaran.user.service;
 
-import com.rajeswaran.common.AppConstants;
-import com.rajeswaran.common.entity.User;
-import com.rajeswaran.common.util.SagaEventBuilderUtil;
-import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
+import org.springframework.stereotype.Service;
+
+import com.rajeswaran.common.entity.User;
+import com.rajeswaran.user.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final StreamBridge streamBridge;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();

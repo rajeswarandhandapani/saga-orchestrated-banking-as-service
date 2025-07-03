@@ -1,17 +1,17 @@
 package com.rajeswaran.common.useronboarding.events;
 
-import com.rajeswaran.common.event.BaseEvent;
+import java.time.Instant;
+
 import com.rajeswaran.common.entity.User;
+import com.rajeswaran.common.event.BaseEvent;
 import com.rajeswaran.common.saga.SagaId;
-import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import java.time.Instant;
 
 /**
  * Event indicating a user was successfully created.

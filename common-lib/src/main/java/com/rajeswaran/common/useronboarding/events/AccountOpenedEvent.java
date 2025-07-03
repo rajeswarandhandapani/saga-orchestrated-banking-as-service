@@ -1,18 +1,18 @@
 package com.rajeswaran.common.useronboarding.events;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import com.rajeswaran.common.entity.Account;
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.event.BaseEvent;
 import com.rajeswaran.common.saga.SagaId;
-import jakarta.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Event indicating an account was successfully opened.
