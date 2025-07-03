@@ -13,15 +13,27 @@ package com.rajeswaran.sagaorchestrator.constants;
  * @since 1.0.0
  */
 public final class SagaConstants {
-    
     private SagaConstants() {
         // Utility class - prevent instantiation
     }
-    
+
     /**
      * User onboarding saga name used for creating user accounts,
      * opening bank accounts, and sending welcome notifications.
      */
     public static final String USER_ONBOARDING_SAGA = "user-onboarding-saga";
-    
+
+    public enum SagaStepStatus {
+        STARTED,
+        COMPLETED,
+        FAILED,
+        COMPENSATED
+    }
+
+    public enum SagaStatus {
+        IN_PROGRESS,
+        COMPLETED,
+        FAILED,
+        ROLLED_BACK
+    }
 }

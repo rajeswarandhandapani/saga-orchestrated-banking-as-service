@@ -1,6 +1,6 @@
 package com.rajeswaran.sagaorchestrator.entity;
 
-import com.rajeswaran.sagaorchestrator.model.SagaStepStatus;
+import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +32,7 @@ public class SagaStepInstance {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private SagaStepStatus status;
+    private SagaConstants.SagaStepStatus status;
 
     @Lob
     @Column(name = "payload", columnDefinition = "TEXT")

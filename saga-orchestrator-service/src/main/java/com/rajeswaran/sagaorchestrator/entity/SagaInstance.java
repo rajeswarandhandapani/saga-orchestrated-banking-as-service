@@ -1,6 +1,6 @@
 package com.rajeswaran.sagaorchestrator.entity;
 
-import com.rajeswaran.sagaorchestrator.model.SagaStatus;
+import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +31,7 @@ public class SagaInstance {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private SagaStatus status;
+    private SagaConstants.SagaStatus status;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
