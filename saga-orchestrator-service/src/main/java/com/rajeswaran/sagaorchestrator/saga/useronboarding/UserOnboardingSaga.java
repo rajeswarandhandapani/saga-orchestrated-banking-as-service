@@ -1,4 +1,4 @@
-package com.rajeswaran.sagaorchestrator.useronboarding;
+package com.rajeswaran.sagaorchestrator.saga.useronboarding;
 
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.SagaId;

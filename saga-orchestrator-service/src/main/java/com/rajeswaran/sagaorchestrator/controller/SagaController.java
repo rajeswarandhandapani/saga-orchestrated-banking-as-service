@@ -2,7 +2,8 @@ package com.rajeswaran.sagaorchestrator.controller;
 
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
-import com.rajeswaran.sagaorchestrator.useronboarding.UserOnboardingSaga;
+import com.rajeswaran.sagaorchestrator.saga.useronboarding.UserOnboardingSaga;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

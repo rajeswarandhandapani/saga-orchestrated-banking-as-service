@@ -1,4 +1,4 @@
-package com.rajeswaran.sagaorchestrator.useronboarding;
+package com.rajeswaran.sagaorchestrator.saga.useronboarding;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
