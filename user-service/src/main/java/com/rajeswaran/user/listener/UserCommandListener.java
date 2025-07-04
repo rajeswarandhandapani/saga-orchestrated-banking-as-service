@@ -31,7 +31,7 @@ public class UserCommandListener {
             log.info("Received createUserCommand for saga {} and user: {}", command.getSagaId(), user.getUsername());
             
             try {
-                User createdUser = userService.createUserFromJwt(user.getUsername(), user.getEmail(), user.getFullName());
+                User createdUser = userService.createUser(user);
                 log.info("User {} created successfully for saga {}", user.getUsername(), command.getSagaId());
                 
                 UserCreatedEvent event = UserCreatedEvent.create(

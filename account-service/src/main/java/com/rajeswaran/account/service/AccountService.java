@@ -30,11 +30,6 @@ public class AccountService {
         if (account.getCreatedTimestamp() == null) {
             account.setCreatedTimestamp(LocalDateTime.now());
         }
-        
-        // mimic exception for testing
-         /*if (!account.getAccountNumber().equals("1234567890")) {
-             throw new RuntimeException("Simulated exception for testing");
-         }*/
         return accountRepository.save(account);
     }
 

@@ -27,8 +27,8 @@ spring:
           uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/api/notifications/**
-        - id: saga-orchestrator
-          uri: lb://SAGA-ORCHESTRATOR
+        - id: saga-orchestrator-service
+          uri: lb://SAGA-ORCHESTRATOR-SERVICE
           predicates:
             - Path=/api/saga/**
   security:
