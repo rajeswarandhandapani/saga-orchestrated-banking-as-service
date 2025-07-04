@@ -2,11 +2,11 @@ package com.rajeswaran.sagaorchestrator.saga.useronboarding;
 
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.SagaId;
-import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
-import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
-import com.rajeswaran.common.useronboarding.commands.OpenAccountCommand;
-import com.rajeswaran.common.useronboarding.commands.SendNotificationCommand;
-import com.rajeswaran.common.useronboarding.events.*;
+import com.rajeswaran.common.saga.useronboarding.commands.CreateUserCommand;
+import com.rajeswaran.common.saga.useronboarding.commands.DeleteUserCommand;
+import com.rajeswaran.common.saga.useronboarding.commands.OpenAccountCommand;
+import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
+import com.rajeswaran.common.saga.useronboarding.events.*;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import com.rajeswaran.sagaorchestrator.saga.Saga;
