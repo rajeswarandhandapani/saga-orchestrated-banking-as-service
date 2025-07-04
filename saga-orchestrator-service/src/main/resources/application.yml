@@ -80,6 +80,8 @@ spring:
           destination: validate-payment-command
         processPaymentCommand-out-0:
           destination: process-payment-command
+        recordTransactionCommand-out-0:
+          destination: record-transaction-command
 
       kafka:
         binder:

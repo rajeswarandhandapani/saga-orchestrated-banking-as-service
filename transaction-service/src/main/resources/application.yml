@@ -29,6 +29,16 @@ spring:
         auditEvent-out-0:
           destination: audit-events
           content-type: application/json
+        recordTransactionCommand-in-0:
+          destination: record-transaction-command
+          group: transaction-service
+          content-type: application/json
+        transactionRecordedEvent-out-0:
+          destination: transaction-recorded-event
+          content-type: application/json
+        transactionFailedEvent-out-0:
+          destination: transaction-failed-event
+          content-type: application/json
       kafka:
         binder:
           brokers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
