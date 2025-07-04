@@ -30,21 +30,12 @@ public class PaymentService {
     }
 
     public Payment createPayment(Payment payment) {
-        // Use SecurityContextHolder here, not in common-lib
-        String username = SecurityUtil.getCurrentUsername();
-
-        // Set the createdBy field to track which user created this payment
-        payment.setCreatedBy(username);
-        
-        // Set the timestamp when creating the payment
         payment.setTimestamp(LocalDateTime.now());
         
-        // Set initial status as PENDING
         payment.setStatus("PENDING");
 
-        Payment created = paymentRepository.save(payment);
 
-        return created;
+        return paymentRepository.save(payment);
     }
 
     public void deletePayment(Long id) {
