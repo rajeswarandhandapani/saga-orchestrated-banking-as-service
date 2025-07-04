@@ -1,7 +1,10 @@
 package com.rajeswaran.sagaorchestrator.saga.payment;
 
-import com.rajeswaran.common.saga.payment.commands.*;
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
+import com.rajeswaran.common.saga.payment.commands.ProcessPaymentCommand;
+import com.rajeswaran.common.saga.payment.commands.RecordTransactionCommand;
+import com.rajeswaran.common.saga.payment.commands.ValidatePaymentCommand;
 import com.rajeswaran.common.saga.payment.events.*;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
@@ -40,9 +43,9 @@ public class PaymentProcessingSaga extends Saga {
 
     @Override
     public void startSagaFlow(Long sagaId, Object payload) {
-        if (payload instanceof PaymentRequest paymentRequest) {
-            log.info("Starting payment processing saga flow {} for payment: {}", sagaId, paymentRequest.getPaymentId());
-            triggerValidatePaymentCommand(sagaId, paymentRequest);
+        if (payload instanceof Payment payment) {
+            log.info("Starting payment processing saga flow {} for payment: {}", sagaId, payment);
+            triggerValidatePaymentCommand(sagaId, payment);
         } else {
             throw new IllegalArgumentException("PaymentProcessingSaga requires PaymentRequest as payload, got: " +
                 (payload != null ? payload.getClass().getSimpleName() : "null"));
@@ -56,18 +59,13 @@ public class PaymentProcessingSaga extends Saga {
 
     // === COMMAND PRODUCERS (Triggers commands to other services) ===
 
-    private void triggerValidatePaymentCommand(Long sagaId, PaymentRequest paymentRequest) {
-        log.info("Triggering ValidatePaymentCommand for saga {} and payment: {}", sagaId, paymentRequest.getPaymentId());
+    private void triggerValidatePaymentCommand(Long sagaId, Payment payment) {
+        log.info("Triggering ValidatePaymentCommand for saga {} and payment: {}", sagaId, payment);
 
         ValidatePaymentCommand command = ValidatePaymentCommand.create(
             sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            paymentRequest.getPaymentId(),
-            paymentRequest.getSourceAccountNumber(),
-            paymentRequest.getDestinationAccountNumber(),
-            paymentRequest.getAmount(),
-            paymentRequest.getDescription(),
-            paymentRequest.getUsername()
+            payment
         );
 
         // Record step as STARTED before publishing command
@@ -76,19 +74,13 @@ public class PaymentProcessingSaga extends Saga {
         streamBridge.send("validatePaymentCommand-out-0", command);
     }
 
-    private void triggerProcessPaymentCommand(Long sagaId, String paymentId, String sourceAccount,
-                                             String destinationAccount, double amount, String description, String username) {
-        log.info("Triggering ProcessPaymentCommand for saga {} and payment: {}", sagaId, paymentId);
+    private void triggerProcessPaymentCommand(Long sagaId, Payment payment) {
+        log.info("Triggering ProcessPaymentCommand for saga {} and payment: {}", sagaId, payment);
 
         ProcessPaymentCommand command = ProcessPaymentCommand.create(
             sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            paymentId,
-            sourceAccount,
-            destinationAccount,
-            amount,
-            description,
-            username
+            payment
         );
 
         // Record step as STARTED before publishing command
@@ -97,19 +89,13 @@ public class PaymentProcessingSaga extends Saga {
         streamBridge.send("processPaymentCommand-out-0", command);
     }
 
-    private void triggerRecordTransactionCommand(Long sagaId, String paymentId, String sourceAccount,
-                                                String destinationAccount, double amount, String description) {
-        log.info("Triggering RecordTransactionCommand for saga {} and payment: {}", sagaId, paymentId);
+    private void triggerRecordTransactionCommand(Long sagaId, Payment payment) {
+        log.info("Triggering RecordTransactionCommand for saga {} and payment: {}", sagaId, payment);
 
         RecordTransactionCommand command = RecordTransactionCommand.create(
             sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
-            paymentId,
-            sourceAccount,
-            destinationAccount,
-            amount,
-            description,
-            "PAYMENT"
+            payment
         );
 
         // Record step as STARTED before publishing command
@@ -118,29 +104,7 @@ public class PaymentProcessingSaga extends Saga {
         streamBridge.send("recordTransactionCommand-out-0", command);
     }
 
-    private void triggerSendNotificationCommand(Long sagaId, String userEmail, String paymentId,
-                                               double amount, String sourceAccount, String destinationAccount) {
-        log.info("Triggering SendNotificationCommand for saga {} and payment: {}", sagaId, paymentId);
 
-        String subject = "Payment Processed Successfully";
-        String message = String.format(
-            "Your payment of $%.2f from account %s to account %s has been processed successfully. Payment ID: %s",
-            amount, sourceAccount, destinationAccount, paymentId
-        );
-
-        SendNotificationCommand command = SendNotificationCommand.create(
-            sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
-            userEmail,
-            subject,
-            message
-        );
-
-        // Record step as STARTED before publishing command
-        startStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
-
-        streamBridge.send("sendNotificationCommand-out-0", command);
-    }
 
     // === EVENT LISTENERS (Responds to events from other services) ===
 
@@ -151,17 +115,17 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<PaymentValidatedEvent>> paymentValidatedEvent() {
         return message -> {
             PaymentValidatedEvent event = message.getPayload();
+            Payment payment = event.getPayment();
             Long sagaId = event.getSagaId();
 
-            log.info("Received PaymentValidatedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
+            log.info("Received PaymentValidatedEvent for saga {}, payment: {}", sagaId, payment.getId());
 
             try {
                 // Complete current step
                 completeStep(sagaId, PaymentProcessingSteps.VALIDATE_PAYMENT.getStepName(), event);
 
                 // Proceed to next step: Process Payment
-                triggerProcessPaymentCommand(sagaId, event.getPaymentId(), event.getSourceAccountNumber(),
-                    event.getDestinationAccountNumber(), event.getAmount(), event.getDescription(), event.getUsername());
+                triggerProcessPaymentCommand(sagaId, payment);
 
             } catch (Exception e) {
                 log.error("Error processing PaymentValidatedEvent for saga {}: {}", sagaId, e.getMessage(), e);
@@ -180,7 +144,7 @@ public class PaymentProcessingSaga extends Saga {
             Long sagaId = event.getSagaId();
 
             log.error("Received PaymentValidationFailedEvent for saga {}, payment: {}, reason: {}",
-                sagaId, event.getPaymentId(), event.getReason());
+                sagaId, event.getPayment().getId(), event.getReason());
 
             try {
                 // Mark step as failed
@@ -202,17 +166,17 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<PaymentProcessedEvent>> paymentProcessedEvent() {
         return message -> {
             PaymentProcessedEvent event = message.getPayload();
+            Payment payment = event.getPayment();
             Long sagaId = event.getSagaId();
 
-            log.info("Received PaymentProcessedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
+            log.info("Received PaymentProcessedEvent for saga {}, payment: {}", sagaId, payment);
 
             try {
                 // Complete current step
                 completeStep(sagaId, PaymentProcessingSteps.PROCESS_PAYMENT.getStepName(), event);
 
                 // Proceed to next step: Record Transaction (skip UpdateAccountBalanceCommand)
-                triggerRecordTransactionCommand(sagaId, event.getPaymentId(), event.getSourceAccountNumber(),
-                    event.getDestinationAccountNumber(), event.getAmount(), event.getDescription());
+                triggerRecordTransactionCommand(sagaId, payment);
 
             } catch (Exception e) {
                 log.error("Error processing PaymentProcessedEvent for saga {}: {}", sagaId, e.getMessage(), e);
@@ -231,7 +195,7 @@ public class PaymentProcessingSaga extends Saga {
             Long sagaId = event.getSagaId();
 
             log.error("Received PaymentFailedEvent for saga {}, payment: {}, reason: {}",
-                sagaId, event.getPaymentId(), event.getReason());
+                sagaId, event.getPayment().getId(), event.getReason());
 
             try {
                 // Mark step as failed
@@ -253,18 +217,23 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<TransactionRecordedEvent>> transactionRecordedEvent() {
         return message -> {
             TransactionRecordedEvent event = message.getPayload();
+            Payment payment = event.getPayment();
             Long sagaId = event.getSagaId();
 
-            log.info("Received TransactionRecordedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
+            log.info("Received TransactionRecordedEvent for saga {}, payment: {}", sagaId, payment);
 
             try {
                 // Complete current step
                 completeStep(sagaId, PaymentProcessingSteps.RECORD_TRANSACTION.getStepName(), event);
 
+                String subject = "Payment Processed Successfully";
+                String notificationMessage = String.format(
+                        "Your payment of $%.2f from account %s to account %s has been processed successfully. Payment ID: %s",
+                        payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(), payment.getId()
+                );
+
                 // Trigger notification (fire-and-forget)
-                triggerSendNotificationCommand(sagaId, "getUserEmailFromSagaContext(sagaId)",
-                    event.getPaymentId(), event.getAmount(),
-                    event.getSourceAccountNumber(), event.getDestinationAccountNumber());
+                triggerSendNotificationCommand(sagaId, payment.getCreatedBy(), subject, notificationMessage);
 
                 // Mark saga as complete after notification is triggered
                 completeSaga(sagaId);
@@ -283,20 +252,24 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<TransactionFailedEvent>> transactionFailedEvent() {
         return message -> {
             TransactionFailedEvent event = message.getPayload();
+            Payment payment = event.getPayment();
             Long sagaId = event.getSagaId();
 
             log.error("Received TransactionFailedEvent for saga {}, payment: {}, reason: {}",
-                sagaId, event.getPaymentId(), event.getReason());
+                sagaId, payment.getId(), event.getReason());
 
             try {
                 // Mark step as failed
                 failStep(sagaId, PaymentProcessingSteps.RECORD_TRANSACTION.getStepName(), event);
 
-                // Transaction recording failed but payment and balance update succeeded
-                // Continue with notification but include warning about audit trail
-                String userEmail = "getUserEmailFromSagaContext(sagaId)";
-                triggerSendNotificationCommand(sagaId, userEmail, event.getPaymentId(),
-                    event.getAmount(), event.getSourceAccountNumber(), event.getDestinationAccountNumber());
+
+                String subject = "Payment Processing Failed";
+                String notificationMessage = String.format(
+                        "Your payment of $%.2f from account %s to account %s failed to process. Payment ID: %s",
+                        payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(), payment.getId()
+                );
+
+                triggerSendNotificationCommand(sagaId, payment.getCreatedBy(), subject, notificationMessage);
 
             } catch (Exception e) {
                 log.error("Error processing TransactionFailedEvent for saga {}: {}", sagaId, e.getMessage(), e);

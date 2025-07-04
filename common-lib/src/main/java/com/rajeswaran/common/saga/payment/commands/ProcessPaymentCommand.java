@@ -1,8 +1,7 @@
 package com.rajeswaran.common.saga.payment.commands;
 
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.saga.command.BaseCommand;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,48 +20,20 @@ import java.time.Instant;
 @SuperBuilder
 public class ProcessPaymentCommand extends BaseCommand {
 
-    @NotBlank
-    private String paymentId;
+    Payment payment;
 
-    @NotBlank
-    private String sourceAccountNumber;
-
-    @NotBlank
-    private String destinationAccountNumber;
-
-    @Positive
-    private double amount;
-
-    private String description;
-
-    private String username;
-
-    public ProcessPaymentCommand(String commandId, Long sagaId, String correlationId, Instant timestamp,
-                                String paymentId, String sourceAccountNumber, String destinationAccountNumber,
-                                double amount, String description, String username) {
+    public ProcessPaymentCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, Payment payment) {
         super(commandId, sagaId, correlationId, timestamp);
-        this.paymentId = paymentId;
-        this.sourceAccountNumber = sourceAccountNumber;
-        this.destinationAccountNumber = destinationAccountNumber;
-        this.amount = amount;
-        this.description = description;
-        this.username = username;
+        this.payment = payment;
     }
 
-    public static ProcessPaymentCommand create(Long sagaId, String correlationId, String paymentId,
-                                              String sourceAccountNumber, String destinationAccountNumber,
-                                              double amount, String description, String username) {
+    public static ProcessPaymentCommand create(Long sagaId, String correlationId, Payment payment) {
         return new ProcessPaymentCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
             correlationId,
             Instant.now(),
-            paymentId,
-            sourceAccountNumber,
-            destinationAccountNumber,
-            amount,
-            description,
-            username
+            payment
         );
     }
 }

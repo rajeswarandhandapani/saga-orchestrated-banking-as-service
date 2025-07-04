@@ -22,7 +22,7 @@ import java.time.Instant;
 public class SendNotificationCommand extends BaseCommand {
 
     @NotBlank
-    private String email;
+    private String userName;
 
     @NotBlank
     private String subject;
@@ -30,20 +30,20 @@ public class SendNotificationCommand extends BaseCommand {
     @NotBlank
     private String message;
 
-    public SendNotificationCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, String email, String subject, String message) {
+    public SendNotificationCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, String userName, String subject, String message) {
         super(commandId, sagaId, correlationId, timestamp);
-        this.email = email;
+        this.userName = userName;
         this.subject = subject;
         this.message = message;
     }
 
-    public static SendNotificationCommand create(Long sagaId, String correlationId, String email, String subject, String message) {
+    public static SendNotificationCommand create(Long sagaId, String correlationId, String userName, String subject, String message) {
         return new SendNotificationCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
             correlationId,
             Instant.now(),
-            email,
+            userName,
             subject,
             message
         );

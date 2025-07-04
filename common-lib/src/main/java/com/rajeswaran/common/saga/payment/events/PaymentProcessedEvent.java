@@ -1,8 +1,7 @@
 package com.rajeswaran.common.saga.payment.events;
 
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.saga.event.BaseEvent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,36 +18,15 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class PaymentProcessedEvent extends BaseEvent {
 
-    @NotBlank
-    private String paymentId;
+    Payment payment;
 
-    @NotBlank
-    private String sourceAccountNumber;
-
-    @NotBlank
-    private String destinationAccountNumber;
-
-    @Positive
-    private double amount;
-
-    private String description;
-
-    private String username;
-
-    public static PaymentProcessedEvent create(Long sagaId, String correlationId, String paymentId,
-                                              String sourceAccountNumber, String destinationAccountNumber,
-                                              double amount, String description, String username) {
+    public static PaymentProcessedEvent create(Long sagaId, String correlationId, Payment payment) {
         return PaymentProcessedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
             .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
-            .paymentId(paymentId)
-            .sourceAccountNumber(sourceAccountNumber)
-            .destinationAccountNumber(destinationAccountNumber)
-            .amount(amount)
-            .description(description)
-            .username(username)
+            .payment(payment)
             .build();
     }
 }

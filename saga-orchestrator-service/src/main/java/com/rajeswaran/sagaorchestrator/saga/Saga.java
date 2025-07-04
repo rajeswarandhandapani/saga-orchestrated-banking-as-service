@@ -1,8 +1,12 @@
 package com.rajeswaran.sagaorchestrator.saga;
 
+import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
+import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
+import com.rajeswaran.sagaorchestrator.saga.payment.PaymentProcessingSteps;
 import com.rajeswaran.sagaorchestrator.service.SagaStateManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 
 /**
@@ -15,6 +19,7 @@ import org.springframework.cloud.stream.function.StreamBridge;
  * @since 1.0.0
  */
 @RequiredArgsConstructor
+@Slf4j
 public abstract class Saga {
     
     protected final SagaStateManager sagaStateManager;
@@ -115,5 +120,23 @@ public abstract class Saga {
      */
     public void failStep(Long sagaId, String stepName, Object errorMessage) {
         sagaStateManager.failStep(sagaId, stepName, errorMessage);
+    }
+
+    protected void triggerSendNotificationCommand(Long sagaId, String userName, String subject, String message) {
+
+        log.info("Triggering SendNotificationCommand for saga {} and payment: {}", sagaId, subject);
+
+        SendNotificationCommand command = SendNotificationCommand.create(
+                sagaId,
+                SagaEventBuilderUtil.getCurrentCorrelationId(),
+                userName,
+                subject,
+                message
+        );
+
+        // Record step as STARTED before publishing command
+        startStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
+
+        streamBridge.send("sendNotificationCommand-out-0", command);
     }
 }

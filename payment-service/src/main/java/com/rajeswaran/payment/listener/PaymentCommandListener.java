@@ -1,5 +1,6 @@
 package com.rajeswaran.payment.listener;
 
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.saga.payment.commands.ValidatePaymentCommand;
 import com.rajeswaran.common.saga.payment.events.PaymentValidatedEvent;
 import com.rajeswaran.common.saga.payment.events.PaymentValidationFailedEvent;
@@ -31,37 +32,28 @@ public class PaymentCommandListener {
     public Consumer<Message<ValidatePaymentCommand>> validatePaymentCommand() {
         return message -> {
             ValidatePaymentCommand command = message.getPayload();
-            log.info("Received ValidatePaymentCommand for saga {} and payment: {}", command.getSagaId(), command.getPaymentId());
+            Payment payment = command.getPayment();
+            log.info("Received ValidatePaymentCommand for saga {} and payment: {}", command.getSagaId(), payment);
 
             // Basic validation placeholder (always succeeds for now)
-            boolean valid = command.getAmount() > 0 && command.getSourceAccountNumber() != null && command.getDestinationAccountNumber() != null;
+            boolean valid = payment.getAmount() > 0 && payment.getSourceAccountNumber() != null && payment.getDestinationAccountNumber() != null;
 
             if (valid) {
                 PaymentValidatedEvent event = PaymentValidatedEvent.create(
                     command.getSagaId(),
                     command.getCorrelationId(),
-                    command.getPaymentId(),
-                    command.getSourceAccountNumber(),
-                    command.getDestinationAccountNumber(),
-                    command.getAmount(),
-                    command.getDescription(),
-                    command.getUsername()
+                    payment
                 );
                 streamBridge.send("paymentValidatedEvent-out-0", event);
-                log.info("Published PaymentValidatedEvent for saga {} and payment: {}", command.getSagaId(), command.getPaymentId());
+                log.info("Published PaymentValidatedEvent for saga {} and payment: {}", command.getSagaId(), payment);
             } else {
                 PaymentValidationFailedEvent event = PaymentValidationFailedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
-                    command.getPaymentId(),
-                    command.getSourceAccountNumber(),
-                    command.getDestinationAccountNumber(),
-                    command.getAmount(),
-                    "Validation failed: Invalid amount or account information",
-                    command.getUsername()
+                    command.getCorrelationId(), payment,
+                    "Validation failed: Invalid amount or account information"
                 );
                 streamBridge.send("paymentValidationFailedEvent-out-0", event);
-                log.warn("Published PaymentValidationFailedEvent for saga {} and payment: {}", command.getSagaId(), command.getPaymentId());
+                log.warn("Published PaymentValidationFailedEvent for saga {} and payment: {}", command.getSagaId(), payment.getId());
             }
         };
     }

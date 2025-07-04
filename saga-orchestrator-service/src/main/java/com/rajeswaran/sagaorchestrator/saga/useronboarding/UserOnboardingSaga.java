@@ -89,25 +89,6 @@ public class UserOnboardingSaga extends Saga {
         streamBridge.send("accountOpenCommand-out-0", command);
     }
     
-    private void triggerSendWelcomeNotificationCommand(Long sagaId, String userName, String email, String fullName, String accountNumber) {
-        log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userName);
-        
-       SendNotificationCommand command = SendNotificationCommand.create(
-            sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
-            email,
-            "Welcome to BaaS Banking Service",
-            String.format("Hello %s,\n\nWelcome to  BaaS Banking service! Your account number is %s.\n\nBest regards,\nYour Company", fullName, accountNumber)
-       );
-
-        // Record step as STARTED before publishing command
-        startStep(sagaId, UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), command);
-        completeStep(sagaId, UserOnboardingSteps.SEND_NOTIFICATION.getStepName(), command);
-        completeSaga(sagaId);
-        
-        streamBridge.send("sendNotificationCommand-out-0", command);
-    }
-    
     private void triggerDeleteUserCommand(Long sagaId, String username) {
         log.info("Triggering DeleteUserCommand for saga {} and username: {} (compensation)", sagaId, username);
         
@@ -160,7 +141,15 @@ public class UserOnboardingSaga extends Saga {
             // Proceed to next step: Send Welcome Notification
             // We need email and fullName, but they're not in AccountOpenedEvent, so we'll use userId for now
             User user = event.getUser();
-            triggerSendWelcomeNotificationCommand(event.getSagaId(), user.getUsername(), user.getFullName(), user.getEmail(), event.getAccount().getAccountNumber());
+
+            String subject = "Welcome to BaaS Banking Service";
+            String notificationMessage = String.format("Hello %s,\n\nWelcome to  BaaS Banking service! Your account number is %s.\n\nBest regards,\nYour Company", user.getFullName(), event.getAccount().getAccountNumber());
+
+            triggerSendNotificationCommand(event.getSagaId(), user.getUsername(), subject, notificationMessage);
+
+            // Record step as STARTED before publishing command
+            completeSaga(event.getSagaId());
+
         };
     }
 

@@ -1,9 +1,10 @@
 package com.rajeswaran.transaction.listener;
 
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.entity.Transaction;
 import com.rajeswaran.common.saga.payment.commands.RecordTransactionCommand;
-import com.rajeswaran.common.saga.payment.events.TransactionRecordedEvent;
 import com.rajeswaran.common.saga.payment.events.TransactionFailedEvent;
+import com.rajeswaran.common.saga.payment.events.TransactionRecordedEvent;
 import com.rajeswaran.transaction.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,16 +28,17 @@ public class TransactionCommandListener {
     public Consumer<Message<RecordTransactionCommand>> recordTransactionCommand() {
         return message -> {
             RecordTransactionCommand cmd = message.getPayload();
-            log.info("[Transaction] Received RecordTransactionCommand for saga {} and payment: {}", cmd.getSagaId(), cmd.getPaymentId());
+            Payment payment = cmd.getPayment();
+            log.info("[Transaction] Received RecordTransactionCommand for saga {} and payment: {}", cmd.getSagaId(), payment);
             try {
                 // Map RecordTransactionCommand to Transaction entity and persist
                 Transaction transaction = new Transaction();
-                transaction.setAccountNumber(cmd.getSourceAccountNumber());
-                transaction.setAmount(cmd.getAmount());
+                transaction.setAccountNumber(payment.getSourceAccountNumber());
+                transaction.setAmount(payment.getAmount());
                 transaction.setType("PAYMENT");
-                transaction.setDescription(cmd.getDescription());
+                transaction.setDescription(payment.getDescription());
                 transaction.setStatus("COMPLETED");
-                transaction.setReference("Payment ID: " + cmd.getPaymentId());
+                transaction.setReference("Payment ID: " + payment.getId());
                 transaction.setTimestamp(LocalDateTime.now());
                 // Optionally set username and balance if available in cmd
                 transactionRepository.save(transaction);
@@ -44,12 +46,12 @@ public class TransactionCommandListener {
 
                 // Also persist destination transaction
                 Transaction destTransaction = new Transaction();
-                destTransaction.setAccountNumber(cmd.getDestinationAccountNumber());
-                destTransaction.setAmount(cmd.getAmount());
+                destTransaction.setAccountNumber(payment.getDestinationAccountNumber());
+                destTransaction.setAmount(payment.getAmount());
                 destTransaction.setType("PAYMENT_RECEIVED");
-                destTransaction.setDescription(cmd.getDescription());
+                destTransaction.setDescription(payment.getDescription());
                 destTransaction.setStatus("COMPLETED");
-                destTransaction.setReference("Payment ID: " + cmd.getPaymentId());
+                destTransaction.setReference("Payment ID: " + payment.getId());
                 destTransaction.setTimestamp(LocalDateTime.now());
                 // Optionally set username and balance if available in cmd
                 transactionRepository.save(destTransaction);
@@ -59,27 +61,18 @@ public class TransactionCommandListener {
                 TransactionRecordedEvent event = TransactionRecordedEvent.create(
                         cmd.getSagaId(),
                         cmd.getCorrelationId(),
-                        cmd.getPaymentId(),
-                        cmd.getSourceAccountNumber(),
-                        cmd.getDestinationAccountNumber(),
-                        cmd.getAmount(),
-                        cmd.getDescription(),
-                        "PAYMENT"
+                        payment
                 );
                 streamBridge.send("transactionRecordedEvent-out-0", event);
-                log.info("[Transaction] Published TransactionRecordedEvent for saga {} and payment: {}", cmd.getSagaId(), cmd.getPaymentId());
+                log.info("[Transaction] Published TransactionRecordedEvent for saga {} and payment: {}", cmd.getSagaId(), payment.getId());
             } catch (Exception e) {
-                log.error("[Transaction] Failed to record transaction for saga {} and payment {}: {}", cmd.getSagaId(), cmd.getPaymentId(), e.getMessage(), e);
+                log.error("[Transaction] Failed to record transaction for saga {} and payment {}: {}", cmd.getSagaId(), payment.getId(), e.getMessage(), e);
                 // On failure, emit TransactionFailedEvent
                 TransactionFailedEvent event = TransactionFailedEvent.create(
                         cmd.getSagaId(),
                         cmd.getCorrelationId(),
-                        cmd.getPaymentId(),
-                        cmd.getSourceAccountNumber(),
-                        cmd.getDestinationAccountNumber(),
-                        cmd.getAmount(),
-                        "Failed to record transaction: " + e.getMessage(),
-                        "PAYMENT"
+                        payment,
+                        "Failed to record transaction: " + e.getMessage()
                 );
                 streamBridge.send("transactionFailedEvent-out-0", event);
             }

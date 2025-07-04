@@ -1,5 +1,6 @@
 package com.rajeswaran.sagaorchestrator.controller;
 
+import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
@@ -54,7 +55,14 @@ public class SagaController {
     public ResponseEntity<String> startPaymentProcessingSaga(@RequestBody PaymentRequest paymentRequest) {
         log.info("Received request to start payment processing saga");
 
-        SagaInstance sagaInstance = paymentProcessingSaga.startSaga(paymentRequest);
+        Payment payment = new Payment();
+        payment.setSourceAccountNumber(paymentRequest.getSourceAccountNumber());
+        payment.setDestinationAccountNumber(paymentRequest.getDestinationAccountNumber());
+        payment.setAmount(paymentRequest.getAmount());
+        payment.setDescription(paymentRequest.getDescription());
+        payment.setCreatedBy(SecurityUtil.getCurrentUsername());
+
+        SagaInstance sagaInstance = paymentProcessingSaga.startSaga(payment);
 
         log.info("Payment processing saga {} started", sagaInstance);
         return ResponseEntity.accepted().body("Payment processing started with saga ID: " + sagaInstance.getId());
