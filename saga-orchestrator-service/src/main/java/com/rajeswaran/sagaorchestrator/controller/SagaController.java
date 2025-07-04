@@ -1,12 +1,15 @@
 package com.rajeswaran.sagaorchestrator.controller;
 
 import com.rajeswaran.common.entity.User;
+import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 import com.rajeswaran.sagaorchestrator.saga.useronboarding.UserOnboardingSaga;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,19 +24,18 @@ public class SagaController {
     private final UserOnboardingSaga userOnboardingSaga;
 
     @PostMapping("/start/user-onboarding")
-    public ResponseEntity<String> startUserOnboardingSaga(@RequestBody User user) {
+    public ResponseEntity<String> startUserOnboardingSaga() {
         log.info("Received request to start user onboarding saga");
 
-        // String username = SecurityUtil.getCurrentUsername();
-        // String email = null;
-        // String fullName = null;
 
-        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
-        //     email = jwt.getClaimAsString("email");
-        //     fullName = jwt.getClaimAsString("name");
-        // }
+        User user = new User();
+        user.setUsername(SecurityUtil.getCurrentUsername());
 
+         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+         if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
+             user.setEmail(jwt.getClaimAsString("email"));
+             user.setFullName(jwt.getClaimAsString("fullName"));
+         }
 
         // Use Saga interface to start saga with payload - this will automatically trigger the first command
         SagaInstance sagaInstance = userOnboardingSaga.startSaga(user);

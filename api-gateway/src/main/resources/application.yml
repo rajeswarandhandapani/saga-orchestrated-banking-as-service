@@ -36,6 +36,16 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8089/realms/baas/protocol/openid-connect/certs}
+
+# =====================
+# Server Configuration
+# =====================
+server:
+  port: 8080
+
+# =====================
+# Eureka Service Discovery
+# =====================
 eureka:
   client:
     service-url:
@@ -44,19 +54,24 @@ eureka:
     prefer-ip-address: true
     hostname: localhost
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-server:
-  port: 8080
+
+# =====================
+# Logging Configuration
+# =====================
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%X{correlationId}] %msg%n"
   level:
-    org.apache.kafka: WARN
-    org.springframework.kafka: WARN
+    root: DEBUG
+
+# =====================
+# Management Endpoints
+# =====================
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,gateway,metrics,routes
   endpoint:
     health:
       show-details: always
