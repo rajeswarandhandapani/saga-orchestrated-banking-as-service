@@ -27,10 +27,6 @@ spring:
           uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/api/notifications/**
-        - id: audit-service
-          uri: lb://AUDIT-SERVICE
-          predicates:
-            - Path=/api/audit-logs/**
         - id: saga-orchestrator
           uri: lb://SAGA-ORCHESTRATOR
           predicates:

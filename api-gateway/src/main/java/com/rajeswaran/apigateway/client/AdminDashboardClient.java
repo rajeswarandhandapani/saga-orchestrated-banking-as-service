@@ -19,9 +19,6 @@ public interface AdminDashboardClient {
     @GetExchange(value = "/api/transactions", accept = "application/json")
     Mono<ResponseEntity<Object>> fetchTransactions(@RequestHeader("Authorization") String authHeader);
 
-    @GetExchange(value = "/api/audit-logs", accept = "application/json")
-    Mono<ResponseEntity<Object>> fetchAuditLogs(@RequestHeader("Authorization") String authHeader);
-
     @GetExchange(value = "/api/notifications", accept = "application/json")
     Mono<ResponseEntity<Object>> fetchNotifications(@RequestHeader("Authorization") String authHeader);
 }

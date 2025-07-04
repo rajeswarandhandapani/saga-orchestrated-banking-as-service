@@ -22,7 +22,6 @@
     <module>payment-service</module>
     <module>transaction-service</module>
     <module>notification-service</module>
-    <module>audit-service</module>
     <module>api-gateway</module>
     <module>service-discovery</module>
     <module>saga-orchestrator-service</module>
