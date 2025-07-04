@@ -1,22 +1,21 @@
 package com.rajeswaran.payment.service;
 
-import com.rajeswaran.common.util.SagaEventBuilderUtil;
-import com.rajeswaran.common.util.SecurityUtil;
-import com.rajeswaran.common.entity.Payment;
-import com.rajeswaran.payment.repository.PaymentRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.rajeswaran.common.entity.Payment;
+import com.rajeswaran.common.util.SecurityUtil;
+import com.rajeswaran.payment.repository.PaymentRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
-    private final StreamBridge streamBridge;
 
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
@@ -44,21 +43,7 @@ public class PaymentService {
         payment.setStatus("PENDING");
 
         Payment created = paymentRepository.save(payment);
-/* 
-        PaymentInitiatedEvent event = PaymentInitiatedEvent.builder()
-                .paymentId(String.valueOf(created.getId()))
-                .sourceAccountNumber(created.getSourceAccountNumber())
-                .destinationAccountNumber(created.getDestinationAccountNumber())
-                .amount(created.getAmount())
-                .username(username)
-                .timestamp(SagaEventBuilderUtil.now())
-                .details("Payment initiated for paymentId: " + created.getId())
-                .correlationId(SagaEventBuilderUtil.getCurrentCorrelationId())
-                .serviceName(com.rajeswaran.common.AppConstants.ServiceName.PAYMENT_SERVICE)
-                .eventType(com.rajeswaran.common.AppConstants.SagaEventType.PAYMENT_INITIATED)
-                .build();
-        streamBridge.send("paymentInitiatedEvent-out-0", event);
-        streamBridge.send("auditEvent-out-0", event); */
+
         return created;
     }
 

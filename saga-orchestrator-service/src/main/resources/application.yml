@@ -68,6 +68,8 @@ spring:
           destination: account-open-command
         sendNotificationCommand-out-0:
           destination: send-notification-command
+        validatePaymentCommand-out-0:
+          destination: validate-payment-command
 
       kafka:
         binder:
