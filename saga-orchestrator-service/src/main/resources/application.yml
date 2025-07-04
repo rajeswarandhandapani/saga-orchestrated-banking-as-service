@@ -58,6 +58,14 @@ spring:
           destination: user-deletion-failed-event
           group: saga-orchestrator-group
           content-type: application/json
+        paymentValidatedEvent-in-0:
+          destination: payment-validated-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        paymentValidationFailedEvent-in-0:
+          destination: payment-validation-failed-event
+          group: saga-orchestrator-group
+          content-type: application/json
 
         # Output bindings for saga commands (used by StreamBridge)
         createUserCommand-out-0:
@@ -70,6 +78,8 @@ spring:
           destination: send-notification-command
         validatePaymentCommand-out-0:
           destination: validate-payment-command
+        processPaymentCommand-out-0:
+          destination: process-payment-command
 
       kafka:
         binder:

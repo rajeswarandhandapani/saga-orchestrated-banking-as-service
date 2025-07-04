@@ -1,8 +1,4 @@
-package com.rajeswaran.sagaorchestrator.saga.payment;/*
- * PaymentProcessingSaga temporarily commented out during SagaId migration
- * TODO: Update this saga to use long sagaId instead of SagaId value object
- */
-
+package com.rajeswaran.sagaorchestrator.saga.payment;
 
 import com.rajeswaran.common.saga.payment.commands.*;
 import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
