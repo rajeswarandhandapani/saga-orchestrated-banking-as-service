@@ -28,7 +28,6 @@ spring:
           group: account-service
           content-type: application/json
 
-        # User Onboarding Saga Events (outputs)
         accountOpenedEvent-out-0:
           destination: account-opened-event
           content-type: application/json
@@ -36,7 +35,7 @@ spring:
           destination: account-open-failed-event
           content-type: application/json
 
-        # Other existing bindings
+        # Payment Processing Commands
         processPaymentCommand-in-0:
           destination: process-payment-command
           group: account-service

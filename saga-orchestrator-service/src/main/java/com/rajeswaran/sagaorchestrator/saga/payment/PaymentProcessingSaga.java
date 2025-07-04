@@ -148,7 +148,7 @@ public class PaymentProcessingSaga extends Saga {
      * Listens for PaymentValidatedEvent to proceed to next step or PaymentValidationFailedEvent to handle failure.
      */
     @Bean
-    public Consumer<Message<PaymentValidatedEvent>> paymentValidatedEventListener() {
+    public Consumer<Message<PaymentValidatedEvent>> paymentValidatedEvent() {
         return message -> {
             PaymentValidatedEvent event = message.getPayload();
             Long sagaId = event.getSagaId();
@@ -174,7 +174,7 @@ public class PaymentProcessingSaga extends Saga {
      * Listens for PaymentValidationFailedEvent to handle payment validation failure.
      */
     @Bean
-    public Consumer<Message<PaymentValidationFailedEvent>> paymentValidationFailedEventListener() {
+    public Consumer<Message<PaymentValidationFailedEvent>> paymentValidationFailedEvent() {
         return message -> {
             PaymentValidationFailedEvent event = message.getPayload();
             Long sagaId = event.getSagaId();
@@ -199,7 +199,7 @@ public class PaymentProcessingSaga extends Saga {
      * Listens for PaymentProcessedEvent to proceed to next step or PaymentFailedEvent to handle failure.
      */
     @Bean
-    public Consumer<Message<PaymentProcessedEvent>> paymentProcessedEventListener() {
+    public Consumer<Message<PaymentProcessedEvent>> paymentProcessedEvent() {
         return message -> {
             PaymentProcessedEvent event = message.getPayload();
             Long sagaId = event.getSagaId();
@@ -250,7 +250,7 @@ public class PaymentProcessingSaga extends Saga {
      * Listens for TransactionRecordedEvent to proceed to next step or TransactionFailedEvent to handle failure.
      */
     @Bean
-    public Consumer<Message<TransactionRecordedEvent>> transactionRecordedEventListener() {
+    public Consumer<Message<TransactionRecordedEvent>> transactionRecordedEvent() {
         return message -> {
             TransactionRecordedEvent event = message.getPayload();
             Long sagaId = event.getSagaId();
@@ -280,7 +280,7 @@ public class PaymentProcessingSaga extends Saga {
      * Listens for TransactionFailedEvent to handle transaction recording failure.
      */
     @Bean
-    public Consumer<Message<TransactionFailedEvent>> transactionFailedEventListener() {
+    public Consumer<Message<TransactionFailedEvent>> transactionFailedEvent() {
         return message -> {
             TransactionFailedEvent event = message.getPayload();
             Long sagaId = event.getSagaId();

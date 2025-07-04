@@ -19,10 +19,18 @@ spring:
           # issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
   cloud:
     function:
-      definition: userCreatedEvent;userCreationFailedEvent;accountOpenedEvent;accountOpenFailedEvent;welcomeNotificationSentEvent;welcomeNotificationFailedEvent;userDeletedEvent;userDeletionFailedEvent
+      definition: userCreatedEvent;userCreationFailedEvent;
+        accountOpenedEvent;accountOpenFailedEvent;
+        userDeletedEvent;userDeletionFailedEvent;
+        paymentValidatedEvent;paymentValidationFailedEvent;
+        paymentProcessedEvent;
+        transactionRecordedEvent;transactionFailedEvent;
+        sendNotificationCommand
     stream:
       bindings:
-        # Event listeners for UserOnboardingSaga
+        # UserOnboardingSaga
+        createUserCommand-out-0:
+          destination: create-user-command
         userCreatedEvent-in-0:
           destination: user-created-event
           group: saga-orchestrator-group
@@ -31,6 +39,9 @@ spring:
           destination: user-creation-failed-event
           group: saga-orchestrator-group
           content-type: application/json
+
+        accountOpenCommand-out-0:
+          destination: account-open-command
         accountOpenedEvent-in-0:
           destination: account-opened-event
           group: saga-orchestrator-group
@@ -39,14 +50,9 @@ spring:
           destination: account-open-failed-event
           group: saga-orchestrator-group
           content-type: application/json
-        welcomeNotificationSentEvent-in-0:
-          destination: welcome-notification-sent-event
-          group: saga-orchestrator-group
-          content-type: application/json
-        welcomeNotificationFailedEvent-in-0:
-          destination: welcome-notification-failed-event
-          group: saga-orchestrator-group
-          content-type: application/json
+
+        deleteUserCommand-out-0:
+          destination: delete-user-command
         userDeletedEvent-in-0:
           destination: user-deleted-event
           group: saga-orchestrator-group
@@ -55,6 +61,11 @@ spring:
           destination: user-deletion-failed-event
           group: saga-orchestrator-group
           content-type: application/json
+
+
+        #  PaymentProcessingSaga
+        validatePaymentCommand-out-0:
+          destination: validate-payment-command
         paymentValidatedEvent-in-0:
           destination: payment-validated-event
           group: saga-orchestrator-group
@@ -63,6 +74,14 @@ spring:
           destination: payment-validation-failed-event
           group: saga-orchestrator-group
           content-type: application/json
+
+        processPaymentCommand-out-0:
+          destination: process-payment-command
+        paymentProcessedEvent-in-0:
+          destination: payment-processed-event
+
+        recordTransactionCommand-out-0:
+          destination: record-transaction-command
         transactionRecordedEvent-in-0:
           destination: transaction-recorded-event
           group: saga-orchestrator-group
@@ -72,22 +91,8 @@ spring:
           group: saga-orchestrator-group
           content-type: application/json
 
-        # Output bindings for saga commands (used by StreamBridge)
-        createUserCommand-out-0:
-          destination: create-user-command
-        deleteUserCommand-out-0:
-          destination: delete-user-command
-        accountOpenCommand-out-0:
-          destination: account-open-command
         sendNotificationCommand-out-0:
           destination: send-notification-command
-        validatePaymentCommand-out-0:
-          destination: validate-payment-command
-        processPaymentCommand-out-0:
-          destination: process-payment-command
-        recordTransactionCommand-out-0:
-          destination: record-transaction-command
-
       kafka:
         binder:
           brokers: ${KAFKA_BROKERS:localhost:9092}

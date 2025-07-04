@@ -3,11 +3,13 @@ package com.rajeswaran.sagaorchestrator.controller;
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
+import com.rajeswaran.sagaorchestrator.saga.payment.PaymentProcessingSaga;
+import com.rajeswaran.sagaorchestrator.saga.payment.PaymentRequest;
 import com.rajeswaran.sagaorchestrator.saga.useronboarding.UserOnboardingSaga;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,11 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class SagaController {
 
     private final UserOnboardingSaga userOnboardingSaga;
+    private final PaymentProcessingSaga paymentProcessingSaga;
 
     @PostMapping("/start/user-onboarding")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> startUserOnboardingSaga() {
         log.info("Received request to start user onboarding saga");
-
 
         User user = new User();
         user.setUsername(SecurityUtil.getCurrentUsername());
@@ -42,5 +45,18 @@ public class SagaController {
 
         log.info("User onboarding saga {} started for user: {}", sagaInstance.getId(), user);
         return ResponseEntity.accepted().body("User onboarding process started with saga ID: " + sagaInstance.getId());
+    }
+
+
+    // Endpoint to start payment processing saga
+    @PostMapping("/start/payment-processing")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> startPaymentProcessingSaga(@RequestBody PaymentRequest paymentRequest) {
+        log.info("Received request to start payment processing saga");
+
+        SagaInstance sagaInstance = paymentProcessingSaga.startSaga(paymentRequest);
+
+        log.info("Payment processing saga {} started", sagaInstance);
+        return ResponseEntity.accepted().body("Payment processing started with saga ID: " + sagaInstance.getId());
     }
 }
