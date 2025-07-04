@@ -261,11 +261,13 @@ public class PaymentProcessingSaga extends Saga {
                 // Complete current step
                 completeStep(sagaId, PaymentProcessingSteps.RECORD_TRANSACTION.getStepName(), event);
 
-                // Get payment request details from saga context to send notification
-                // For now, we'll use the event data and construct a generic notification
+                // Trigger notification (fire-and-forget)
                 triggerSendNotificationCommand(sagaId, "getUserEmailFromSagaContext(sagaId)",
                     event.getPaymentId(), event.getAmount(),
                     event.getSourceAccountNumber(), event.getDestinationAccountNumber());
+
+                // Mark saga as complete after notification is triggered
+                completeSaga(sagaId);
 
             } catch (Exception e) {
                 log.error("Error processing TransactionRecordedEvent for saga {}: {}", sagaId, e.getMessage(), e);
@@ -301,53 +303,4 @@ public class PaymentProcessingSaga extends Saga {
             }
         };
     }
-
-    /**
-     * Listens for NotificationSentEvent to complete the saga or NotificationFailedEvent to handle failure.
-     */
-    /*@Bean
-    public Consumer<Message<NotificationSentEvent>> notificationSentEventListener() {
-        return message -> {
-            NotificationSentEvent event = message.getPayload();
-            Long sagaId = event.getSagaId();
-
-            log.info("Received NotificationSentEvent for saga {}", sagaId);
-
-            try {
-                // Complete current step
-                completeStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), event);
-
-                // Complete the entire saga
-                completeSaga(sagaId);
-
-            } catch (Exception e) {
-                log.error("Error processing NotificationSentEvent for saga {}: {}", sagaId, e.getMessage(), e);
-            }
-        };
-    }*/
-
-    /**
-     * Listens for NotificationFailedEvent to handle notification failure.
-     */
-    /*@Bean
-    public Consumer<Message<NotificationFailedEvent>> notificationFailedEventListener() {
-        return message -> {
-            NotificationFailedEvent event = message.getPayload();
-            Long sagaId = event.getSagaId();
-
-            log.error("Received NotificationFailedEvent for saga {}, reason: {}", sagaId, event.getReason());
-
-            try {
-                // Mark step as failed
-                failStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), event);
-
-                // Payment was successful but notification failed - complete saga anyway
-                log.warn("Payment processing completed successfully but notification failed for saga {}", sagaId);
-                completeSaga(sagaId);
-
-            } catch (Exception e) {
-                log.error("Error processing NotificationFailedEvent for saga {}: {}", sagaId, e.getMessage(), e);
-            }
-        };
-    }*/
 }

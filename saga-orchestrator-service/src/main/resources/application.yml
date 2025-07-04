@@ -66,6 +66,14 @@ spring:
           destination: payment-validation-failed-event
           group: saga-orchestrator-group
           content-type: application/json
+        transactionRecordedEvent-in-0:
+          destination: transaction-recorded-event
+          group: saga-orchestrator-group
+          content-type: application/json
+        transactionFailedEvent-in-0:
+          destination: transaction-failed-event
+          group: saga-orchestrator-group
+          content-type: application/json
 
         # Output bindings for saga commands (used by StreamBridge)
         createUserCommand-out-0:
