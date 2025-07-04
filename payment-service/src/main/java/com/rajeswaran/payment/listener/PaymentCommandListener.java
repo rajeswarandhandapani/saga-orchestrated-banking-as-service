@@ -3,7 +3,6 @@ package com.rajeswaran.payment.listener;
 import com.rajeswaran.common.saga.payment.commands.ValidatePaymentCommand;
 import com.rajeswaran.common.saga.payment.events.PaymentValidatedEvent;
 import com.rajeswaran.common.saga.payment.events.PaymentValidationFailedEvent;
-import com.rajeswaran.payment.client.AccountServiceClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -24,9 +23,6 @@ public class PaymentCommandListener {
 
     @Autowired
     private StreamBridge streamBridge;
-
-    @Autowired
-    private AccountServiceClient accountServiceClient;
 
     /**
      * Consumes ValidatePaymentCommand, performs basic validation, and publishes result event.
