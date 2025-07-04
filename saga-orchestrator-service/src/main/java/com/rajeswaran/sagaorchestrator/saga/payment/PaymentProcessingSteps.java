@@ -6,9 +6,8 @@ package com.rajeswaran.sagaorchestrator.saga.payment;
  * Defines the sequence of steps in the payment processing saga flow:
  * 1. VALIDATE_PAYMENT - Validate payment details and business rules
  * 2. PROCESS_PAYMENT - Process the payment transaction
- * 3. UPDATE_ACCOUNT_BALANCE - Update source and destination account balances
- * 4. RECORD_TRANSACTION - Record transaction details for audit trail
- * 5. SEND_NOTIFICATION - Send payment confirmation notification
+ * 3. RECORD_TRANSACTION - Record transaction details for audit trail
+ * 4. SEND_NOTIFICATION - Send payment confirmation notification
  *
  * @author Rajeswaran
  * @since 1.0.0
@@ -27,12 +26,7 @@ public enum PaymentProcessingSteps {
     PROCESS_PAYMENT("process-payment"),
 
     /**
-     * Third step: Update account balances for both source and destination accounts.
-     */
-    UPDATE_ACCOUNT_BALANCE("update-account-balance"),
-
-    /**
-     * Fourth step: Record transaction details in the transaction service for audit trail.
+     * Third step: Record transaction details in the transaction service for audit trail.
      */
     RECORD_TRANSACTION("record-transaction"),
 

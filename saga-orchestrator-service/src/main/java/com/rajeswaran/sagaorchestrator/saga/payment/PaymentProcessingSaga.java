@@ -97,26 +97,6 @@ public class PaymentProcessingSaga extends Saga {
         streamBridge.send("processPaymentCommand-out-0", command);
     }
 
-    private void triggerUpdateAccountBalanceCommand(Long sagaId, String paymentId, String sourceAccount,
-                                                   String destinationAccount, double amount, String description) {
-        log.info("Triggering UpdateAccountBalanceCommand for saga {} and payment: {}", sagaId, paymentId);
-
-        UpdateAccountBalanceCommand command = UpdateAccountBalanceCommand.create(
-            sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
-            paymentId,
-            sourceAccount,
-            destinationAccount,
-            amount,
-            description
-        );
-
-        // Record step as STARTED before publishing command
-        startStep(sagaId, PaymentProcessingSteps.UPDATE_ACCOUNT_BALANCE.getStepName(), command);
-
-        streamBridge.send("updateAccountBalanceCommand-out-0", command);
-    }
-
     private void triggerRecordTransactionCommand(Long sagaId, String paymentId, String sourceAccount,
                                                 String destinationAccount, double amount, String description) {
         log.info("Triggering RecordTransactionCommand for saga {} and payment: {}", sagaId, paymentId);
@@ -230,8 +210,8 @@ public class PaymentProcessingSaga extends Saga {
                 // Complete current step
                 completeStep(sagaId, PaymentProcessingSteps.PROCESS_PAYMENT.getStepName(), event);
 
-                // Proceed to next step: Update Account Balance
-                triggerUpdateAccountBalanceCommand(sagaId, event.getPaymentId(), event.getSourceAccountNumber(),
+                // Proceed to next step: Record Transaction (skip UpdateAccountBalanceCommand)
+                triggerRecordTransactionCommand(sagaId, event.getPaymentId(), event.getSourceAccountNumber(),
                     event.getDestinationAccountNumber(), event.getAmount(), event.getDescription());
 
             } catch (Exception e) {
@@ -262,59 +242,6 @@ public class PaymentProcessingSaga extends Saga {
 
             } catch (Exception e) {
                 log.error("Error processing PaymentFailedEvent for saga {}: {}", sagaId, e.getMessage(), e);
-            }
-        };
-    }
-
-    /**
-     * Listens for AccountBalanceUpdatedEvent to proceed to next step or AccountBalanceUpdateFailedEvent to handle failure.
-     */
-    @Bean
-    public Consumer<Message<AccountBalanceUpdatedEvent>> accountBalanceUpdatedEventListener() {
-        return message -> {
-            AccountBalanceUpdatedEvent event = message.getPayload();
-            Long sagaId = event.getSagaId();
-
-            log.info("Received AccountBalanceUpdatedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
-
-            try {
-                // Complete current step
-                completeStep(sagaId, PaymentProcessingSteps.UPDATE_ACCOUNT_BALANCE.getStepName(), event);
-
-                // Proceed to next step: Record Transaction
-                triggerRecordTransactionCommand(sagaId, event.getPaymentId(), event.getSourceAccountNumber(),
-                    event.getDestinationAccountNumber(), event.getAmount(), event.getDescription());
-
-            } catch (Exception e) {
-                log.error("Error processing AccountBalanceUpdatedEvent for saga {}: {}", sagaId, e.getMessage(), e);
-                failSaga(sagaId);
-            }
-        };
-    }
-
-    /**
-     * Listens for AccountBalanceUpdateFailedEvent to handle account balance update failure.
-     */
-    @Bean
-    public Consumer<Message<AccountBalanceUpdateFailedEvent>> accountBalanceUpdateFailedEventListener() {
-        return message -> {
-            AccountBalanceUpdateFailedEvent event = message.getPayload();
-            Long sagaId = event.getSagaId();
-
-            log.error("Received AccountBalanceUpdateFailedEvent for saga {}, payment: {}, reason: {}",
-                sagaId, event.getPaymentId(), event.getReason());
-
-            try {
-                // Mark step as failed
-                failStep(sagaId, PaymentProcessingSteps.UPDATE_ACCOUNT_BALANCE.getStepName(), event);
-
-                // Start compensation: Reverse the payment since it was processed but balance update failed
-                triggerReversePaymentCommand(sagaId, event.getPaymentId(), event.getSourceAccountNumber(),
-                    event.getDestinationAccountNumber(), event.getAmount(),
-                    "Account balance update failed: " + event.getReason());
-
-            } catch (Exception e) {
-                log.error("Error processing AccountBalanceUpdateFailedEvent for saga {}: {}", sagaId, e.getMessage(), e);
             }
         };
     }
@@ -423,75 +350,4 @@ public class PaymentProcessingSaga extends Saga {
             }
         };
     }*/
-
-    // === COMPENSATION METHODS (Rollback/Reverse operations) ===
-
-    /**
-     * Triggers reverse payment command for compensation.
-     */
-    private void triggerReversePaymentCommand(Long sagaId, String paymentId, String sourceAccount,
-                                             String destinationAccount, double amount, String reason) {
-        log.info("Triggering ReversePaymentCommand for saga {} and payment: {}", sagaId, paymentId);
-
-        ReversePaymentCommand command = ReversePaymentCommand.create(
-            sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
-            paymentId,
-            sourceAccount,
-            destinationAccount,
-            amount,
-            reason,
-            "getUsernameFromSagaContext(sagaId)"
-        );
-
-        // Record compensation step
-        startStep(sagaId, "reverse-payment", command);
-
-        streamBridge.send("reversePaymentCommand-out-0", command);
-    }
-
-    /**
-     * Listens for PaymentReversedEvent to handle successful payment reversal.
-     */
-    @Bean
-    public Consumer<Message<PaymentReversedEvent>> paymentReversedEventListener() {
-        return message -> {
-            PaymentReversedEvent event = message.getPayload();
-            Long sagaId = event.getSagaId();
-
-            log.info("Received PaymentReversedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
-
-            try {
-                // Complete compensation step
-                completeStep(sagaId, "reverse-payment", event);
-
-                // Send failure notification to user
-                String userEmail = "getUserEmailFromSagaContext(sagaId)";
-                String subject = "Payment Processing Failed";
-                String notificationMessage = String.format(
-                    "Your payment of $%.2f could not be completed and has been reversed. Reason: %s. Payment ID: %s",
-                    event.getAmount(), event.getReason(), event.getPaymentId()
-                );
-
-                SendNotificationCommand command = SendNotificationCommand.create(
-                    sagaId,
-                    SagaEventBuilderUtil.getCurrentCorrelationId(),
-                    userEmail,
-                    subject,
-                    notificationMessage
-                );
-
-                streamBridge.send("sendNotificationCommand-out-0", command);
-
-                // Mark saga as compensated
-                failSaga(sagaId);
-                log.info("Payment reversed successfully for saga {}", sagaId);
-
-            } catch (Exception e) {
-                log.error("Error processing PaymentReversedEvent for saga {}: {}", sagaId, e.getMessage(), e);
-            }
-        };
-    }
-
-
 }
