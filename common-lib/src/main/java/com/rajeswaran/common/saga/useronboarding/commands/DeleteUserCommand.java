@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.useronboarding.commands;
 
 import com.rajeswaran.common.saga.command.BaseCommand;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,12 +23,12 @@ public class DeleteUserCommand extends BaseCommand {
     @NotBlank
     private String username;
 
-    public DeleteUserCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp, String username) {
+    public DeleteUserCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, String username) {
         super(commandId, sagaId, correlationId, timestamp);
         this.username = username;
     }
 
-    public static DeleteUserCommand create(SagaId sagaId, String correlationId, String username) {
+    public static DeleteUserCommand create(Long sagaId, String correlationId, String username) {
         return new DeleteUserCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,

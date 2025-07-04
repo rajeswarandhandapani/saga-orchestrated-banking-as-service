@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.payment.events;
 
 import com.rajeswaran.common.saga.event.BaseEvent;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -36,7 +35,7 @@ public class PaymentProcessedEvent extends BaseEvent {
 
     private String username;
 
-    public static PaymentProcessedEvent create(SagaId sagaId, String correlationId, String paymentId,
+    public static PaymentProcessedEvent create(Long sagaId, String correlationId, String paymentId,
                                               String sourceAccountNumber, String destinationAccountNumber,
                                               double amount, String description, String username) {
         return PaymentProcessedEvent.builder()

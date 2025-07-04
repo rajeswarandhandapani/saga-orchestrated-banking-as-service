@@ -1,7 +1,6 @@
 package com.rajeswaran.sagaorchestrator.saga.useronboarding;
 
 import com.rajeswaran.common.entity.User;
-import com.rajeswaran.common.saga.SagaId;
 import com.rajeswaran.common.saga.useronboarding.commands.CreateUserCommand;
 import com.rajeswaran.common.saga.useronboarding.commands.DeleteUserCommand;
 import com.rajeswaran.common.saga.useronboarding.commands.OpenAccountCommand;
@@ -63,7 +62,7 @@ public class UserOnboardingSaga extends Saga {
         
         
         CreateUserCommand command = CreateUserCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             user
         );
@@ -78,7 +77,7 @@ public class UserOnboardingSaga extends Saga {
         log.info("Triggering OpenAccountCommand for saga {} and userId: {}", sagaId, user.getUserId());
         
         OpenAccountCommand command = OpenAccountCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             "SAVINGS",
             user
@@ -94,7 +93,7 @@ public class UserOnboardingSaga extends Saga {
         log.info("Triggering SendWelcomeNotificationCommand for saga {} and user: {}", sagaId, userName);
         
        SendNotificationCommand command = SendNotificationCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             email,
             "Welcome to BaaS Banking Service",
@@ -113,7 +112,7 @@ public class UserOnboardingSaga extends Saga {
         log.info("Triggering DeleteUserCommand for saga {} and username: {} (compensation)", sagaId, username);
         
         DeleteUserCommand command = DeleteUserCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             username
         );
@@ -130,12 +129,12 @@ public class UserOnboardingSaga extends Saga {
 
             UserCreatedEvent event = message.getPayload();
 
-            log.info("User created successfully for saga {}, event: {}", event.getSagaId().value(), event);
+            log.info("User created successfully for saga {}, event: {}", event.getSagaId(), event);
             
-            completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.CREATE_USER.getStepName(), event);
+            completeStep(event.getSagaId(), UserOnboardingSteps.CREATE_USER.getStepName(), event);
             
             // Proceed to next step: Open Account
-            triggerOpenAccountCommand(Long.valueOf(event.getSagaId().value()), event.getUser());
+            triggerOpenAccountCommand(event.getSagaId(), event.getUser());
         };
     }
 
@@ -143,10 +142,10 @@ public class UserOnboardingSaga extends Saga {
     public Consumer<Message<UserCreationFailedEvent>> userCreationFailedEvent() {
         return message -> {
             UserCreationFailedEvent event = message.getPayload();
-            log.error("User creation failed for saga {}: {}", event.getSagaId().value(), event.getErrorMessage());
+            log.error("User creation failed for saga {}: {}", event.getSagaId(), event.getErrorMessage());
             
-            failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.CREATE_USER.getStepName(), event);
-            failSaga(Long.valueOf(event.getSagaId().value()));
+            failStep(event.getSagaId(), UserOnboardingSteps.CREATE_USER.getStepName(), event);
+            failSaga(event.getSagaId());
         };
     }
      @Bean
@@ -154,14 +153,14 @@ public class UserOnboardingSaga extends Saga {
         return message -> {
             AccountOpenedEvent event = message.getPayload();
 
-            log.info("Account opened successfully for saga {}, event: {}", event.getSagaId().value(), event);
+            log.info("Account opened successfully for saga {}, event: {}", event.getSagaId(), event);
             
-            completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), event);
+            completeStep(event.getSagaId(), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), event);
             
             // Proceed to next step: Send Welcome Notification
             // We need email and fullName, but they're not in AccountOpenedEvent, so we'll use userId for now
             User user = event.getUser();
-            triggerSendWelcomeNotificationCommand(Long.valueOf(event.getSagaId().value()), user.getUsername(), user.getFullName(), user.getEmail(), event.getAccount().getAccountNumber());
+            triggerSendWelcomeNotificationCommand(event.getSagaId(), user.getUsername(), user.getFullName(), user.getEmail(), event.getAccount().getAccountNumber());
         };
     }
 
@@ -169,12 +168,12 @@ public class UserOnboardingSaga extends Saga {
     public Consumer<Message<AccountOpenFailedEvent>> accountOpenFailedEvent() {
         return message -> {
             AccountOpenFailedEvent event = message.getPayload();
-            log.error("Account opening failed for saga {}: {}", event.getSagaId().value(), event.getErrorMessage());
+            log.error("Account opening failed for saga {}: {}", event.getSagaId(), event.getErrorMessage());
             
-            failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), event);
+            failStep(event.getSagaId(), UserOnboardingSteps.OPEN_ACCOUNT.getStepName(), event);
             
             // Trigger compensation: Delete the user that was created earlier using username
-            triggerDeleteUserCommand(Long.valueOf(event.getSagaId().value()), event.getUsername());
+            triggerDeleteUserCommand(event.getSagaId(), event.getUsername());
         };
     }
 
@@ -182,11 +181,11 @@ public class UserOnboardingSaga extends Saga {
     public Consumer<Message<UserDeletedEvent>> userDeletedEvent() {
         return message -> {
             UserDeletedEvent event = message.getPayload();
-            log.info("User deleted successfully for saga {} (compensation completed)", event.getSagaId().value());
+            log.info("User deleted successfully for saga {} (compensation completed)", event.getSagaId());
             
-            completeStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.DELETE_USER.getStepName(), event);
-            failSaga(Long.valueOf(event.getSagaId().value()));
-            log.info("User onboarding saga {} failed and compensation completed", event.getSagaId().value());
+            completeStep(event.getSagaId(), UserOnboardingSteps.DELETE_USER.getStepName(), event);
+            failSaga(event.getSagaId());
+            log.info("User onboarding saga {} failed and compensation completed", event.getSagaId());
         };
     }
 
@@ -194,11 +193,11 @@ public class UserOnboardingSaga extends Saga {
     public Consumer<Message<UserDeletionFailedEvent>> userDeletionFailedEvent() {
         return message -> {
             UserDeletionFailedEvent event = message.getPayload();
-            log.error("User deletion failed for saga {} (compensation failed): {}", event.getSagaId().value(), event.getErrorMessage());
+            log.error("User deletion failed for saga {} (compensation failed): {}", event.getSagaId(), event.getErrorMessage());
             
-            failStep(Long.valueOf(event.getSagaId().value()), UserOnboardingSteps.DELETE_USER.getStepName(), event);
-            failSaga(Long.valueOf(event.getSagaId().value()));
-            log.error("User onboarding saga {} failed and compensation also failed - manual intervention required", event.getSagaId().value());
+            failStep(event.getSagaId(), UserOnboardingSteps.DELETE_USER.getStepName(), event);
+            failSaga(event.getSagaId());
+            log.error("User onboarding saga {} failed and compensation also failed - manual intervention required", event.getSagaId());
         };
     }
 }

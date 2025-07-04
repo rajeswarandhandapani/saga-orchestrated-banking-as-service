@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.rajeswaran.common.entity.Account;
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.event.BaseEvent;
-import com.rajeswaran.common.saga.SagaId;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +27,7 @@ public class AccountOpenedEvent extends BaseEvent {
 
     User user;
 
-    public static AccountOpenedEvent create(SagaId sagaId, String correlationId, Account account, User user) {
+    public static AccountOpenedEvent create(Long sagaId, String correlationId, Account account, User user) {
         return AccountOpenedEvent.builder()
             .eventId(UUID.randomUUID().toString())
             .sagaId(sagaId)

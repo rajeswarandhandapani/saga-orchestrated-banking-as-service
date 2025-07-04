@@ -2,8 +2,6 @@ package com.rajeswaran.common.saga.event;
 
 import java.time.Instant;
 
-import com.rajeswaran.common.saga.SagaId;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.ToString;
@@ -22,7 +20,7 @@ public abstract class BaseEvent implements Event {
     private String eventId;
     
     @NotNull
-    private SagaId sagaId;
+    private Long sagaId;
     
     @NotNull
     private String correlationId;
@@ -42,7 +40,7 @@ public abstract class BaseEvent implements Event {
     public BaseEvent() {
     }
 
-    public BaseEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
+    public BaseEvent(String eventId, Long sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
         this.eventId = eventId;
         this.sagaId = sagaId;
         this.correlationId = correlationId;

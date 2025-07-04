@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.event.BaseEvent;
-import com.rajeswaran.common.saga.SagaId;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ public class UserCreatedEvent extends BaseEvent {
     @NotNull
     private User user;
 
-    public static UserCreatedEvent create(SagaId sagaId, String correlationId, User user) {
+    public static UserCreatedEvent create(Long sagaId, String correlationId, User user) {
         return UserCreatedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)

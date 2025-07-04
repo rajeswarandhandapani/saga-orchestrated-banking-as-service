@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.payment.commands;
 
 import com.rajeswaran.common.saga.command.BaseCommand;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -38,7 +37,7 @@ public class RecordTransactionCommand extends BaseCommand {
 
     private String transactionType;
 
-    public RecordTransactionCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp,
+    public RecordTransactionCommand(String commandId, Long sagaId, String correlationId, Instant timestamp,
                                    String paymentId, String sourceAccountNumber, String destinationAccountNumber,
                                    double amount, String description, String transactionType) {
         super(commandId, sagaId, correlationId, timestamp);
@@ -50,7 +49,7 @@ public class RecordTransactionCommand extends BaseCommand {
         this.transactionType = transactionType;
     }
 
-    public static RecordTransactionCommand create(SagaId sagaId, String correlationId, String paymentId,
+    public static RecordTransactionCommand create(long sagaId, String correlationId, String paymentId,
                                                  String sourceAccountNumber, String destinationAccountNumber,
                                                  double amount, String description, String transactionType) {
         return new RecordTransactionCommand(

@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.rajeswaran.common.entity.Notification;
-import com.rajeswaran.common.useronboarding.commands.SendNotificationCommand;
+import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
 import com.rajeswaran.notification.repository.NotificationRepository;
 
 import lombok.RequiredArgsConstructor;

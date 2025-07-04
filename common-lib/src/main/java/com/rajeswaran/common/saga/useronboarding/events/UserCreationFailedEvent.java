@@ -3,7 +3,6 @@ package com.rajeswaran.common.saga.useronboarding.events;
 import java.time.Instant;
 
 import com.rajeswaran.common.saga.event.BaseEvent;
-import com.rajeswaran.common.saga.SagaId;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -20,11 +19,11 @@ public class UserCreationFailedEvent extends BaseEvent {
     public UserCreationFailedEvent() {
     }
 
-    public UserCreationFailedEvent(String eventId, SagaId sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
+    public UserCreationFailedEvent(String eventId, Long sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
         super(eventId, sagaId, correlationId, timestamp, success, errorMessage);
     }
 
-    public static UserCreationFailedEvent create(SagaId sagaId, String correlationId, String errorMessage) {
+    public static UserCreationFailedEvent create(Long sagaId, String correlationId, String errorMessage) {
         return UserCreationFailedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)

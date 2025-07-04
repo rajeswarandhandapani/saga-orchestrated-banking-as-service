@@ -1,6 +1,5 @@
-package com.rajeswaran.common.event;
+package com.rajeswaran.common.saga.event;
 
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
@@ -14,7 +13,7 @@ public interface Event {
     String getEventId();
     
     @NotNull
-    SagaId getSagaId();
+    Long getSagaId();
     
     @NotNull
     String getCorrelationId();

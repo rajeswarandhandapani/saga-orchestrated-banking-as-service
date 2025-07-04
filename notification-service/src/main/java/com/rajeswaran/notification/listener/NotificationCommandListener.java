@@ -1,6 +1,6 @@
 package com.rajeswaran.notification.listener;
 
-import com.rajeswaran.common.useronboarding.commands.SendNotificationCommand;
+import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
 import com.rajeswaran.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

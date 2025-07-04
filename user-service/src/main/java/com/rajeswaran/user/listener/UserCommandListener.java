@@ -1,12 +1,12 @@
 package com.rajeswaran.user.listener;
 
 import com.rajeswaran.common.entity.User;
-import com.rajeswaran.common.useronboarding.commands.CreateUserCommand;
-import com.rajeswaran.common.useronboarding.commands.DeleteUserCommand;
-import com.rajeswaran.common.useronboarding.events.UserCreatedEvent;
-import com.rajeswaran.common.useronboarding.events.UserCreationFailedEvent;
-import com.rajeswaran.common.useronboarding.events.UserDeletedEvent;
-import com.rajeswaran.common.useronboarding.events.UserDeletionFailedEvent;
+import com.rajeswaran.common.saga.useronboarding.commands.CreateUserCommand;
+import com.rajeswaran.common.saga.useronboarding.commands.DeleteUserCommand;
+import com.rajeswaran.common.saga.useronboarding.events.UserCreatedEvent;
+import com.rajeswaran.common.saga.useronboarding.events.UserCreationFailedEvent;
+import com.rajeswaran.common.saga.useronboarding.events.UserDeletedEvent;
+import com.rajeswaran.common.saga.useronboarding.events.UserDeletionFailedEvent;
 import com.rajeswaran.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +28,11 @@ public class UserCommandListener {
     public Consumer<CreateUserCommand> createUserCommand() {
         return command -> {
             User user = command.getUser();
-            log.info("Received createUserCommand for saga {} and user: {}", command.getSagaId().value(), user.getUsername());
+            log.info("Received createUserCommand for saga {} and user: {}", command.getSagaId(), user.getUsername());
             
             try {
                 User createdUser = userService.createUserFromJwt(user.getUsername(), user.getEmail(), user.getFullName());
-                log.info("User {} created successfully for saga {}", user.getUsername(), command.getSagaId().value());
+                log.info("User {} created successfully for saga {}", user.getUsername(), command.getSagaId());
                 
                 UserCreatedEvent event = UserCreatedEvent.create(
                     command.getSagaId(),
@@ -41,10 +41,10 @@ public class UserCommandListener {
                 );
                 
                 streamBridge.send("userCreatedEvent-out-0", event);
-                log.info("Published UserCreatedEvent for saga {} and userId: {}", command.getSagaId().value(), createdUser.getUserId());
+                log.info("Published UserCreatedEvent for saga {} and userId: {}", command.getSagaId(), createdUser.getUserId());
                 
             } catch (Exception e) {
-                log.error("Failed to create user {} for saga {}: {}", user.getUsername(), command.getSagaId().value(), e.getMessage(), e);
+                log.error("Failed to create user {} for saga {}: {}", user.getUsername(), command.getSagaId(), e.getMessage(), e);
                 
                 // Publish UserCreationFailedEvent
                 UserCreationFailedEvent event = UserCreationFailedEvent.create(
@@ -54,7 +54,7 @@ public class UserCommandListener {
                 );
                 
                 streamBridge.send("userCreationFailedEvent-out-0", event);
-                log.info("Published UserCreationFailedEvent for saga {} and user: {}", command.getSagaId().value(), user.getUsername());
+                log.info("Published UserCreationFailedEvent for saga {} and user: {}", command.getSagaId(), user.getUsername());
             }
         };
     }
@@ -63,11 +63,11 @@ public class UserCommandListener {
     public Consumer<DeleteUserCommand> deleteUserCommand() {
         return command -> {
             String username = command.getUsername();
-            log.info("Received deleteUserCommand for saga {} and user: {} (compensation)", command.getSagaId().value(), username);
+            log.info("Received deleteUserCommand for saga {} and user: {} (compensation)", command.getSagaId(), username);
             
             try {
                 userService.deleteUserByUsername(username);
-                log.info("User {} deleted successfully for saga {} (compensation completed)", username, command.getSagaId().value());
+                log.info("User {} deleted successfully for saga {} (compensation completed)", username, command.getSagaId());
                 
                 // Publish UserDeletedEvent
                 UserDeletedEvent event = UserDeletedEvent.create(
@@ -77,10 +77,10 @@ public class UserCommandListener {
                 );
                 
                 streamBridge.send("userDeletedEvent-out-0", event);
-                log.info("Published UserDeletedEvent for saga {} and user: {}", command.getSagaId().value(), username);
+                log.info("Published UserDeletedEvent for saga {} and user: {}", command.getSagaId(), username);
                 
             } catch (Exception e) {
-                log.error("Failed to delete user {} for saga {} (compensation failed): {}", username, command.getSagaId().value(), e.getMessage(), e);
+                log.error("Failed to delete user {} for saga {} (compensation failed): {}", username, command.getSagaId(), e.getMessage(), e);
                 
                 // Publish UserDeletionFailedEvent
                 UserDeletionFailedEvent event = UserDeletionFailedEvent.create(
@@ -91,7 +91,7 @@ public class UserCommandListener {
                 );
                 
                 streamBridge.send("userDeletionFailedEvent-out-0", event);
-                log.info("Published UserDeletionFailedEvent for saga {} and user: {}", command.getSagaId().value(), username);
+                log.info("Published UserDeletionFailedEvent for saga {} and user: {}", command.getSagaId(), username);
             }
         };
     }

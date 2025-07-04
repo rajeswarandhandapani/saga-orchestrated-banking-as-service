@@ -1,6 +1,5 @@
 package com.rajeswaran.payment.service;
 
-import com.rajeswaran.common.payment.events.PaymentInitiatedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.common.entity.Payment;

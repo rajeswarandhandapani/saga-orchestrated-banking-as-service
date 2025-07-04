@@ -3,9 +3,9 @@ package com.rajeswaran.account.listener;
 import com.rajeswaran.account.service.AccountService;
 import com.rajeswaran.common.entity.Account;
 import com.rajeswaran.common.entity.User;
-import com.rajeswaran.common.useronboarding.commands.OpenAccountCommand;
-import com.rajeswaran.common.useronboarding.events.AccountOpenedEvent;
-import com.rajeswaran.common.useronboarding.events.AccountOpenFailedEvent;
+import com.rajeswaran.common.saga.useronboarding.commands.OpenAccountCommand;
+import com.rajeswaran.common.saga.useronboarding.events.AccountOpenedEvent;
+import com.rajeswaran.common.saga.useronboarding.events.AccountOpenFailedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -32,7 +32,7 @@ public class AccountCommandListener {
             OpenAccountCommand command = message.getPayload();
             User user = command.getUser();
             log.info("Received OpenAccountCommand for saga {} and userId: {}",
-                    command.getSagaId().value(), user.getUserId());
+                    command.getSagaId(), user.getUserId());
 
             try {
                 // Create account
@@ -48,7 +48,7 @@ public class AccountCommandListener {
                 Account savedAccount = accountService.createAccount(account);
                 
                 log.info("Account created successfully for saga {} - accountId: {}, accountNumber: {}", 
-                        command.getSagaId().value(), savedAccount.getId(), savedAccount.getAccountNumber());
+                        command.getSagaId(), savedAccount.getId(), savedAccount.getAccountNumber());
                 
                 // Publish success event
                 AccountOpenedEvent event = AccountOpenedEvent.create(
@@ -59,11 +59,11 @@ public class AccountCommandListener {
                 );
                 
                 streamBridge.send("accountOpenedEvent-out-0", event);
-                log.info("Published AccountOpenedEvent for saga {}", command.getSagaId().value());
+                log.info("Published AccountOpenedEvent for saga {}", command.getSagaId());
                 
             } catch (Exception e) {
                 log.error("Failed to create account for saga {}, userId: {}", 
-                         command.getSagaId().value(), user.getUserId(), e);
+                         command.getSagaId(), user.getUserId(), e);
                 
                 // Publish failure event
                 AccountOpenFailedEvent event = AccountOpenFailedEvent.create(
@@ -75,7 +75,7 @@ public class AccountCommandListener {
                 );
                 
                 streamBridge.send("accountOpenFailedEvent-out-0", event);
-                log.info("Published AccountOpenFailedEvent for saga {}", command.getSagaId().value());
+                log.info("Published AccountOpenFailedEvent for saga {}", command.getSagaId());
             }
         };
     }

@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.useronboarding.events;
 
 import com.rajeswaran.common.saga.event.BaseEvent;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +22,7 @@ public class UserDeletionFailedEvent extends BaseEvent {
     @NotBlank
     private String username;
 
-    public static UserDeletionFailedEvent create(SagaId sagaId, String correlationId, 
+    public static UserDeletionFailedEvent create(Long sagaId, String correlationId, 
                                                String username, String errorMessage) {
         return UserDeletionFailedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())

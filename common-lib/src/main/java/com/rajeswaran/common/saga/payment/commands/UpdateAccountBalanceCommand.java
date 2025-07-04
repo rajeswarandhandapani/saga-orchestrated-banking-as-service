@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.payment.commands;
 
 import com.rajeswaran.common.saga.command.BaseCommand;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -36,7 +35,7 @@ public class UpdateAccountBalanceCommand extends BaseCommand {
 
     private String description;
 
-    public UpdateAccountBalanceCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp,
+    public UpdateAccountBalanceCommand(String commandId, Long sagaId, String correlationId, Instant timestamp,
                                       String paymentId, String sourceAccountNumber, String destinationAccountNumber,
                                       double amount, String description) {
         super(commandId, sagaId, correlationId, timestamp);
@@ -47,7 +46,7 @@ public class UpdateAccountBalanceCommand extends BaseCommand {
         this.description = description;
     }
 
-    public static UpdateAccountBalanceCommand create(SagaId sagaId, String correlationId, String paymentId,
+    public static UpdateAccountBalanceCommand create(long sagaId, String correlationId, String paymentId,
                                                     String sourceAccountNumber, String destinationAccountNumber,
                                                     double amount, String description) {
         return new UpdateAccountBalanceCommand(

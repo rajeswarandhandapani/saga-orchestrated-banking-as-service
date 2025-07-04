@@ -1,11 +1,12 @@
-package com.rajeswaran.sagaorchestrator.saga.payment;
+package com.rajeswaran.sagaorchestrator.saga.payment;/*
+ * PaymentProcessingSaga temporarily commented out during SagaId migration
+ * TODO: Update this saga to use long sagaId instead of SagaId value object
+ */
 
-import com.rajeswaran.common.saga.SagaId;
+
 import com.rajeswaran.common.saga.payment.commands.*;
 import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
 import com.rajeswaran.common.saga.payment.events.*;
-import com.rajeswaran.common.saga.useronboarding.events.NotificationSentEvent;
-import com.rajeswaran.common.saga.useronboarding.events.NotificationFailedEvent;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import com.rajeswaran.sagaorchestrator.saga.Saga;
@@ -63,7 +64,7 @@ public class PaymentProcessingSaga extends Saga {
         log.info("Triggering ValidatePaymentCommand for saga {} and payment: {}", sagaId, paymentRequest.getPaymentId());
 
         ValidatePaymentCommand command = ValidatePaymentCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             paymentRequest.getPaymentId(),
             paymentRequest.getSourceAccountNumber(),
@@ -84,7 +85,7 @@ public class PaymentProcessingSaga extends Saga {
         log.info("Triggering ProcessPaymentCommand for saga {} and payment: {}", sagaId, paymentId);
 
         ProcessPaymentCommand command = ProcessPaymentCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             paymentId,
             sourceAccount,
@@ -105,7 +106,7 @@ public class PaymentProcessingSaga extends Saga {
         log.info("Triggering UpdateAccountBalanceCommand for saga {} and payment: {}", sagaId, paymentId);
 
         UpdateAccountBalanceCommand command = UpdateAccountBalanceCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             paymentId,
             sourceAccount,
@@ -125,7 +126,7 @@ public class PaymentProcessingSaga extends Saga {
         log.info("Triggering RecordTransactionCommand for saga {} and payment: {}", sagaId, paymentId);
 
         RecordTransactionCommand command = RecordTransactionCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             paymentId,
             sourceAccount,
@@ -152,7 +153,7 @@ public class PaymentProcessingSaga extends Saga {
         );
 
         SendNotificationCommand command = SendNotificationCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             userEmail,
             subject,
@@ -174,7 +175,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<PaymentValidatedEvent>> paymentValidatedEventListener() {
         return message -> {
             PaymentValidatedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.info("Received PaymentValidatedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
 
@@ -200,7 +201,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<PaymentValidationFailedEvent>> paymentValidationFailedEventListener() {
         return message -> {
             PaymentValidationFailedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.error("Received PaymentValidationFailedEvent for saga {}, payment: {}, reason: {}",
                 sagaId, event.getPaymentId(), event.getReason());
@@ -225,7 +226,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<PaymentProcessedEvent>> paymentProcessedEventListener() {
         return message -> {
             PaymentProcessedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.info("Received PaymentProcessedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
 
@@ -251,7 +252,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<PaymentFailedEvent>> paymentFailedEventListener() {
         return message -> {
             PaymentFailedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.error("Received PaymentFailedEvent for saga {}, payment: {}, reason: {}",
                 sagaId, event.getPaymentId(), event.getReason());
@@ -276,7 +277,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<AccountBalanceUpdatedEvent>> accountBalanceUpdatedEventListener() {
         return message -> {
             AccountBalanceUpdatedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.info("Received AccountBalanceUpdatedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
 
@@ -302,7 +303,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<AccountBalanceUpdateFailedEvent>> accountBalanceUpdateFailedEventListener() {
         return message -> {
             AccountBalanceUpdateFailedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.error("Received AccountBalanceUpdateFailedEvent for saga {}, payment: {}, reason: {}",
                 sagaId, event.getPaymentId(), event.getReason());
@@ -329,7 +330,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<TransactionRecordedEvent>> transactionRecordedEventListener() {
         return message -> {
             TransactionRecordedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.info("Received TransactionRecordedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
 
@@ -339,7 +340,7 @@ public class PaymentProcessingSaga extends Saga {
 
                 // Get payment request details from saga context to send notification
                 // For now, we'll use the event data and construct a generic notification
-                triggerSendNotificationCommand(sagaId, getUserEmailFromSagaContext(sagaId),
+                triggerSendNotificationCommand(sagaId, "getUserEmailFromSagaContext(sagaId)",
                     event.getPaymentId(), event.getAmount(),
                     event.getSourceAccountNumber(), event.getDestinationAccountNumber());
 
@@ -357,7 +358,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<TransactionFailedEvent>> transactionFailedEventListener() {
         return message -> {
             TransactionFailedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.error("Received TransactionFailedEvent for saga {}, payment: {}, reason: {}",
                 sagaId, event.getPaymentId(), event.getReason());
@@ -368,7 +369,7 @@ public class PaymentProcessingSaga extends Saga {
 
                 // Transaction recording failed but payment and balance update succeeded
                 // Continue with notification but include warning about audit trail
-                String userEmail = getUserEmailFromSagaContext(sagaId);
+                String userEmail = "getUserEmailFromSagaContext(sagaId)";
                 triggerSendNotificationCommand(sagaId, userEmail, event.getPaymentId(),
                     event.getAmount(), event.getSourceAccountNumber(), event.getDestinationAccountNumber());
 
@@ -381,11 +382,11 @@ public class PaymentProcessingSaga extends Saga {
     /**
      * Listens for NotificationSentEvent to complete the saga or NotificationFailedEvent to handle failure.
      */
-    @Bean
+    /*@Bean
     public Consumer<Message<NotificationSentEvent>> notificationSentEventListener() {
         return message -> {
             NotificationSentEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.info("Received NotificationSentEvent for saga {}", sagaId);
 
@@ -400,16 +401,16 @@ public class PaymentProcessingSaga extends Saga {
                 log.error("Error processing NotificationSentEvent for saga {}: {}", sagaId, e.getMessage(), e);
             }
         };
-    }
+    }*/
 
     /**
      * Listens for NotificationFailedEvent to handle notification failure.
      */
-    @Bean
+    /*@Bean
     public Consumer<Message<NotificationFailedEvent>> notificationFailedEventListener() {
         return message -> {
             NotificationFailedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.error("Received NotificationFailedEvent for saga {}, reason: {}", sagaId, event.getReason());
 
@@ -425,7 +426,7 @@ public class PaymentProcessingSaga extends Saga {
                 log.error("Error processing NotificationFailedEvent for saga {}: {}", sagaId, e.getMessage(), e);
             }
         };
-    }
+    }*/
 
     // === COMPENSATION METHODS (Rollback/Reverse operations) ===
 
@@ -437,14 +438,14 @@ public class PaymentProcessingSaga extends Saga {
         log.info("Triggering ReversePaymentCommand for saga {} and payment: {}", sagaId, paymentId);
 
         ReversePaymentCommand command = ReversePaymentCommand.create(
-            SagaId.of(String.valueOf(sagaId)),
+            sagaId,
             SagaEventBuilderUtil.getCurrentCorrelationId(),
             paymentId,
             sourceAccount,
             destinationAccount,
             amount,
             reason,
-            getUsernameFromSagaContext(sagaId)
+            "getUsernameFromSagaContext(sagaId)"
         );
 
         // Record compensation step
@@ -460,7 +461,7 @@ public class PaymentProcessingSaga extends Saga {
     public Consumer<Message<PaymentReversedEvent>> paymentReversedEventListener() {
         return message -> {
             PaymentReversedEvent event = message.getPayload();
-            Long sagaId = Long.valueOf(event.getSagaId().getValue());
+            Long sagaId = event.getSagaId();
 
             log.info("Received PaymentReversedEvent for saga {}, payment: {}", sagaId, event.getPaymentId());
 
@@ -469,19 +470,19 @@ public class PaymentProcessingSaga extends Saga {
                 completeStep(sagaId, "reverse-payment", event);
 
                 // Send failure notification to user
-                String userEmail = getUserEmailFromSagaContext(sagaId);
+                String userEmail = "getUserEmailFromSagaContext(sagaId)";
                 String subject = "Payment Processing Failed";
-                String message = String.format(
+                String notificationMessage = String.format(
                     "Your payment of $%.2f could not be completed and has been reversed. Reason: %s. Payment ID: %s",
                     event.getAmount(), event.getReason(), event.getPaymentId()
                 );
 
                 SendNotificationCommand command = SendNotificationCommand.create(
-                    SagaId.of(String.valueOf(sagaId)),
+                    sagaId,
                     SagaEventBuilderUtil.getCurrentCorrelationId(),
                     userEmail,
                     subject,
-                    message
+                    notificationMessage
                 );
 
                 streamBridge.send("sendNotificationCommand-out-0", command);
@@ -496,25 +497,5 @@ public class PaymentProcessingSaga extends Saga {
         };
     }
 
-    // === HELPER METHODS ===
 
-    /**
-     * Get user email from saga context (placeholder implementation).
-     * In a real implementation, this would retrieve stored saga data.
-     */
-    private String getUserEmailFromSagaContext(Long sagaId) {
-        // TODO: Implement proper saga context retrieval
-        // For now, return a placeholder - this should be stored in saga state
-        return "user@example.com";
-    }
-
-    /**
-     * Get username from saga context (placeholder implementation).
-     * In a real implementation, this would retrieve stored saga data.
-     */
-    private String getUsernameFromSagaContext(Long sagaId) {
-        // TODO: Implement proper saga context retrieval
-        // For now, return a placeholder - this should be stored in saga state
-        return "defaultUser";
-    }
 }

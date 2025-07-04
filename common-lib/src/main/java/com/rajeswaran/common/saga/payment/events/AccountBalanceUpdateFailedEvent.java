@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.payment.events;
 
 import com.rajeswaran.common.saga.event.BaseEvent;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +31,7 @@ public class AccountBalanceUpdateFailedEvent extends BaseEvent {
 
     private String reason;
 
-    public static AccountBalanceUpdateFailedEvent create(SagaId sagaId, String correlationId, String paymentId,
+    public static AccountBalanceUpdateFailedEvent create(Long sagaId, String correlationId, String paymentId,
                                                         String sourceAccountNumber, String destinationAccountNumber,
                                                         double amount, String reason) {
         return AccountBalanceUpdateFailedEvent.builder()

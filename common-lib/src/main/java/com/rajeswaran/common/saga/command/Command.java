@@ -1,6 +1,5 @@
-package com.rajeswaran.common.command;
+package com.rajeswaran.common.saga.command;
 
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
@@ -14,7 +13,7 @@ public interface Command {
     String getCommandId();
     
     @NotNull
-    SagaId getSagaId();
+    Long getSagaId();
     
     @NotNull
     String getCorrelationId();

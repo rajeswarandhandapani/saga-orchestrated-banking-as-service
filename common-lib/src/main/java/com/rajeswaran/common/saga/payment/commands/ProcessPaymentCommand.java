@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.payment.commands;
 
 import com.rajeswaran.common.saga.command.BaseCommand;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -38,7 +37,7 @@ public class ProcessPaymentCommand extends BaseCommand {
 
     private String username;
 
-    public ProcessPaymentCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp,
+    public ProcessPaymentCommand(String commandId, Long sagaId, String correlationId, Instant timestamp,
                                 String paymentId, String sourceAccountNumber, String destinationAccountNumber,
                                 double amount, String description, String username) {
         super(commandId, sagaId, correlationId, timestamp);
@@ -50,7 +49,7 @@ public class ProcessPaymentCommand extends BaseCommand {
         this.username = username;
     }
 
-    public static ProcessPaymentCommand create(SagaId sagaId, String correlationId, String paymentId,
+    public static ProcessPaymentCommand create(Long sagaId, String correlationId, String paymentId,
                                               String sourceAccountNumber, String destinationAccountNumber,
                                               double amount, String description, String username) {
         return new ProcessPaymentCommand(

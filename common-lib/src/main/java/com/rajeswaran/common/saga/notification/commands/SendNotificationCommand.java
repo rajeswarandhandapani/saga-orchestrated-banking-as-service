@@ -1,7 +1,6 @@
 package com.rajeswaran.common.saga.notification.commands;
 
 import com.rajeswaran.common.saga.command.BaseCommand;
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,14 +30,14 @@ public class SendNotificationCommand extends BaseCommand {
     @NotBlank
     private String message;
 
-    public SendNotificationCommand(String commandId, SagaId sagaId, String correlationId, Instant timestamp, String email, String subject, String message) {
+    public SendNotificationCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, String email, String subject, String message) {
         super(commandId, sagaId, correlationId, timestamp);
         this.email = email;
         this.subject = subject;
         this.message = message;
     }
 
-    public static SendNotificationCommand create(SagaId sagaId, String correlationId, String email, String subject, String message) {
+    public static SendNotificationCommand create(Long sagaId, String correlationId, String email, String subject, String message) {
         return new SendNotificationCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,

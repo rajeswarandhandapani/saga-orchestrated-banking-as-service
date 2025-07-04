@@ -1,6 +1,5 @@
 package com.rajeswaran.common.saga.command;
 
-import com.rajeswaran.common.saga.SagaId;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +24,7 @@ public abstract class BaseCommand implements Command {
     private String commandId;
     
     @NotNull
-    private SagaId sagaId;
+    private Long sagaId;
     
     @NotNull
     private String correlationId;
