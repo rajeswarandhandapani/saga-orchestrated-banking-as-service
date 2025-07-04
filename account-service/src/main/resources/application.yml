@@ -56,6 +56,16 @@ spring:
         accountBalanceUpdatedEvent-out-0:
           destination: account-balance-updated
           content-type: application/json
+        processPaymentCommand-in-0:
+          destination: process-payment-command
+          group: account-service-group
+          content-type: application/json
+        paymentProcessedEvent-out-0:
+          destination: payment-processed-event
+          content-type: application/json
+        paymentFailedEvent-out-0:
+          destination: payment-failed-event
+          content-type: application/json
       kafka:
         binder:
           brokers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
