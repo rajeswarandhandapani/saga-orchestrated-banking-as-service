@@ -53,9 +53,6 @@ spring:
         paymentFailedEvent-out-0:
           destination: payment-failed
           content-type: application/json
-        accountBalanceUpdatedEvent-out-0:
-          destination: account-balance-updated
-          content-type: application/json
         processPaymentCommand-in-0:
           destination: process-payment-command
           group: account-service-group
