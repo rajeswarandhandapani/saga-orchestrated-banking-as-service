@@ -23,10 +23,18 @@ spring:
           destination: validate-payment-command
           group: payment-service-group
           content-type: application/json
+        processPaymentCommand-in-0:
+          destination: process-payment-command
+          group: payment-service-group
+          content-type: application/json
         paymentValidatedEvent-out-0:
           destination: payment-validated-event
         paymentValidationFailedEvent-out-0:
           destination: payment-validation-failed-event
+        paymentProcessedEvent-out-0:
+          destination: payment-processed-event
+        paymentFailedEvent-out-0:
+          destination: payment-failed-event
       kafka:
         binder:
           brokers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
