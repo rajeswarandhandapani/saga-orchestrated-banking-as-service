@@ -4,6 +4,7 @@ import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.saga.payment.commands.ValidatePaymentCommand;
 import com.rajeswaran.common.saga.payment.events.PaymentValidatedEvent;
 import com.rajeswaran.common.saga.payment.events.PaymentValidationFailedEvent;
+import com.rajeswaran.payment.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -29,7 +30,7 @@ public class PaymentCommandListener {
      * Consumes ValidatePaymentCommand, performs basic validation, and publishes result event.
      */
     @Bean
-    public Consumer<Message<ValidatePaymentCommand>> validatePaymentCommand() {
+    public Consumer<Message<ValidatePaymentCommand>> validatePaymentCommand(PaymentService paymentService) {
         return message -> {
             ValidatePaymentCommand command = message.getPayload();
             Payment payment = command.getPayment();
@@ -44,6 +45,7 @@ public class PaymentCommandListener {
                     command.getCorrelationId(),
                     payment
                 );
+                paymentService.createPayment(payment);
                 streamBridge.send("paymentValidatedEvent-out-0", event);
                 log.info("Published PaymentValidatedEvent for saga {} and payment: {}", command.getSagaId(), payment);
             } else {

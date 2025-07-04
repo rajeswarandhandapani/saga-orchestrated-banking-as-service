@@ -36,7 +36,7 @@ public class NotificationService {
     public void sendNotification(SendNotificationCommand command) {
         Notification notification = new Notification(
                 null,
-                command.getEmail(),
+                command.getUserName(),
                 command.getSubject(),
                 command.getMessage(),
                 LocalDateTime.now()

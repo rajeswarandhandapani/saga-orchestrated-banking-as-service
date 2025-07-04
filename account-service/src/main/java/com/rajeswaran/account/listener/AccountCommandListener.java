@@ -4,12 +4,12 @@ import com.rajeswaran.account.service.AccountService;
 import com.rajeswaran.common.entity.Account;
 import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.entity.User;
-import com.rajeswaran.common.saga.useronboarding.commands.OpenAccountCommand;
-import com.rajeswaran.common.saga.useronboarding.events.AccountOpenedEvent;
-import com.rajeswaran.common.saga.useronboarding.events.AccountOpenFailedEvent;
 import com.rajeswaran.common.saga.payment.commands.ProcessPaymentCommand;
-import com.rajeswaran.common.saga.payment.events.PaymentProcessedEvent;
 import com.rajeswaran.common.saga.payment.events.PaymentFailedEvent;
+import com.rajeswaran.common.saga.payment.events.PaymentProcessedEvent;
+import com.rajeswaran.common.saga.useronboarding.commands.OpenAccountCommand;
+import com.rajeswaran.common.saga.useronboarding.events.AccountOpenFailedEvent;
+import com.rajeswaran.common.saga.useronboarding.events.AccountOpenedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -96,51 +96,48 @@ public class AccountCommandListener {
 
             var srcOpt = accountService.getAccountByAccountNumber(payment.getSourceAccountNumber());
             if (srcOpt.isEmpty()) {
-                publishFailed(cmd, "Source account not found");
+                publishFailed(cmd, "Source account not found", payment);
                 return;
             }
             var src = srcOpt.get();
             if (!"ACTIVE".equalsIgnoreCase(src.getStatus())) {
-                publishFailed(cmd, "Source account is not active");
+                publishFailed(cmd, "Source account is not active", payment);
                 return;
             }
             if (src.getBalance() < payment.getAmount()) {
-                publishFailed(cmd, "Insufficient balance");
+                publishFailed(cmd, "Insufficient balance", payment);
                 return;
             }
             var destOpt = accountService.getAccountByAccountNumber(payment.getDestinationAccountNumber());
             if (destOpt.isEmpty()) {
-                publishFailed(cmd, "Destination account not found");
+                publishFailed(cmd, "Destination account not found", payment);
                 return;
             }
             var dest = destOpt.get();
             if (!"ACTIVE".equalsIgnoreCase(dest.getStatus())) {
-                publishFailed(cmd, "Destination account is not active");
+                publishFailed(cmd, "Destination account is not active", payment);
                 return;
             }
             // All checks passed: update balances
             boolean debited = accountService.deductFromAccount(payment.getSourceAccountNumber(), payment.getAmount());
             boolean credited = accountService.addToAccount(payment.getDestinationAccountNumber(), payment.getAmount());
             if (!debited || !credited) {
-                publishFailed(cmd, "Failed to update account balances");
+                publishFailed(cmd, "Failed to update account balances", payment);
                 return;
             }
             log.info("[Account] Debited {} from {} and credited to {}", payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber());
             streamBridge.send("paymentProcessedEvent-out-0", PaymentProcessedEvent.create(
                 cmd.getSagaId(), cmd.getCorrelationId(), payment
             ));
-            log.info("[Account] Published PaymentProcessedEvent for saga {} and payment: {}", cmd.getSagaId(), cmd.getPaymentId());
+            log.info("[Account] Published PaymentProcessedEvent for saga {} and payment: {}", cmd.getSagaId(), payment.getId());
         };
     }
 
-    private void publishFailed(ProcessPaymentCommand cmd, String reason) {
-        Payment payment = cmd.getPayment();
+    private void publishFailed(ProcessPaymentCommand cmd, String reason, Payment payment) {
         streamBridge.send("paymentFailedEvent-out-0", PaymentFailedEvent.create(
-            cmd.getSagaId(), cmd.getCorrelationId(), payment.getId(),
-                payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(),
-                payment.getAmount(), reason, payment.getUsername()
+            cmd.getSagaId(), cmd.getCorrelationId(), payment, reason
         ));
-        log.warn("[Account] Payment failed for saga {} and payment {}: {}", cmd.getSagaId(), cmd.getPaymentId(), reason);
+        log.warn("[Account] Payment failed for saga {} and payment {}: {}", cmd.getSagaId(), payment.getId(), reason);
     }
 
     private String generateAccountNumber() {
