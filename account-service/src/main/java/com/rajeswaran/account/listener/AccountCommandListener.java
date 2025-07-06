@@ -118,13 +118,22 @@ public class AccountCommandListener {
                 publishFailed(cmd, "Destination account is not active", payment);
                 return;
             }
+            payment.setDestinationAccountUserName(dest.getUserName());
+
+
             // All checks passed: update balances
             boolean debited = accountService.deductFromAccount(payment.getSourceAccountNumber(), payment.getAmount());
             boolean credited = accountService.addToAccount(payment.getDestinationAccountNumber(), payment.getAmount());
+
             if (!debited || !credited) {
                 publishFailed(cmd, "Failed to update account balances", payment);
                 return;
             }
+
+            //set source and destination account balance after transaction on the payment
+            payment.setSourceAccountBalance(src.getBalance() - payment.getAmount());
+            payment.setDestinationAccountBalance(dest.getBalance() + payment.getAmount());
+
             log.info("[Account] Debited {} from {} and credited to {}", payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber());
             streamBridge.send("paymentProcessedEvent-out-0", PaymentProcessedEvent.create(
                 cmd.getSagaId(), cmd.getCorrelationId(), payment

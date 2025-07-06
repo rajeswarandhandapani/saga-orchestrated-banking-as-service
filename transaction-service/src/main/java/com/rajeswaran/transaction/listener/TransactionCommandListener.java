@@ -40,6 +40,8 @@ public class TransactionCommandListener {
                 transaction.setStatus("COMPLETED");
                 transaction.setReference("Payment ID: " + payment.getId());
                 transaction.setTimestamp(LocalDateTime.now());
+                transaction.setUsername(payment.getCreatedBy());
+                transaction.setBalance(payment.getSourceAccountBalance());
                 // Optionally set username and balance if available in cmd
                 transactionRepository.save(transaction);
                 log.info("[Transaction] Persisted transaction: {}", transaction);
@@ -53,6 +55,8 @@ public class TransactionCommandListener {
                 destTransaction.setStatus("COMPLETED");
                 destTransaction.setReference("Payment ID: " + payment.getId());
                 destTransaction.setTimestamp(LocalDateTime.now());
+                destTransaction.setUsername(payment.getDestinationAccountUserName());
+                destTransaction.setBalance(payment.getDestinationAccountBalance());
                 // Optionally set username and balance if available in cmd
                 transactionRepository.save(destTransaction);
                 log.info("[Transaction] Persisted destination transaction: {}", destTransaction);
