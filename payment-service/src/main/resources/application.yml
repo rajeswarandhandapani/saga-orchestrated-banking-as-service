@@ -21,7 +21,7 @@ spring:
       bindings:
         validatePaymentCommand-in-0:
           destination: validate-payment-command
-          group: payment-service-group
+          group: payment-service
           content-type: application/json
         paymentValidatedEvent-out-0:
           destination: payment-validated-event
@@ -29,7 +29,7 @@ spring:
           destination: payment-validation-failed-event
         updatePaymentStatusCommand-in-0:
           destination: update-payment-status-command
-          group: payment-service-group
+          group: payment-service
           content-type: application/json
         paymentStatusUpdatedEvent-out-0:
           destination: payment-status-updated-event

@@ -34,33 +34,33 @@ spring:
           destination: create-user-command
         userCreatedEvent-in-0:
           destination: user-created-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
         userCreationFailedEvent-in-0:
           destination: user-creation-failed-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
 
         accountOpenCommand-out-0:
           destination: account-open-command
         accountOpenedEvent-in-0:
           destination: account-opened-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
         accountOpenFailedEvent-in-0:
           destination: account-open-failed-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
 
         deleteUserCommand-out-0:
           destination: delete-user-command
         userDeletedEvent-in-0:
           destination: user-deleted-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
         userDeletionFailedEvent-in-0:
           destination: user-deletion-failed-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
 
 
@@ -69,34 +69,36 @@ spring:
           destination: validate-payment-command
         paymentValidatedEvent-in-0:
           destination: payment-validated-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
         paymentValidationFailedEvent-in-0:
           destination: payment-validation-failed-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
 
         processPaymentCommand-out-0:
           destination: process-payment-command
         paymentProcessedEvent-in-0:
           destination: payment-processed-event
+          group: saga-orchestrator-service
+          content-type: application/json
 
         recordTransactionCommand-out-0:
           destination: record-transaction-command
         transactionRecordedEvent-in-0:
           destination: transaction-recorded-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
         transactionFailedEvent-in-0:
           destination: transaction-failed-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
 
         updatePaymentStatusCommand-out-0:
           destination: update-payment-status-command
         paymentStatusUpdatedEvent-in-0:
           destination: payment-status-updated-event
-          group: saga-orchestrator-group
+          group: saga-orchestrator-service
           content-type: application/json
 
         sendNotificationCommand-out-0:
