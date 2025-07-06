@@ -1,10 +1,10 @@
 package com.rajeswaran.sagaorchestrator.saga.useronboarding;
 
+import com.rajeswaran.common.AppConstants;
 import com.rajeswaran.common.entity.User;
 import com.rajeswaran.common.saga.useronboarding.commands.CreateUserCommand;
 import com.rajeswaran.common.saga.useronboarding.commands.DeleteUserCommand;
 import com.rajeswaran.common.saga.useronboarding.commands.OpenAccountCommand;
-import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
 import com.rajeswaran.common.saga.useronboarding.events.*;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
@@ -103,6 +103,7 @@ public class UserOnboardingSaga extends Saga {
         
         streamBridge.send("deleteUserCommand-out-0", command);
     }
+    
     // === EVENT LISTENERS (Consumes events from other services) ===
      @Bean
     public Consumer<Message<UserCreatedEvent>> userCreatedEvent() {
@@ -114,8 +115,24 @@ public class UserOnboardingSaga extends Saga {
             
             completeStep(event.getSagaId(), UserOnboardingSteps.CREATE_USER.getStepName(), event);
             
-            // Proceed to next step: Open Account
-            triggerOpenAccountCommand(event.getSagaId(), event.getUser());
+            User user = event.getUser();
+            
+            // Check if user has admin role
+            if (user.getRoles() != null && user.getRoles().contains(AppConstants.ROLE_BAAS_ADMIN)) {
+                log.info("User {} has admin role, skipping account opening and proceeding to notification", user.getUsername());
+                
+                // Send admin welcome notification
+                String subject = "Welcome to BaaS Banking Service - Admin Access";
+                String notificationMessage = String.format("Hello %s,\n\nWelcome to BaaS Banking service! You have been granted admin access.\n\nBest regards,\nYour Company", user.getFullName());
+                
+                triggerSendNotificationCommand(event.getSagaId(), user.getUsername(), subject, notificationMessage);
+                
+                // Complete saga after notification is sent
+                completeSaga(event.getSagaId());
+            } else {
+                // Proceed to next step: Open Account for regular users
+                triggerOpenAccountCommand(event.getSagaId(), user);
+            }
         };
     }
 

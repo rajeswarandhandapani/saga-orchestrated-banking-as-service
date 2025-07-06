@@ -34,6 +34,7 @@ public class SagaController {
 
         User user = new User();
         user.setUsername(SecurityUtil.getCurrentUsername());
+        user.setRoles(SecurityUtil.extractRolesFromJwt());
 
          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
          if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
