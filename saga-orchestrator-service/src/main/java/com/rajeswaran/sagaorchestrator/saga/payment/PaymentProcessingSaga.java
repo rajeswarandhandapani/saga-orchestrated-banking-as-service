@@ -22,12 +22,17 @@ import java.util.function.Consumer;
 /**
  * Self-orchestrating Payment Processing Saga using command/event pattern.
  *
- * Flow:
+ * Happy Path Flow:
  * 1. Produces ValidatePaymentCommand → Listens for PaymentValidatedEvent/PaymentValidationFailedEvent
  * 2. Produces ProcessPaymentCommand → Listens for PaymentProcessedEvent/PaymentFailedEvent
- * 3. Produces UpdateAccountBalanceCommand → Listens for AccountBalanceUpdatedEvent/AccountBalanceUpdateFailedEvent
- * 4. Produces RecordTransactionCommand → Listens for TransactionRecordedEvent/TransactionFailedEvent
- * 5. Produces SendNotificationCommand → Listens for NotificationSentEvent/NotificationFailedEvent
+ * 3. Produces RecordTransactionCommand → Listens for TransactionRecordedEvent/TransactionFailedEvent
+ * 4. Produces UpdatePaymentStatusCommand → Listens for PaymentStatusUpdatedEvent
+ * 5. Produces SendNotificationCommand → Completes saga
+ *
+ * Failure Flow:
+ * - If validation fails → Fails saga immediately
+ * - If payment processing fails → Fails saga immediately  
+ * - If transaction recording fails → Sends failure notification
  */
 @Component
 @Slf4j

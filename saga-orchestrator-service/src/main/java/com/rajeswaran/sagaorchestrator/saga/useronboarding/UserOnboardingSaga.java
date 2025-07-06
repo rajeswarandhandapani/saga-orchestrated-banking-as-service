@@ -21,10 +21,18 @@ import java.util.function.Consumer;
 /**
  * Self-orchestrating User Onboarding Saga using command/event pattern.
  * 
- * Flow:
+ * Flow for Regular Users:
  * 1. Produces CreateUserCommand → Listens for UserCreatedEvent/UserCreationFailedEvent
  * 2. Produces OpenAccountCommand → Listens for AccountOpenedEvent/AccountOpenFailedEvent  
- * 3. Produces SendWelcomeNotificationCommand → Listens for WelcomeNotificationSentEvent/WelcomeNotificationFailedEvent
+ * 3. Produces SendNotificationCommand → Completes saga
+ * 
+ * Flow for Admin Users:
+ * 1. Produces CreateUserCommand → Listens for UserCreatedEvent/UserCreationFailedEvent
+ * 2. Skips account opening step
+ * 3. Produces SendNotificationCommand → Completes saga
+ * 
+ * Compensation Flow:
+ * - If account opening fails → Produces DeleteUserCommand
  */
 @Component
 @Slf4j
