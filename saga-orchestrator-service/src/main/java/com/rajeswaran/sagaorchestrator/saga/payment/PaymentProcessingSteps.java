@@ -31,6 +31,11 @@ public enum PaymentProcessingSteps {
     RECORD_TRANSACTION("record-transaction"),
 
     /**
+     * Fourth step: Update payment status to COMPLETED.
+     */
+    UPDATE_PAYMENT_STATUS("update-payment-status"),
+
+    /**
      * Final step: Send payment confirmation notification to the user.
      */
     SEND_NOTIFICATION("send-notification");

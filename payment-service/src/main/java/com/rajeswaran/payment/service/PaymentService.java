@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.rajeswaran.common.entity.Payment;
-import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.payment.repository.PaymentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,14 +30,16 @@ public class PaymentService {
 
     public Payment createPayment(Payment payment) {
         payment.setTimestamp(LocalDateTime.now());
-        
         payment.setStatus("PENDING");
-
-
         return paymentRepository.save(payment);
     }
 
     public void deletePayment(Long id) {
         paymentRepository.deleteById(id);
+    }
+
+    public Payment updatePayment(Payment payment) {
+        payment.setTimestamp(LocalDateTime.now());
+        return paymentRepository.save(payment);
     }
 }

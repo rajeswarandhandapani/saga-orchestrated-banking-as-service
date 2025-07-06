@@ -15,7 +15,7 @@ spring:
     discovery:
       enabled: true
     function:
-      definition: validatePaymentCommand;accountBalanceUpdatedEvent;paymentFailedEvent
+      definition: validatePaymentCommand;accountBalanceUpdatedEvent;paymentFailedEvent;updatePaymentStatusCommand
     stream:
       default-binder: kafka
       bindings:
@@ -27,6 +27,12 @@ spring:
           destination: payment-validated-event
         paymentValidationFailedEvent-out-0:
           destination: payment-validation-failed-event
+        updatePaymentStatusCommand-in-0:
+          destination: update-payment-status-command
+          group: payment-service-group
+          content-type: application/json
+        paymentStatusUpdatedEvent-out-0:
+          destination: payment-status-updated-event
       kafka:
         binder:
           brokers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}

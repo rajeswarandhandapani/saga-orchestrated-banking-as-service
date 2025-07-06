@@ -24,7 +24,6 @@ public class Payment {
     private String destinationAccountNumber;
     private double amount;
     private String status;
-    private String reference;
     private String description;
     private LocalDateTime timestamp;
     private String createdBy;

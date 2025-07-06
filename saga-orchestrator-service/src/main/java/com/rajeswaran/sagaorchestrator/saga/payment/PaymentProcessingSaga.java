@@ -4,6 +4,7 @@ import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
 import com.rajeswaran.common.saga.payment.commands.ProcessPaymentCommand;
 import com.rajeswaran.common.saga.payment.commands.RecordTransactionCommand;
+import com.rajeswaran.common.saga.payment.commands.UpdatePaymentStatusCommand;
 import com.rajeswaran.common.saga.payment.commands.ValidatePaymentCommand;
 import com.rajeswaran.common.saga.payment.events.*;
 import com.rajeswaran.common.util.SagaEventBuilderUtil;
@@ -102,6 +103,24 @@ public class PaymentProcessingSaga extends Saga {
         startStep(sagaId, PaymentProcessingSteps.RECORD_TRANSACTION.getStepName(), command);
 
         streamBridge.send("recordTransactionCommand-out-0", command);
+    }
+
+    private void triggerUpdatePaymentStatusCommand(Long sagaId, Payment payment, String status) {
+        log.info("Triggering UpdatePaymentStatusCommand for saga {} and payment: {} to status: {}", sagaId, payment.getId(), status);
+
+        // Set the payment status in the saga
+        payment.setStatus(status);
+
+        UpdatePaymentStatusCommand command = UpdatePaymentStatusCommand.create(
+            sagaId,
+            SagaEventBuilderUtil.getCurrentCorrelationId(),
+            payment
+        );
+
+        // Record step as STARTED before publishing command
+        startStep(sagaId, PaymentProcessingSteps.UPDATE_PAYMENT_STATUS.getStepName(), command);
+
+        streamBridge.send("updatePaymentStatusCommand-out-0", command);
     }
 
 
@@ -226,17 +245,8 @@ public class PaymentProcessingSaga extends Saga {
                 // Complete current step
                 completeStep(sagaId, PaymentProcessingSteps.RECORD_TRANSACTION.getStepName(), event);
 
-                String subject = "Payment Processed Successfully";
-                String notificationMessage = String.format(
-                        "Your payment of $%.2f from account %s to account %s has been processed successfully. Payment ID: %s",
-                        payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(), payment.getId()
-                );
-
-                // Trigger notification (fire-and-forget)
-                triggerSendNotificationCommand(sagaId, payment.getCreatedBy(), subject, notificationMessage);
-
-                // Mark saga as complete after notification is triggered
-                completeSaga(sagaId);
+                // Trigger payment status update to COMPLETED
+                triggerUpdatePaymentStatusCommand(sagaId, payment, "COMPLETED");
 
             } catch (Exception e) {
                 log.error("Error processing TransactionRecordedEvent for saga {}: {}", sagaId, e.getMessage(), e);
@@ -273,6 +283,43 @@ public class PaymentProcessingSaga extends Saga {
 
             } catch (Exception e) {
                 log.error("Error processing TransactionFailedEvent for saga {}: {}", sagaId, e.getMessage(), e);
+            }
+        };
+    }
+
+    /**
+     * Listens for PaymentStatusUpdatedEvent to proceed to final step.
+     */
+    @Bean
+    public Consumer<Message<PaymentStatusUpdatedEvent>> paymentStatusUpdatedEvent() {
+        return message -> {
+            PaymentStatusUpdatedEvent event = message.getPayload();
+            Payment payment = event.getPayment();
+            Long sagaId = event.getSagaId();
+
+            log.info("Received PaymentStatusUpdatedEvent for saga {}, payment: {} with status: {}", 
+                    sagaId, payment.getId(), payment.getStatus());
+
+            try {
+                // Complete the update payment status step
+                completeStep(sagaId, PaymentProcessingSteps.UPDATE_PAYMENT_STATUS.getStepName(), event);
+
+                String subject = "Payment Processed Successfully";
+                String notificationMessage = String.format(
+                        "Your payment of $%.2f from account %s to account %s has been processed successfully and marked as %s. Payment ID: %s",
+                        payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(), 
+                        payment.getStatus(), payment.getId()
+                );
+
+                // Trigger notification (fire-and-forget)
+                triggerSendNotificationCommand(sagaId, payment.getCreatedBy(), subject, notificationMessage);
+                
+                // Mark saga as complete
+                completeSaga(sagaId);
+
+            } catch (Exception e) {
+                log.error("Error processing PaymentStatusUpdatedEvent for saga {}: {}", sagaId, e.getMessage(), e);
+                failSaga(sagaId);
             }
         };
     }

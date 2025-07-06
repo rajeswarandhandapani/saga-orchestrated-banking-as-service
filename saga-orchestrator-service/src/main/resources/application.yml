@@ -25,6 +25,7 @@ spring:
         paymentValidatedEvent;paymentValidationFailedEvent;
         paymentProcessedEvent;
         transactionRecordedEvent;transactionFailedEvent;
+        paymentStatusUpdatedEvent;
         sendNotificationCommand
     stream:
       bindings:
@@ -88,6 +89,13 @@ spring:
           content-type: application/json
         transactionFailedEvent-in-0:
           destination: transaction-failed-event
+          group: saga-orchestrator-group
+          content-type: application/json
+
+        updatePaymentStatusCommand-out-0:
+          destination: update-payment-status-command
+        paymentStatusUpdatedEvent-in-0:
+          destination: payment-status-updated-event
           group: saga-orchestrator-group
           content-type: application/json
 
