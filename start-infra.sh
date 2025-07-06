@@ -46,28 +46,3 @@ if [ -f "pom.xml" ]; then
 else
   echo "Root pom.xml not found! Skipping parent POM installation."
 fi
-
-
-modules=(
-  "service-discovery"
-  "account-service"
-  "notification-service"
-  "payment-service"
-  "transaction-service"
-  "user-service"
-  "saga-orchestrator-service"
-  "api-gateway"
-)
-
-for module in "${modules[@]}"; do
-  if [ -d "$module" ]; then
-    echo "Starting Spring Boot app in $module ..."
-    (cd "$module" && mvn spring-boot:run &)
-    echo "Waiting 10 seconds before starting the next service..."
-    sleep 5
-  else
-    echo "Directory $module does not exist, skipping."
-  fi
-done
-
-echo "All listed Spring Boot applications are starting in the background."
