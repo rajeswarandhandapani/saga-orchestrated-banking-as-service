@@ -21,4 +21,7 @@ public interface AdminDashboardClient {
 
     @GetExchange(value = "/api/notifications", accept = "application/json")
     Mono<ResponseEntity<Object>> fetchNotifications(@RequestHeader("Authorization") String authHeader);
+
+    @GetExchange(value = "/api/saga/instances", accept = "application/json")
+    Mono<ResponseEntity<Object>> fetchSagaInstances(@RequestHeader("Authorization") String authHeader);
 }

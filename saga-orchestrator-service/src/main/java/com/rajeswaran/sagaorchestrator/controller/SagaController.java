@@ -7,16 +7,20 @@ import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 import com.rajeswaran.sagaorchestrator.saga.payment.PaymentProcessingSaga;
 import com.rajeswaran.sagaorchestrator.saga.payment.PaymentRequest;
 import com.rajeswaran.sagaorchestrator.saga.useronboarding.UserOnboardingSaga;
+import com.rajeswaran.sagaorchestrator.service.SagaStateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -26,6 +30,18 @@ public class SagaController {
 
     private final UserOnboardingSaga userOnboardingSaga;
     private final PaymentProcessingSaga paymentProcessingSaga;
+    private final SagaStateManager sagaStateManager;
+
+    @GetMapping("/instances")
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
+    public ResponseEntity<List<SagaInstance>> getAllSagaInstances() {
+        log.info("Received request to get all saga instances");
+
+        List<SagaInstance> sagaInstances = sagaStateManager.getAllSagaInstances();
+
+        log.info("Retrieved {} saga instances", sagaInstances.size());
+        return ResponseEntity.ok(sagaInstances);
+    }
 
     @PostMapping("/start/user-onboarding")
     @PreAuthorize("isAuthenticated()")
@@ -36,11 +52,11 @@ public class SagaController {
         user.setUsername(SecurityUtil.getCurrentUsername());
         user.setRoles(SecurityUtil.extractRolesFromJwt());
 
-         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-         if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
-             user.setEmail(jwt.getClaimAsString("email"));
-             user.setFullName(jwt.getClaimAsString("name"));
-         }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
+            user.setEmail(jwt.getClaimAsString("email"));
+            user.setFullName(jwt.getClaimAsString("name"));
+        }
 
         // Use Saga interface to start saga with payload - this will automatically trigger the first command
         SagaInstance sagaInstance = userOnboardingSaga.startSaga(user);
