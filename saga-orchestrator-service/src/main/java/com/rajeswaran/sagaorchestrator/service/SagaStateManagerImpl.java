@@ -10,6 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -67,6 +71,13 @@ public class SagaStateManagerImpl implements SagaStateManager {
     public void failStep(Long sagaId, String stepName, Object errorMessage) {
         log.info("Failing step '{}' for saga {} with error: {}", stepName, sagaId, errorMessage);
         updateStepStatus(sagaId, stepName, SagaConstants.SagaStepStatus.FAILED, errorMessage != null ? errorMessage.toString() : "");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SagaInstance> getAllSagaInstances() {
+        log.info("Retrieving all saga instances with step instances");
+        return sagaInstanceRepository.findAllWithStepInstances();
     }
 
     // Private helper methods

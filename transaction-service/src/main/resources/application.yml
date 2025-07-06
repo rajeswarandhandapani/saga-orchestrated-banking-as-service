@@ -19,15 +19,18 @@ spring:
   #          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
   cloud:
     function:
-      definition: accountBalanceUpdatedEvent
+      definition: recordTransactionCommand
     stream:
       bindings:
-        accountBalanceUpdatedEvent-in-0:
-          destination: account-balance-updated
+        recordTransactionCommand-in-0:
+          destination: record-transaction-command
           group: transaction-service
           content-type: application/json
-        auditEvent-out-0:
-          destination: audit-events
+        transactionRecordedEvent-out-0:
+          destination: transaction-recorded-event
+          content-type: application/json
+        transactionFailedEvent-out-0:
+          destination: transaction-failed-event
           content-type: application/json
       kafka:
         binder:

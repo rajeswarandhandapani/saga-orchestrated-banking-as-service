@@ -19,7 +19,7 @@ spring:
   #          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/baas}
   cloud:
     function:
-      definition: accountOpenCommand
+      definition: accountOpenCommand;processPaymentCommand
     stream:
       bindings:
         # User Onboarding Saga Commands
@@ -28,7 +28,6 @@ spring:
           group: account-service
           content-type: application/json
 
-        # User Onboarding Saga Events (outputs)
         accountOpenedEvent-out-0:
           destination: account-opened-event
           content-type: application/json
@@ -36,25 +35,16 @@ spring:
           destination: account-open-failed-event
           content-type: application/json
 
-        # Other existing bindings
-        auditEvent-out-0:
-          destination: audit-events
-          content-type: application/json
-        notificationEvent-out-0:
-          destination: notification-events
-          content-type: application/json
-        paymentInitiatedEvent-in-0:
-          destination: payment-initiated
+        # Payment Processing Commands
+        processPaymentCommand-in-0:
+          destination: process-payment-command
           group: account-service
           content-type: application/json
-        paymentValidatedEvent-out-0:
-          destination: payment-validated
+        paymentProcessedEvent-out-0:
+          destination: payment-processed-event
           content-type: application/json
         paymentFailedEvent-out-0:
-          destination: payment-failed
-          content-type: application/json
-        accountBalanceUpdatedEvent-out-0:
-          destination: account-balance-updated
+          destination: payment-failed-event
           content-type: application/json
       kafka:
         binder:

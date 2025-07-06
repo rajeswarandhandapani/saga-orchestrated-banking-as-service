@@ -12,3 +12,4 @@
 10. Keep the code simple, readable, and only generate what is necessary for the feature.
 11. Use Lombok annotations to reduce boilerplate code.
 12. Don't over-engineer solutions; keep them straightforward and maintainable.
+13. use imports instead of fully qualified class names to keep the code clean and readable.

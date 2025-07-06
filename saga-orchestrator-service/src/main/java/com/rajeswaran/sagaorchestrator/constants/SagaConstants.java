@@ -23,6 +23,12 @@ public final class SagaConstants {
      */
     public static final String USER_ONBOARDING_SAGA = "user-onboarding-saga";
 
+    /**
+     * Payment processing saga name used for validating payments,
+     * processing transactions, updating account balances, and sending notifications.
+     */
+    public static final String PAYMENT_PROCESSING_SAGA = "payment-processing-saga";
+
     public enum SagaStepStatus {
         STARTED,
         COMPLETED,

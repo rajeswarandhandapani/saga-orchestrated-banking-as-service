@@ -22,7 +22,6 @@
     <module>payment-service</module>
     <module>transaction-service</module>
     <module>notification-service</module>
-    <module>audit-service</module>
     <module>api-gateway</module>
     <module>service-discovery</module>
     <module>saga-orchestrator-service</module>
@@ -58,6 +57,11 @@
         <optional>true</optional>
       </dependency>
 
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-webflux</artifactId>
+        <version>${spring-boot.version}</version>
+      </dependency>
 
       <!-- Command/Event Framework Dependencies (lightweight approach) -->
       <!-- Only keep non-Spring Boot dependencies here -->

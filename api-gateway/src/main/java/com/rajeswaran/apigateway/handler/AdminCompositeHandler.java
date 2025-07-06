@@ -24,17 +24,17 @@ public class AdminCompositeHandler {
         Mono<ResponseEntity<Object>> accounts = adminDashboardClient.fetchAccounts(authHeader);
         Mono<ResponseEntity<Object>> transactions = adminDashboardClient.fetchTransactions(authHeader);
         Mono<ResponseEntity<Object>> payments = adminDashboardClient.fetchPayments(authHeader);
-        Mono<ResponseEntity<Object>> auditLogs = adminDashboardClient.fetchAuditLogs(authHeader);
         Mono<ResponseEntity<Object>> notifications = adminDashboardClient.fetchNotifications(authHeader);
+        Mono<ResponseEntity<Object>> sagaInstances = adminDashboardClient.fetchSagaInstances(authHeader);
 
-        return Mono.zip(users, accounts, transactions, payments, auditLogs, notifications)
+        return Mono.zip(users, accounts, transactions, payments, notifications, sagaInstances)
                 .flatMap(tuple -> {
                     Object usersObj = tuple.getT1().getBody();
                     Object accountsObj = tuple.getT2().getBody();
                     Object transactionsObj = tuple.getT3().getBody();
                     Object paymentsObj = tuple.getT4().getBody();
-                    Object auditLogsObj = tuple.getT5().getBody();
-                    Object notificationsObj = tuple.getT6().getBody();
+                    Object notificationsObj = tuple.getT5().getBody();
+                    Object sagaInstancesObj = tuple.getT6().getBody();
 
                     return ServerResponse.ok()
                     .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -44,8 +44,8 @@ public class AdminCompositeHandler {
                                 "accounts", accountsObj,
                                 "transactions", transactionsObj,
                                 "payments", paymentsObj,
-                                "auditLogs", auditLogsObj,
-                                "notifications", notificationsObj
+                                "notifications", notificationsObj,
+                                "sagaInstances", sagaInstancesObj
                             )
                     );
                 });

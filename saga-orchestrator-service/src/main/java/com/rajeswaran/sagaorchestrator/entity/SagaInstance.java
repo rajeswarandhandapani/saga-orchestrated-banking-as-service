@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "saga_instance")
@@ -32,6 +33,10 @@ public class SagaInstance {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private SagaConstants.SagaStatus status;
+
+    @OneToMany(mappedBy = "sagaInstance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("createdAt ASC")
+    private List<SagaStepInstance> stepInstances;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

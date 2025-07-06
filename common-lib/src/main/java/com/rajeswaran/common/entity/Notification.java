@@ -20,7 +20,7 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String email;
+    private String userName;
     private String subject;
     private String message;
     private LocalDateTime timestamp;

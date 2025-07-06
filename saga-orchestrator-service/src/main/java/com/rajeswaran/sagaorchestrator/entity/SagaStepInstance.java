@@ -1,5 +1,6 @@
 package com.rajeswaran.sagaorchestrator.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class SagaStepInstance {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saga_instance_id", nullable = false)
+    @JsonIgnore
     private SagaInstance sagaInstance;
 
     @Column(name = "step_name", nullable = false)
