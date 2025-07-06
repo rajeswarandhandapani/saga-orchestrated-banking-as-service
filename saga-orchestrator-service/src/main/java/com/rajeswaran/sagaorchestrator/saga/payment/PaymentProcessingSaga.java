@@ -1,7 +1,6 @@
 package com.rajeswaran.sagaorchestrator.saga.payment;
 
 import com.rajeswaran.common.entity.Payment;
-import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
 import com.rajeswaran.common.saga.payment.commands.ProcessPaymentCommand;
 import com.rajeswaran.common.saga.payment.commands.RecordTransactionCommand;
 import com.rajeswaran.common.saga.payment.commands.UpdatePaymentStatusCommand;
@@ -29,10 +28,10 @@ import java.util.function.Consumer;
  * 4. Produces UpdatePaymentStatusCommand → Listens for PaymentStatusUpdatedEvent
  * 5. Produces SendNotificationCommand → Completes saga
  *
- * Failure Flow:
+ * Failure Flows:
  * - If validation fails → Fails saga immediately
- * - If payment processing fails → Fails saga immediately  
- * - If transaction recording fails → Sends failure notification
+ * - If payment processing fails → Updates payment status to FAILED → Sends failure notification → Fails saga
+ * - If transaction recording fails → Sends failure notification directly (no status update needed)
  */
 @Component
 @Slf4j

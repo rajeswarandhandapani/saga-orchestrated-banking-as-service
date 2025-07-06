@@ -14,6 +14,8 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import org.springframework.messaging.Message;
+
 import java.util.function.Consumer;
 
 @Slf4j
@@ -25,8 +27,9 @@ public class UserCommandListener {
     private final StreamBridge streamBridge;
 
     @Bean
-    public Consumer<CreateUserCommand> createUserCommand() {
-        return command -> {
+    public Consumer<Message<CreateUserCommand>> createUserCommand() {
+        return message -> {
+            CreateUserCommand command = message.getPayload();
             User user = command.getUser();
             log.info("Received createUserCommand for saga {} and user: {}", command.getSagaId(), user.getUsername());
             
@@ -60,8 +63,9 @@ public class UserCommandListener {
     }
 
     @Bean
-    public Consumer<DeleteUserCommand> deleteUserCommand() {
-        return command -> {
+    public Consumer<Message<DeleteUserCommand>> deleteUserCommand() {
+        return message -> {
+            DeleteUserCommand command = message.getPayload();
             String username = command.getUsername();
             log.info("Received deleteUserCommand for saga {} and user: {} (compensation)", command.getSagaId(), username);
             
