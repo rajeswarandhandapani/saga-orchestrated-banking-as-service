@@ -4,7 +4,12 @@
 # Kill all running Java processes before starting services
 pkill -f java || true
   sleep 5
-docker ps -q | xargs -r docker kill
+
+# Stop any running Docker containers and remove them
+docker stop $(docker ps -q) || true
+docker rm $(docker ps -aq) || true
+# Stop any running docker-compose services
+docker-compose down || true
 
 # Set Java 21 as default if available
 echo "Starting Apache Kafka container..."

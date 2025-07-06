@@ -38,7 +38,7 @@ public class SagaController {
          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
          if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt jwt) {
              user.setEmail(jwt.getClaimAsString("email"));
-             user.setFullName(jwt.getClaimAsString("fullName"));
+             user.setFullName(jwt.getClaimAsString("name"));
          }
 
         // Use Saga interface to start saga with payload - this will automatically trigger the first command
