@@ -213,23 +213,25 @@ public class PaymentProcessingSaga extends Saga {
      * Listens for PaymentFailedEvent to handle payment processing failure.
      */
     @Bean
-    public Consumer<Message<PaymentFailedEvent>> paymentFailedEventListener() {
+    public Consumer<Message<PaymentFailedEvent>> paymentFailedEvent() {
         return message -> {
             PaymentFailedEvent event = message.getPayload();
+            Payment payment = event.getPayment();
             Long sagaId = event.getSagaId();
 
             log.error("Received PaymentFailedEvent for saga {}, payment: {}, reason: {}",
-                sagaId, event.getPayment().getId(), event.getReason());
+                sagaId, payment.getId(), event.getReason());
 
             try {
                 // Mark step as failed
                 failStep(sagaId, PaymentProcessingSteps.PROCESS_PAYMENT.getStepName(), event);
 
-                // Handle saga failure (no compensation needed as payment wasn't actually processed)
-                failSaga(sagaId);
+                // Update payment status to FAILED before failing the saga
+                triggerUpdatePaymentStatusCommand(sagaId, payment, "FAILED");
 
             } catch (Exception e) {
                 log.error("Error processing PaymentFailedEvent for saga {}: {}", sagaId, e.getMessage(), e);
+                failSaga(sagaId);
             }
         };
     }
@@ -309,18 +311,33 @@ public class PaymentProcessingSaga extends Saga {
                 // Complete the update payment status step
                 completeStep(sagaId, PaymentProcessingSteps.UPDATE_PAYMENT_STATUS.getStepName(), event);
 
-                String subject = "Payment Processed Successfully";
-                String notificationMessage = String.format(
-                        "Your payment of $%.2f from account %s to account %s has been processed successfully and marked as %s. Payment ID: %s",
-                        payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(), 
-                        payment.getStatus(), payment.getId()
-                );
-
-                // Trigger notification (fire-and-forget)
-                triggerSendNotificationCommand(sagaId, payment.getCreatedBy(), subject, notificationMessage);
+                String subject;
+                String notificationMessage;
                 
-                // Mark saga as complete
-                completeSaga(sagaId);
+                if ("FAILED".equals(payment.getStatus())) {
+                    // Handle failed payment notification
+                    subject = "Payment Processing Failed";
+                    notificationMessage = String.format(
+                            "Your payment of $%.2f from account %s to account %s failed to process. Payment ID: %s",
+                            payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(), payment.getId()
+                    );
+                    
+                    // Trigger notification and fail saga
+                    triggerSendNotificationCommand(sagaId, payment.getCreatedBy(), subject, notificationMessage);
+                    failSaga(sagaId);
+                } else {
+                    // Handle successful payment notification
+                    subject = "Payment Processed Successfully";
+                    notificationMessage = String.format(
+                            "Your payment of $%.2f from account %s to account %s has been processed successfully and marked as %s. Payment ID: %s",
+                            payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber(), 
+                            payment.getStatus(), payment.getId()
+                    );
+                    
+                    // Trigger notification and complete saga
+                    triggerSendNotificationCommand(sagaId, payment.getCreatedBy(), subject, notificationMessage);
+                    completeSaga(sagaId);
+                }
 
             } catch (Exception e) {
                 log.error("Error processing PaymentStatusUpdatedEvent for saga {}: {}", sagaId, e.getMessage(), e);

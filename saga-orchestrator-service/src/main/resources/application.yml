@@ -23,7 +23,7 @@ spring:
         accountOpenedEvent;accountOpenFailedEvent;
         userDeletedEvent;userDeletionFailedEvent;
         paymentValidatedEvent;paymentValidationFailedEvent;
-        paymentProcessedEvent;
+        paymentProcessedEvent;paymentFailedEvent;
         transactionRecordedEvent;transactionFailedEvent;
         paymentStatusUpdatedEvent;
         sendNotificationCommand
@@ -80,6 +80,10 @@ spring:
           destination: process-payment-command
         paymentProcessedEvent-in-0:
           destination: payment-processed-event
+          group: saga-orchestrator-service
+          content-type: application/json
+        paymentFailedEvent-in-0:
+          destination: payment-failed-event
           group: saga-orchestrator-service
           content-type: application/json
 
