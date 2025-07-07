@@ -1,5 +1,6 @@
 package com.rajeswaran.apigateway.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -24,6 +25,7 @@ import java.util.UUID;
  * Note: This header name must match AppConstants.CORRELATION_ID_HEADER in common-lib
  * to ensure consistency between HTTP and messaging layers.
  */
+@Slf4j
 @Component
 public class CorrelationIdFilter implements GlobalFilter, Ordered {
     // This value must match AppConstants.CORRELATION_ID_HEADER in common-lib
@@ -34,25 +36,16 @@ public class CorrelationIdFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String correlationId = request.getHeaders().getFirst(CORRELATION_ID_HEADER);
         
-        boolean generated = false;
         if (correlationId == null || correlationId.isEmpty()) {
             correlationId = UUID.randomUUID().toString();
-            generated = true;
             request = exchange.getRequest().mutate()
                     .header(CORRELATION_ID_HEADER, correlationId)
                     .build();
             exchange = exchange.mutate().request(request).build();
         }
         
-        // Set in MDC for gateway logging
+        // Set in MDC for logging
         MDC.put("correlationId", correlationId);
-        
-        // Log correlation ID assignment
-        if (generated) {
-            System.out.println("Generated new correlation ID: " + correlationId + " for path: " + request.getPath());
-        } else {
-            System.out.println("Using existing correlation ID: " + correlationId + " for path: " + request.getPath());
-        }
         
         return chain.filter(exchange).doFinally(signalType -> {
             MDC.remove("correlationId");

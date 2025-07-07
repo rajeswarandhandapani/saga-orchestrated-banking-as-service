@@ -63,10 +63,12 @@ server:
 
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%X{correlationId}] %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level [%X{correlationId:-N/A}] %logger{36} - %msg%n"
   level:
+    com.rajeswaran: INFO
     org.apache.kafka: WARN
     org.springframework.kafka: WARN
+    root: INFO
 management:
   endpoints:
     web:
