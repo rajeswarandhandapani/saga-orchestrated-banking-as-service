@@ -38,7 +38,7 @@ public class CorrelationIdMessageUtils {
         }
         
         return MessageBuilder.fromMessage(message)
-                .setHeader(AppConstants.CORRELATION_ID_MESSAGE_HEADER, correlationId)
+                .setHeader(AppConstants.CORRELATION_ID_HEADER, correlationId)
                 .build();
     }
 
@@ -50,7 +50,7 @@ public class CorrelationIdMessageUtils {
      */
     public static void extractCorrelationIdFromMessage(Message<?> message) {
         MessageHeaders headers = message.getHeaders();
-        String correlationId = (String) headers.get(AppConstants.CORRELATION_ID_MESSAGE_HEADER);
+        String correlationId = (String) headers.get(AppConstants.CORRELATION_ID_HEADER);
         
         if (StringUtils.hasText(correlationId)) {
             setCorrelationIdInMDC(correlationId);
@@ -106,7 +106,7 @@ public class CorrelationIdMessageUtils {
      * @return true if correlation ID header exists, false otherwise
      */
     public static boolean hasCorrelationId(Message<?> message) {
-        return message.getHeaders().containsKey(AppConstants.CORRELATION_ID_MESSAGE_HEADER);
+        return message.getHeaders().containsKey(AppConstants.CORRELATION_ID_HEADER);
     }
 
     /**
@@ -116,7 +116,7 @@ public class CorrelationIdMessageUtils {
      * @return correlation ID from message headers, or null if not present
      */
     public static String getCorrelationIdFromMessage(Message<?> message) {
-        return (String) message.getHeaders().get(AppConstants.CORRELATION_ID_MESSAGE_HEADER);
+        return (String) message.getHeaders().get(AppConstants.CORRELATION_ID_HEADER);
     }
 
     /**
