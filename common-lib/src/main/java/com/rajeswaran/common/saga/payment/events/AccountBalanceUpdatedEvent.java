@@ -33,13 +33,12 @@ public class AccountBalanceUpdatedEvent extends BaseEvent {
 
     private String description;
 
-    public static AccountBalanceUpdatedEvent create(long sagaId, String correlationId, String paymentId,
+    public static AccountBalanceUpdatedEvent create(long sagaId, String paymentId,
                                                    String sourceAccountNumber, String destinationAccountNumber,
                                                    double amount, String description) {
         return AccountBalanceUpdatedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
             .paymentId(paymentId)
             .sourceAccountNumber(sourceAccountNumber)

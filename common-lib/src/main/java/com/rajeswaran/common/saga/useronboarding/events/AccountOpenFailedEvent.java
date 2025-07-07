@@ -25,12 +25,10 @@ public class AccountOpenFailedEvent extends BaseEvent {
     @NotBlank
     private String username;
 
-    public static AccountOpenFailedEvent create(Long sagaId, String correlationId,
-                                                String userId, String username, String errorMessage) {
+    public static AccountOpenFailedEvent create(Long sagaId, String userId, String username, String errorMessage) {
         return AccountOpenFailedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(Instant.now())
             .success(false)
             .errorMessage(errorMessage)

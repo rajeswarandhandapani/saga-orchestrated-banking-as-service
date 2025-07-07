@@ -57,7 +57,6 @@ public class AccountCommandListener {
                 // Publish success event
                 AccountOpenedEvent event = AccountOpenedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     savedAccount,
                     user
                 );
@@ -72,7 +71,6 @@ public class AccountCommandListener {
                 // Publish failure event
                 AccountOpenFailedEvent event = AccountOpenFailedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     String.valueOf(user.getUserId()),
                     user.getUsername(),
                     "Failed to create account: " + e.getMessage()
@@ -136,7 +134,7 @@ public class AccountCommandListener {
 
             log.info("[Account] Debited {} from {} and credited to {}", payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber());
             streamBridge.send("paymentProcessedEvent-out-0", PaymentProcessedEvent.create(
-                cmd.getSagaId(), cmd.getCorrelationId(), payment
+                cmd.getSagaId(), payment
             ));
             log.info("[Account] Published PaymentProcessedEvent for saga {} and payment: {}", cmd.getSagaId(), payment.getId());
         };
@@ -144,7 +142,7 @@ public class AccountCommandListener {
 
     private void publishFailed(ProcessPaymentCommand cmd, String reason, Payment payment) {
         streamBridge.send("paymentFailedEvent-out-0", PaymentFailedEvent.create(
-            cmd.getSagaId(), cmd.getCorrelationId(), payment, reason
+            cmd.getSagaId(), payment, reason
         ));
         log.warn("[Account] Payment failed for saga {} and payment {}: {}", cmd.getSagaId(), payment.getId(), reason);
     }

@@ -35,13 +35,12 @@ public class PaymentReversedEvent extends BaseEvent {
 
     private String username;
 
-    public static PaymentReversedEvent create(Long sagaId, String correlationId, String paymentId,
+    public static PaymentReversedEvent create(Long sagaId, String paymentId,
                                              String sourceAccountNumber, String destinationAccountNumber,
                                              double amount, String reason, String username) {
         return PaymentReversedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
             .paymentId(paymentId)
             .sourceAccountNumber(sourceAccountNumber)

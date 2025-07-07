@@ -24,11 +24,10 @@ public class UserCreatedEvent extends BaseEvent {
     @NotNull
     private User user;
 
-    public static UserCreatedEvent create(Long sagaId, String correlationId, User user) {
+    public static UserCreatedEvent create(Long sagaId, User user) {
         return UserCreatedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(Instant.now())
             .success(true)
             .errorMessage(null)

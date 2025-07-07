@@ -19,15 +19,14 @@ public class UserCreationFailedEvent extends BaseEvent {
     public UserCreationFailedEvent() {
     }
 
-    public UserCreationFailedEvent(String eventId, Long sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
-        super(eventId, sagaId, correlationId, timestamp, success, errorMessage);
+    public UserCreationFailedEvent(String eventId, Long sagaId, Instant timestamp, boolean success, String errorMessage) {
+        super(eventId, sagaId, timestamp, success, errorMessage);
     }
 
-    public static UserCreationFailedEvent create(Long sagaId, String correlationId, String errorMessage) {
+    public static UserCreationFailedEvent create(Long sagaId, String errorMessage) {
         return UserCreationFailedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(Instant.now())
             .success(false)
             .errorMessage(errorMessage)
