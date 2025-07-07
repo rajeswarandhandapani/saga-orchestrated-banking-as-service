@@ -69,7 +69,6 @@ public class PaymentProcessingSaga extends Saga {
 
         ValidatePaymentCommand command = ValidatePaymentCommand.create(
             sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
             payment
         );
 
@@ -84,7 +83,6 @@ public class PaymentProcessingSaga extends Saga {
 
         ProcessPaymentCommand command = ProcessPaymentCommand.create(
             sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
             payment
         );
 
