@@ -22,11 +22,10 @@ public class PaymentFailedEvent extends BaseEvent {
     private String reason;
 
 
-    public static PaymentFailedEvent create(Long sagaId, String correlationId, Payment payment, String reason) {
+    public static PaymentFailedEvent create(Long sagaId, Payment payment, String reason) {
         return PaymentFailedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
             .payment(payment)
             .reason(reason)
