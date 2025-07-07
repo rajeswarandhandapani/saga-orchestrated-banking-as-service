@@ -42,7 +42,6 @@ public class PaymentCommandListener {
             if (valid) {
                 PaymentValidatedEvent event = PaymentValidatedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     payment
                 );
                 paymentService.createPayment(payment);
@@ -51,7 +50,7 @@ public class PaymentCommandListener {
             } else {
                 PaymentValidationFailedEvent event = PaymentValidationFailedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(), payment,
+                    payment,
                     "Validation failed: Invalid amount or account information"
                 );
                 streamBridge.send("paymentValidationFailedEvent-out-0", event);

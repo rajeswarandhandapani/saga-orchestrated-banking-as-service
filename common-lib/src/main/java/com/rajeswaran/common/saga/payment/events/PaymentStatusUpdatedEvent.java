@@ -20,11 +20,10 @@ public class PaymentStatusUpdatedEvent extends BaseEvent {
 
     private Payment payment;
 
-    public static PaymentStatusUpdatedEvent create(Long sagaId, String correlationId, Payment payment) {
+    public static PaymentStatusUpdatedEvent create(Long sagaId, Payment payment) {
         return PaymentStatusUpdatedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
             .payment(payment)
             .build();
