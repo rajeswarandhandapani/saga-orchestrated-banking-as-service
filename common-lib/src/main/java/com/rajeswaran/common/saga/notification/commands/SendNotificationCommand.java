@@ -30,18 +30,17 @@ public class SendNotificationCommand extends BaseCommand {
     @NotBlank
     private String message;
 
-    public SendNotificationCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, String userName, String subject, String message) {
-        super(commandId, sagaId, correlationId, timestamp);
+    public SendNotificationCommand(String commandId, Long sagaId, Instant timestamp, String userName, String subject, String message) {
+        super(commandId, sagaId, timestamp);
         this.userName = userName;
         this.subject = subject;
         this.message = message;
     }
 
-    public static SendNotificationCommand create(Long sagaId, String correlationId, String userName, String subject, String message) {
+    public static SendNotificationCommand create(Long sagaId, String userName, String subject, String message) {
         return new SendNotificationCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             userName,
             subject,

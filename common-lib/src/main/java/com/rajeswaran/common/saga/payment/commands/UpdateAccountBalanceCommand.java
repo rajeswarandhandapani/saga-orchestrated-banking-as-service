@@ -35,10 +35,10 @@ public class UpdateAccountBalanceCommand extends BaseCommand {
 
     private String description;
 
-    public UpdateAccountBalanceCommand(String commandId, Long sagaId, String correlationId, Instant timestamp,
+    public UpdateAccountBalanceCommand(String commandId, Long sagaId, Instant timestamp,
                                       String paymentId, String sourceAccountNumber, String destinationAccountNumber,
                                       double amount, String description) {
-        super(commandId, sagaId, correlationId, timestamp);
+        super(commandId, sagaId, timestamp);
         this.paymentId = paymentId;
         this.sourceAccountNumber = sourceAccountNumber;
         this.destinationAccountNumber = destinationAccountNumber;
@@ -46,13 +46,12 @@ public class UpdateAccountBalanceCommand extends BaseCommand {
         this.description = description;
     }
 
-    public static UpdateAccountBalanceCommand create(long sagaId, String correlationId, String paymentId,
+    public static UpdateAccountBalanceCommand create(long sagaId, String paymentId,
                                                     String sourceAccountNumber, String destinationAccountNumber,
                                                     double amount, String description) {
         return new UpdateAccountBalanceCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             paymentId,
             sourceAccountNumber,

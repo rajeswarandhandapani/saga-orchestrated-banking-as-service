@@ -37,10 +37,10 @@ public class ReversePaymentCommand extends BaseCommand {
 
     private String username;
 
-    public ReversePaymentCommand(String commandId, Long sagaId, String correlationId, Instant timestamp,
+    public ReversePaymentCommand(String commandId, Long sagaId, Instant timestamp,
                                 String paymentId, String sourceAccountNumber, String destinationAccountNumber,
                                 double amount, String reason, String username) {
-        super(commandId, sagaId, correlationId, timestamp);
+        super(commandId, sagaId, timestamp);
         this.paymentId = paymentId;
         this.sourceAccountNumber = sourceAccountNumber;
         this.destinationAccountNumber = destinationAccountNumber;
@@ -49,13 +49,12 @@ public class ReversePaymentCommand extends BaseCommand {
         this.username = username;
     }
 
-    public static ReversePaymentCommand create(long sagaId, String correlationId, String paymentId,
+    public static ReversePaymentCommand create(long sagaId, String paymentId,
                                               String sourceAccountNumber, String destinationAccountNumber,
                                               double amount, String reason, String username) {
         return new ReversePaymentCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             paymentId,
             sourceAccountNumber,

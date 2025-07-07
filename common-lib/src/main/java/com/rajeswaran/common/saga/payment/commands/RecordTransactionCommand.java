@@ -2,8 +2,6 @@ package com.rajeswaran.common.saga.payment.commands;
 
 import com.rajeswaran.common.entity.Payment;
 import com.rajeswaran.common.saga.command.BaseCommand;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,16 +22,15 @@ public class RecordTransactionCommand extends BaseCommand {
 
     Payment payment;
 
-    public RecordTransactionCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, Payment payment) {
-        super(commandId, sagaId, correlationId, timestamp);
+    public RecordTransactionCommand(String commandId, Long sagaId, Instant timestamp, Payment payment) {
+        super(commandId, sagaId, timestamp);
         this.payment = payment;
     }
 
-    public static RecordTransactionCommand create(long sagaId, String correlationId, Payment payment) {
+    public static RecordTransactionCommand create(long sagaId, Payment payment) {
         return new RecordTransactionCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             payment
         );

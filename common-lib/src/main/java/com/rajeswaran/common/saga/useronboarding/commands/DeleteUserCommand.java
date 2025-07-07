@@ -23,16 +23,15 @@ public class DeleteUserCommand extends BaseCommand {
     @NotBlank
     private String username;
 
-    public DeleteUserCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, String username) {
-        super(commandId, sagaId, correlationId, timestamp);
+    public DeleteUserCommand(String commandId, Long sagaId, Instant timestamp, String username) {
+        super(commandId, sagaId, timestamp);
         this.username = username;
     }
 
-    public static DeleteUserCommand create(Long sagaId, String correlationId, String username) {
+    public static DeleteUserCommand create(Long sagaId, String username) {
         return new DeleteUserCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             username
         );
