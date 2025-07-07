@@ -6,7 +6,6 @@ import com.rajeswaran.common.saga.useronboarding.commands.CreateUserCommand;
 import com.rajeswaran.common.saga.useronboarding.commands.DeleteUserCommand;
 import com.rajeswaran.common.saga.useronboarding.commands.OpenAccountCommand;
 import com.rajeswaran.common.saga.useronboarding.events.*;
-import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import com.rajeswaran.sagaorchestrator.saga.Saga;
 import com.rajeswaran.sagaorchestrator.service.SagaStateManager;
@@ -71,7 +70,6 @@ public class UserOnboardingSaga extends Saga {
         
         CreateUserCommand command = CreateUserCommand.create(
             sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
             user
         );
 
@@ -86,7 +84,6 @@ public class UserOnboardingSaga extends Saga {
         
         OpenAccountCommand command = OpenAccountCommand.create(
             sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
             "SAVINGS",
             user
         );
@@ -102,7 +99,6 @@ public class UserOnboardingSaga extends Saga {
         
         DeleteUserCommand command = DeleteUserCommand.create(
             sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
             username
         );
 

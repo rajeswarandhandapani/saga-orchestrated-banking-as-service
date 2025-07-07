@@ -1,7 +1,6 @@
 package com.rajeswaran.sagaorchestrator.saga;
 
 import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
-import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 import com.rajeswaran.sagaorchestrator.saga.payment.PaymentProcessingSteps;
 import com.rajeswaran.sagaorchestrator.service.SagaStateManager;
@@ -128,7 +127,6 @@ public abstract class Saga {
 
         SendNotificationCommand command = SendNotificationCommand.create(
                 sagaId,
-                SagaEventBuilderUtil.getCurrentCorrelationId(),
                 userName,
                 subject,
                 message

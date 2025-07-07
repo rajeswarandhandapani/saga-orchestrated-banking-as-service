@@ -6,7 +6,6 @@ import com.rajeswaran.common.saga.payment.commands.RecordTransactionCommand;
 import com.rajeswaran.common.saga.payment.commands.UpdatePaymentStatusCommand;
 import com.rajeswaran.common.saga.payment.commands.ValidatePaymentCommand;
 import com.rajeswaran.common.saga.payment.events.*;
-import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.constants.SagaConstants;
 import com.rajeswaran.sagaorchestrator.saga.Saga;
 import com.rajeswaran.sagaorchestrator.service.SagaStateManager;
@@ -97,7 +96,6 @@ public class PaymentProcessingSaga extends Saga {
 
         RecordTransactionCommand command = RecordTransactionCommand.create(
             sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
             payment
         );
 
@@ -115,7 +113,6 @@ public class PaymentProcessingSaga extends Saga {
 
         UpdatePaymentStatusCommand command = UpdatePaymentStatusCommand.create(
             sagaId,
-            SagaEventBuilderUtil.getCurrentCorrelationId(),
             payment
         );
 
