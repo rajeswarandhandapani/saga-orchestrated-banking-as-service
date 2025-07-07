@@ -7,14 +7,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.stereotype.Component;
 
 /**
- * Channel interceptor that automatically adds correlation ID to outgoing messages.
+ * Channel interceptor that automatically adds correlation ID to outgoing messages
+ * and extracts correlation ID from incoming messages.
  * Works with any Spring Cloud Stream binder (Kafka, RabbitMQ, etc.).
  */
 @Slf4j
-@Component
 public class CorrelationIdChannelInterceptor implements ChannelInterceptor {
 
     /**
