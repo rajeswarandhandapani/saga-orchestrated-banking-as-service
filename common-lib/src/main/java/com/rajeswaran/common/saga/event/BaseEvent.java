@@ -23,9 +23,6 @@ public abstract class BaseEvent implements Event {
     private Long sagaId;
     
     @NotNull
-    private String correlationId;
-    
-    @NotNull
     private Instant timestamp;
     
     private boolean success;
@@ -40,10 +37,9 @@ public abstract class BaseEvent implements Event {
     public BaseEvent() {
     }
 
-    public BaseEvent(String eventId, Long sagaId, String correlationId, Instant timestamp, boolean success, String errorMessage) {
+    public BaseEvent(String eventId, Long sagaId, Instant timestamp, boolean success, String errorMessage) {
         this.eventId = eventId;
         this.sagaId = sagaId;
-        this.correlationId = correlationId;
         this.timestamp = timestamp;
         this.success = success;
         this.errorMessage = errorMessage;
