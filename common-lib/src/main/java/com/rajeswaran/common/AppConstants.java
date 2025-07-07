@@ -15,6 +15,9 @@ public final class AppConstants {
     public static final String CORRELATION_ID_MDC_KEY = "correlationId";
     public static final String SAGA_ID_MDC_KEY = "sagaId";
     
+    // Message Header Constants for Spring Cloud Stream
+    public static final String CORRELATION_ID_MESSAGE_HEADER = "correlation-id";
+    
     // Security Roles
     public static final String ROLE_BAAS_ADMIN = "ROLE_BAAS_ADMIN";
     public static final String ROLE_ACCOUNT_HOLDER = "ROLE_ACCOUNT_HOLDER";

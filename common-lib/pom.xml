@@ -35,6 +35,18 @@
       <artifactId>spring-boot-starter-web</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- Spring Cloud Stream for messaging abstraction -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-stream</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Spring Messaging for Message interface -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-messaging</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- SLF4J API -->
     <dependency>
       <groupId>org.slf4j</groupId>
