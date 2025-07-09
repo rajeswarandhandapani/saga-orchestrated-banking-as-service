@@ -55,7 +55,7 @@ server:
   port: 8083
 logging:
   pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level [%X{correlationId:-N/A}] %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{trace_id:-N/A} %X{span_id:-N/A}] [${spring.application.name}] %logger{40} - %msg%n"
   level:
     com.rajeswaran: INFO
     org.apache.kafka: WARN
