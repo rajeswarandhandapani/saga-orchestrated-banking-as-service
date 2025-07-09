@@ -214,3 +214,37 @@ services:
         condition: service_started
       audit-service:
         condition: service_started
+
+  saga-orchestrator-service:
+    image: rajeswaran/baas-saga-orchestrator-service:1.0-SNAPSHOT
+    container_name: saga-orchestrator-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - KEYCLOAK_JWK_SET_URI=http://keycloak:8080/realms/baas/protocol/openid-connect/certs
+      - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/baas_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=baas_user
+      - SPRING_DATASOURCE_PASSWORD=baas_password
+    ports:
+      - "8090:8090"
+    depends_on:
+      service-discovery:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      broker:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      user-service:
+        condition: service_started
+      account-service:
+        condition: service_started
+      transaction-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
