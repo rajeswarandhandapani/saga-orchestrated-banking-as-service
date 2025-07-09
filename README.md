@@ -114,17 +114,27 @@ graph LR
 
 ### Running the Platform
 
-1. **Start Infrastructure**:
+You can start all infrastructure and services using Docker Compose for a fully containerized setup:
+
+1. **Start All Services with Docker Compose**:
+   ```bash
+   ./start-docker-compse.sh
+   ```
+   This script will launch all required infrastructure and Spring Boot microservices using Docker Compose. Use this for local development or demo environments where you want everything running in containers.
+
+Alternatively, you can start infrastructure and services separately:
+
+2. **Start Infrastructure Only**:
    ```bash
    ./start-infra.sh
    ```
 
-2. **Build and Start Services**:
+3. **Build and Start Spring Boot Services (Locally)**:
    ```bash
    ./start-springboot-services.sh
    ```
 
-3. **Access Points**:
+4. **Access Points**:
    - **API Gateway**: http://localhost:8080
    - **Keycloak Admin**: http://localhost:8180/admin (admin/admin)
    - **Service Discovery**: http://localhost:8761
