@@ -73,7 +73,7 @@ services:
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=user-service
       - OTEL_TRACES_EXPORTER=console
-      - OTEL_METRICS_EXPORTER=console
+      - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=console
     depends_on:
       service-discovery:
@@ -100,7 +100,7 @@ services:
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=account-service
       - OTEL_TRACES_EXPORTER=console
-      - OTEL_METRICS_EXPORTER=console
+      - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=console
     depends_on:
       service-discovery:
@@ -127,7 +127,7 @@ services:
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=transaction-service
       - OTEL_TRACES_EXPORTER=console
-      - OTEL_METRICS_EXPORTER=console
+      - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=console
     depends_on:
       service-discovery:
@@ -154,7 +154,7 @@ services:
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=payment-service
       - OTEL_TRACES_EXPORTER=console
-      - OTEL_METRICS_EXPORTER=console
+      - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=console
     depends_on:
       service-discovery:
@@ -181,7 +181,7 @@ services:
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=notification-service
       - OTEL_TRACES_EXPORTER=console
-      - OTEL_METRICS_EXPORTER=console
+      - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=console
     depends_on:
       service-discovery:
@@ -206,7 +206,7 @@ services:
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=saga-orchestrator-service
       - OTEL_TRACES_EXPORTER=console
-      - OTEL_METRICS_EXPORTER=console
+      - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=console
     ports:
       - "8090:8090"
@@ -243,7 +243,7 @@ services:
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=api-gateway
       - OTEL_TRACES_EXPORTER=console
-      - OTEL_METRICS_EXPORTER=console
+      - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=console
     depends_on:
       service-discovery:

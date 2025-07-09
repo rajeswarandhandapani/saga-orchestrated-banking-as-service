@@ -50,6 +50,10 @@ logging:
     # Application-specific logging levels
     com.rajeswaran: INFO
     
+    # Spring Cloud Stream Kafka listener logs
+    org.springframework.cloud.stream.function: INFO
+    org.springframework.cloud.stream.binding: INFO
+    
     # Framework logging levels (reduce noise)
     org.apache.kafka: WARN
     org.springframework.kafka: WARN
