@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Kill all running Java processes before starting services
-pkill -f java || true
-  sleep 5
-
+# Stop any running docker-compose services
+docker-compose down || true
 # Stop any running Docker containers and remove them
 docker stop $(docker ps -q) || true
 docker rm $(docker ps -aq) || true
-# Stop any running docker-compose services
-docker-compose down || true
+
+# Kill all running Java processes before starting services
+pkill -f java || true
+  sleep 5
 
 echo "========================================="
 echo "Building microservices Docker images..."
