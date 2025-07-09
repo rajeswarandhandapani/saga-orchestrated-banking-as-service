@@ -129,6 +129,12 @@ graph LR
    - **Keycloak Admin**: http://localhost:8180/admin (admin/admin)
    - **Service Discovery**: http://localhost:8761
 
+## Observability & Tracing
+
+- All microservices are instrumented with the OpenTelemetry Java Agent for distributed tracing.
+- Traces and span data are printed directly to each service’s logs—no extra setup required.
+- Trace and span IDs are included in all log entries for easy correlation across services.
+
 ## Frontend Application
 
 A complete React-based web application is available to interact with this Banking as a Service platform:
