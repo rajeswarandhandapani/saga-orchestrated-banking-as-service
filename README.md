@@ -121,13 +121,19 @@ graph LR
 
 2. **Build and Start Services**:
    ```bash
-   ./start-all-services.sh
+   ./start-springboot-services.sh
    ```
 
 3. **Access Points**:
    - **API Gateway**: http://localhost:8080
    - **Keycloak Admin**: http://localhost:8180/admin (admin/admin)
    - **Service Discovery**: http://localhost:8761
+
+## Observability & Tracing
+
+- All microservices are instrumented with the OpenTelemetry Java Agent for distributed tracing.
+- Traces and span data are printed directly to each service’s logs—no extra setup required.
+- Trace and span IDs are included in all log entries for easy correlation across services.
 
 ## Frontend Application
 

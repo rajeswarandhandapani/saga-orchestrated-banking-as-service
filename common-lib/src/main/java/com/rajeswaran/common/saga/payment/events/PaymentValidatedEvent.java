@@ -22,11 +22,10 @@ public class PaymentValidatedEvent extends BaseEvent {
 
     Payment payment;
 
-    public static PaymentValidatedEvent create(Long sagaId, String correlationId, Payment payment) {
+    public static PaymentValidatedEvent create(Long sagaId, Payment payment) {
         return PaymentValidatedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
             .payment(payment)
             .build();

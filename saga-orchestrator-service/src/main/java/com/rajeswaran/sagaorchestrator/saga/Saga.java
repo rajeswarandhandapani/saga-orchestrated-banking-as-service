@@ -1,7 +1,6 @@
 package com.rajeswaran.sagaorchestrator.saga;
 
 import com.rajeswaran.common.saga.notification.commands.SendNotificationCommand;
-import com.rajeswaran.common.util.SagaEventBuilderUtil;
 import com.rajeswaran.sagaorchestrator.entity.SagaInstance;
 import com.rajeswaran.sagaorchestrator.saga.payment.PaymentProcessingSteps;
 import com.rajeswaran.sagaorchestrator.service.SagaStateManager;
@@ -128,15 +127,16 @@ public abstract class Saga {
 
         SendNotificationCommand command = SendNotificationCommand.create(
                 sagaId,
-                SagaEventBuilderUtil.getCurrentCorrelationId(),
                 userName,
                 subject,
                 message
         );
 
         // Record step as STARTED before publishing command
-        completeStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
+        startStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
 
         streamBridge.send("sendNotificationCommand-out-0", command);
+
+        completeStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
     }
 }

@@ -31,13 +31,12 @@ public class AccountBalanceUpdateFailedEvent extends BaseEvent {
 
     private String reason;
 
-    public static AccountBalanceUpdateFailedEvent create(Long sagaId, String correlationId, String paymentId,
+    public static AccountBalanceUpdateFailedEvent create(Long sagaId, String paymentId,
                                                         String sourceAccountNumber, String destinationAccountNumber,
                                                         double amount, String reason) {
         return AccountBalanceUpdateFailedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
             .paymentId(paymentId)
             .sourceAccountNumber(sourceAccountNumber)

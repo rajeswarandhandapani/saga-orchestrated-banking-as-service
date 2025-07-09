@@ -22,17 +22,16 @@ public class UpdatePaymentStatusCommand extends BaseCommand {
 
     private Payment payment;
 
-    public UpdatePaymentStatusCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, 
+    public UpdatePaymentStatusCommand(String commandId, Long sagaId, Instant timestamp, 
                                      Payment payment) {
-        super(commandId, sagaId, correlationId, timestamp);
+        super(commandId, sagaId, timestamp);
         this.payment = payment;
     }
 
-    public static UpdatePaymentStatusCommand create(long sagaId, String correlationId, Payment payment) {
+    public static UpdatePaymentStatusCommand create(long sagaId, Payment payment) {
         return new UpdatePaymentStatusCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             payment
         );

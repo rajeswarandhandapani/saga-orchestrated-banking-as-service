@@ -63,10 +63,22 @@ server:
 
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%X{correlationId}] %msg%n"
+    console: "[${spring.application.name}] [%X{trace_id:-N/A} %X{span_id:-N/A}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{40} - %msg%n"
   level:
+    com.rajeswaran: INFO
+    
+    # Spring Cloud Stream Kafka listener logs
+    org.springframework.cloud.stream.function: INFO
+    org.springframework.cloud.stream.binding: INFO
+    
+    # Framework logging levels (reduce noise)
     org.apache.kafka: WARN
     org.springframework.kafka: WARN
+    org.springframework.cloud.stream: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    root: INFO
 management:
   endpoints:
     web:

@@ -16,9 +16,6 @@ public interface Event {
     Long getSagaId();
     
     @NotNull
-    String getCorrelationId();
-    
-    @NotNull
     Instant getTimestamp();
     
     @NotNull

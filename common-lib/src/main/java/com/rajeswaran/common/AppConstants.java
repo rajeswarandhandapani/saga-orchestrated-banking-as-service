@@ -9,11 +9,9 @@ public final class AppConstants {
 
     // Header Constants for distributed tracing
     public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
-    public static final String SAGA_ID_HEADER = "X-Saga-Id";
     
     // MDC Keys for structured logging
     public static final String CORRELATION_ID_MDC_KEY = "correlationId";
-    public static final String SAGA_ID_MDC_KEY = "sagaId";
     
     // Security Roles
     public static final String ROLE_BAAS_ADMIN = "ROLE_BAAS_ADMIN";

@@ -27,9 +27,6 @@ public abstract class BaseCommand implements Command {
     private Long sagaId;
     
     @NotNull
-    private String correlationId;
-    
-    @NotNull
     private Instant timestamp;
     
     @Override

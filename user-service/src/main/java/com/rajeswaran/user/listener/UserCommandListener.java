@@ -39,7 +39,6 @@ public class UserCommandListener {
                 
                 UserCreatedEvent event = UserCreatedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     createdUser
                 );
                 
@@ -52,7 +51,6 @@ public class UserCommandListener {
                 // Publish UserCreationFailedEvent
                 UserCreationFailedEvent event = UserCreationFailedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     "Failed to create user: " + e.getMessage()
                 );
                 
@@ -76,7 +74,6 @@ public class UserCommandListener {
                 // Publish UserDeletedEvent
                 UserDeletedEvent event = UserDeletedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     username
                 );
                 
@@ -89,7 +86,6 @@ public class UserCommandListener {
                 // Publish UserDeletionFailedEvent
                 UserDeletionFailedEvent event = UserDeletionFailedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     username,
                     "Failed to delete user: " + e.getMessage()
                 );

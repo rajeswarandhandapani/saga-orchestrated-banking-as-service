@@ -64,7 +64,6 @@ public class TransactionCommandListener {
                 // On success, emit TransactionRecordedEvent
                 TransactionRecordedEvent event = TransactionRecordedEvent.create(
                         cmd.getSagaId(),
-                        cmd.getCorrelationId(),
                         payment
                 );
                 streamBridge.send("transactionRecordedEvent-out-0", event);
@@ -74,7 +73,6 @@ public class TransactionCommandListener {
                 // On failure, emit TransactionFailedEvent
                 TransactionFailedEvent event = TransactionFailedEvent.create(
                         cmd.getSagaId(),
-                        cmd.getCorrelationId(),
                         payment,
                         "Failed to record transaction: " + e.getMessage()
                 );

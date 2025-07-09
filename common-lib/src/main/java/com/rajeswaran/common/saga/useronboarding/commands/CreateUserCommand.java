@@ -24,16 +24,15 @@ public class CreateUserCommand extends BaseCommand {
     @NotNull
     private User user;
     
-    public CreateUserCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, User user) {
-        super(commandId, sagaId, correlationId, timestamp);
+    public CreateUserCommand(String commandId, Long sagaId, Instant timestamp, User user) {
+        super(commandId, sagaId, timestamp);
         this.user = user;
     }
     
-    public static CreateUserCommand create(Long sagaId, String correlationId, User user) {
+    public static CreateUserCommand create(Long sagaId, User user) {
         return new CreateUserCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             user
         );

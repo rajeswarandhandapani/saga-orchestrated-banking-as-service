@@ -24,16 +24,15 @@ public class ValidatePaymentCommand extends BaseCommand {
 
     Payment payment;
 
-    public ValidatePaymentCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, Payment payment) {
-        super(commandId, sagaId, correlationId, timestamp);
+    public ValidatePaymentCommand(String commandId, Long sagaId, Instant timestamp, Payment payment) {
+        super(commandId, sagaId, timestamp);
         this.payment = payment;
     }
 
-    public static ValidatePaymentCommand create(long sagaId, String correlationId, Payment payment) {
+    public static ValidatePaymentCommand create(long sagaId, Payment payment) {
         return new ValidatePaymentCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             payment
         );

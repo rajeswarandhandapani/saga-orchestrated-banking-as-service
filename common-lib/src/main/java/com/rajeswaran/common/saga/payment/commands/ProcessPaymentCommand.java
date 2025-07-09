@@ -22,16 +22,15 @@ public class ProcessPaymentCommand extends BaseCommand {
 
     Payment payment;
 
-    public ProcessPaymentCommand(String commandId, Long sagaId, String correlationId, Instant timestamp, Payment payment) {
-        super(commandId, sagaId, correlationId, timestamp);
+    public ProcessPaymentCommand(String commandId, Long sagaId, Instant timestamp, Payment payment) {
+        super(commandId, sagaId, timestamp);
         this.payment = payment;
     }
 
-    public static ProcessPaymentCommand create(Long sagaId, String correlationId, Payment payment) {
+    public static ProcessPaymentCommand create(Long sagaId, Payment payment) {
         return new ProcessPaymentCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             payment
         );

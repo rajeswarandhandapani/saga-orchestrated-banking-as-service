@@ -27,11 +27,10 @@ public class AccountOpenedEvent extends BaseEvent {
 
     User user;
 
-    public static AccountOpenedEvent create(Long sagaId, String correlationId, Account account, User user) {
+    public static AccountOpenedEvent create(Long sagaId, Account account, User user) {
         return AccountOpenedEvent.builder()
             .eventId(UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(Instant.now())
             .success(true)
             .errorMessage(null)

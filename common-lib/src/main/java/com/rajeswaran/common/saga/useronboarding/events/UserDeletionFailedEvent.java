@@ -22,12 +22,10 @@ public class UserDeletionFailedEvent extends BaseEvent {
     @NotBlank
     private String username;
 
-    public static UserDeletionFailedEvent create(Long sagaId, String correlationId, 
-                                               String username, String errorMessage) {
+    public static UserDeletionFailedEvent create(Long sagaId, String username, String errorMessage) {
         return UserDeletionFailedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(Instant.now())
             .success(false)
             .errorMessage(errorMessage)

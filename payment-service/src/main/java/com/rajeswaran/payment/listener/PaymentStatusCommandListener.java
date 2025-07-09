@@ -45,7 +45,6 @@ public class PaymentStatusCommandListener {
                 // Publish success event
                 PaymentStatusUpdatedEvent event = PaymentStatusUpdatedEvent.create(
                     command.getSagaId(),
-                    command.getCorrelationId(),
                     updatedPayment
                 );
                 streamBridge.send("paymentStatusUpdatedEvent-out-0", event);

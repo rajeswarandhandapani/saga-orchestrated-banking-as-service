@@ -18,6 +18,8 @@ management:
     health:
       show-details: always
 logging:
+  pattern:
+    console: "[${spring.application.name}] [%X{trace_id:-N/A} %X{span_id:-N/A}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{40} - %msg%n"
   level:
     org.apache.kafka: WARN
     org.springframework.kafka: WARN

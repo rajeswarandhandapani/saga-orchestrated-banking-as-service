@@ -28,19 +28,17 @@ public class OpenAccountCommand extends BaseCommand {
     @NotNull
     private User user;
     
-    public OpenAccountCommand(String commandId, Long sagaId, String correlationId, Instant timestamp,
+    public OpenAccountCommand(String commandId, Long sagaId, Instant timestamp,
                             String accountType, User user) {
-        super(commandId, sagaId, correlationId, timestamp);
+        super(commandId, sagaId, timestamp);
         this.accountType = accountType;
         this.user = user;
     }
     
-    public static OpenAccountCommand create(Long sagaId, String correlationId, 
-                                          String accountType, User user) {
+    public static OpenAccountCommand create(Long sagaId, String accountType, User user) {
         return new OpenAccountCommand(
             java.util.UUID.randomUUID().toString(),
             sagaId,
-            correlationId,
             Instant.now(),
             accountType,
             user

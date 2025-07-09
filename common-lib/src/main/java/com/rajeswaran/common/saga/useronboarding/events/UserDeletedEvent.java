@@ -22,11 +22,10 @@ public class UserDeletedEvent extends BaseEvent {
     @NotBlank
     private String username;
 
-    public static UserDeletedEvent create(Long sagaId, String correlationId, String username) {
+    public static UserDeletedEvent create(Long sagaId, String username) {
         return UserDeletedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(Instant.now())
             .success(true)
             .errorMessage(null)

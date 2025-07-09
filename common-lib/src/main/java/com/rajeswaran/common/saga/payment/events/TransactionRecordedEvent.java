@@ -20,11 +20,10 @@ public class TransactionRecordedEvent extends BaseEvent {
 
     Payment payment;
 
-    public static TransactionRecordedEvent create(Long sagaId, String correlationId, Payment payment) {
+    public static TransactionRecordedEvent create(Long sagaId, Payment payment) {
         return TransactionRecordedEvent.builder()
             .eventId(java.util.UUID.randomUUID().toString())
             .sagaId(sagaId)
-            .correlationId(correlationId)
             .timestamp(java.time.Instant.now())
             .payment(payment)
             .build();
