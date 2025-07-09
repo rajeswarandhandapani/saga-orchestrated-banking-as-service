@@ -121,7 +121,7 @@ graph LR
 
 2. **Build and Start Services**:
    ```bash
-   ./start-all-services.sh
+   ./start-springboot-services.sh
    ```
 
 3. **Access Points**:

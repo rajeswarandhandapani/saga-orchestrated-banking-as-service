@@ -72,9 +72,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=baas_password
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=user-service
-      - OTEL_TRACES_EXPORTER=console
+      - OTEL_TRACES_EXPORTER=none
       - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=console
+      - OTEL_LOGS_EXPORTER=none
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -99,9 +99,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=baas_password
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=account-service
-      - OTEL_TRACES_EXPORTER=console
+      - OTEL_TRACES_EXPORTER=none
       - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=console
+      - OTEL_LOGS_EXPORTER=none
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -126,9 +126,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=baas_password
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=transaction-service
-      - OTEL_TRACES_EXPORTER=console
+      - OTEL_TRACES_EXPORTER=none
       - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=console
+      - OTEL_LOGS_EXPORTER=none
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -153,9 +153,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=baas_password
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=payment-service
-      - OTEL_TRACES_EXPORTER=console
+      - OTEL_TRACES_EXPORTER=none
       - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=console
+      - OTEL_LOGS_EXPORTER=none
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -180,9 +180,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=baas_password
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=notification-service
-      - OTEL_TRACES_EXPORTER=console
+      - OTEL_TRACES_EXPORTER=none
       - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=console
+      - OTEL_LOGS_EXPORTER=none
     depends_on:
       service-discovery:
         condition: service_healthy
@@ -205,9 +205,9 @@ services:
       - SPRING_DATASOURCE_PASSWORD=baas_password
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=saga-orchestrator-service
-      - OTEL_TRACES_EXPORTER=console
+      - OTEL_TRACES_EXPORTER=none
       - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=console
+      - OTEL_LOGS_EXPORTER=none
     ports:
       - "8090:8090"
     depends_on:
@@ -242,9 +242,9 @@ services:
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/baas
       - JAVA_TOOL_OPTIONS="-javaagent:/app/libs/opentelemetry-javaagent-2.17.0.jar"
       - OTEL_SERVICE_NAME=api-gateway
-      - OTEL_TRACES_EXPORTER=console
+      - OTEL_TRACES_EXPORTER=none
       - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=console
+      - OTEL_LOGS_EXPORTER=none
     depends_on:
       service-discovery:
         condition: service_healthy

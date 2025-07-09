@@ -133,8 +133,10 @@ public abstract class Saga {
         );
 
         // Record step as STARTED before publishing command
-        completeStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
+        startStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
 
         streamBridge.send("sendNotificationCommand-out-0", command);
+
+        completeStep(sagaId, PaymentProcessingSteps.SEND_NOTIFICATION.getStepName(), command);
     }
 }
