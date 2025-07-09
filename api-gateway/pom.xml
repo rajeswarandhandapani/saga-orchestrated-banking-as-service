@@ -52,6 +52,11 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.javaagent</groupId>
+            <artifactId>opentelemetry-javaagent</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>

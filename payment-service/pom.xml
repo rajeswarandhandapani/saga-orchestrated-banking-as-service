@@ -86,6 +86,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!-- OpenTelemetry Java Agent -->
+        <dependency>
+            <groupId>io.opentelemetry.javaagent</groupId>
+            <artifactId>opentelemetry-javaagent</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
