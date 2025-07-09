@@ -60,7 +60,7 @@ eureka:
 # =====================
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{trace_id:-N/A} %X{span_id:-N/A}] [${spring.application.name}] %logger{40} - %msg%n"
+    console: "[${spring.application.name}] [%X{trace_id:-N/A} %X{span_id:-N/A}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{40} - %msg%n"
   level:
     com.rajeswaran: INFO
     org.springframework.cloud.gateway: INFO
