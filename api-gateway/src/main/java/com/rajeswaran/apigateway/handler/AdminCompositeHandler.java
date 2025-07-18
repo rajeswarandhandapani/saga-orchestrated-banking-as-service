@@ -1,6 +1,7 @@
 package com.rajeswaran.apigateway.handler;
 
 import com.rajeswaran.apigateway.client.AdminDashboardClient;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminCompositeHandler {
 
+    private final ReactiveCircuitBreakerFactory<?, ?> circuitBreakerFactory;
+
     private final AdminDashboardClient adminDashboardClient;
 
     public Mono<ServerResponse> getAdminDashboard(ServerRequest serverRequest) {
@@ -23,7 +26,11 @@ public class AdminCompositeHandler {
         Mono<ResponseEntity<Object>> users = adminDashboardClient.fetchUsers(authHeader);
         Mono<ResponseEntity<Object>> accounts = adminDashboardClient.fetchAccounts(authHeader);
         Mono<ResponseEntity<Object>> transactions = adminDashboardClient.fetchTransactions(authHeader);
-        Mono<ResponseEntity<Object>> payments = adminDashboardClient.fetchPayments(authHeader);
+        Mono<ResponseEntity<Object>> payments = circuitBreakerFactory.create("paymentsService")
+            .run(
+                adminDashboardClient.fetchPayments(authHeader),
+                throwable -> Mono.just(ResponseEntity.ok(null))
+            );
         Mono<ResponseEntity<Object>> notifications = adminDashboardClient.fetchNotifications(authHeader);
         Mono<ResponseEntity<Object>> sagaInstances = adminDashboardClient.fetchSagaInstances(authHeader);
 
