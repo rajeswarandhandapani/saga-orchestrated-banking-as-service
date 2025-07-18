@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rajeswaran.common.entity.User;
+import com.rajeswaran.user.dto.UpdateUserRequest;
 import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.user.service.UserService;
 
@@ -26,7 +28,7 @@ public class UserController {
 
     @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody com.rajeswaran.user.dto.UpdateUserRequest request) {
+    public User updateUser(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest request) {
         log.info("Received request: updateUser id={}, fullName={}, email={}", id, request.getFullName(), request.getEmail());
         return userService.updateUserDetails(id, request.getFullName(), request.getEmail());
     }
