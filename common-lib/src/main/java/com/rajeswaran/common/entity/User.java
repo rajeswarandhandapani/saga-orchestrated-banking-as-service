@@ -18,6 +18,10 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class User {
+    
+    @Version
+    private Long version;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
