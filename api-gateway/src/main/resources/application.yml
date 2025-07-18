@@ -73,7 +73,22 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway,metrics,routes
+        include: health,info,gateway,metrics,routes,circuitbreakers
   endpoint:
     health:
       show-details: always
+
+# =====================
+# Resilience4j Circuit Breaker Configuration
+# =====================
+resilience4j:
+  circuitbreaker:
+    instances:
+      paymentsService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10

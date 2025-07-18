@@ -1,23 +1,29 @@
 package com.rajeswaran.apigateway.handler;
 
 import com.rajeswaran.apigateway.client.AdminDashboardClient;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AdminCompositeHandler {
 
-    private final ReactiveCircuitBreakerFactory<?, ?> circuitBreakerFactory;
-
     private final AdminDashboardClient adminDashboardClient;
+    private final CircuitBreakerRegistry circuitBreakerRegistry;
 
     public Mono<ServerResponse> getAdminDashboard(ServerRequest serverRequest) {
 
@@ -26,11 +32,11 @@ public class AdminCompositeHandler {
         Mono<ResponseEntity<Object>> users = adminDashboardClient.fetchUsers(authHeader);
         Mono<ResponseEntity<Object>> accounts = adminDashboardClient.fetchAccounts(authHeader);
         Mono<ResponseEntity<Object>> transactions = adminDashboardClient.fetchTransactions(authHeader);
-        Mono<ResponseEntity<Object>> payments = circuitBreakerFactory.create("paymentsService")
-            .run(
-                adminDashboardClient.fetchPayments(authHeader),
-                throwable -> Mono.just(ResponseEntity.ok(null))
-            );
+        Mono<ResponseEntity<Object>> payments = withCircuitBreaker(
+            "paymentsService",
+            () -> adminDashboardClient.fetchPayments(authHeader),
+            t -> clientFallback(authHeader, t)
+        );
         Mono<ResponseEntity<Object>> notifications = adminDashboardClient.fetchNotifications(authHeader);
         Mono<ResponseEntity<Object>> sagaInstances = adminDashboardClient.fetchSagaInstances(authHeader);
 
@@ -56,6 +62,19 @@ public class AdminCompositeHandler {
                             )
                     );
                 });
+    }
+
+    // Generic circuit breaker wrapper for all fetch calls
+    public <T> Mono<T> withCircuitBreaker(String serviceName, Supplier<Mono<T>> supplier, Function<Throwable, Mono<T>> fallback) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker(serviceName);
+        return Mono.defer(supplier)
+            .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
+            .onErrorResume(fallback);
+    }
+
+    public Mono<ResponseEntity<Object>> clientFallback(String authHeader, Throwable t) {
+        log.warn("FALLBACK TO DASHBOARD CLIENT {}", t.getMessage());
+        return Mono.just(ResponseEntity.ok(Collections.emptyList()));
     }
 
 }
