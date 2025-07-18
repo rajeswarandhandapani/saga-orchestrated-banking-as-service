@@ -29,16 +29,36 @@ public class AdminCompositeHandler {
 
         String authHeader = serverRequest.headers().firstHeader("Authorization");
 
-        Mono<ResponseEntity<Object>> users = adminDashboardClient.fetchUsers(authHeader);
-        Mono<ResponseEntity<Object>> accounts = adminDashboardClient.fetchAccounts(authHeader);
-        Mono<ResponseEntity<Object>> transactions = adminDashboardClient.fetchTransactions(authHeader);
+        Mono<ResponseEntity<Object>> users = withCircuitBreaker(
+            "usersService",
+            () -> adminDashboardClient.fetchUsers(authHeader),
+            t -> clientFallback(authHeader, t)
+        );
+        Mono<ResponseEntity<Object>> accounts = withCircuitBreaker(
+            "accountsService",
+            () -> adminDashboardClient.fetchAccounts(authHeader),
+            t -> clientFallback(authHeader, t)
+        );
+        Mono<ResponseEntity<Object>> transactions = withCircuitBreaker(
+            "transactionsService",
+            () -> adminDashboardClient.fetchTransactions(authHeader),
+            t -> clientFallback(authHeader, t)
+        );
         Mono<ResponseEntity<Object>> payments = withCircuitBreaker(
             "paymentsService",
             () -> adminDashboardClient.fetchPayments(authHeader),
             t -> clientFallback(authHeader, t)
         );
-        Mono<ResponseEntity<Object>> notifications = adminDashboardClient.fetchNotifications(authHeader);
-        Mono<ResponseEntity<Object>> sagaInstances = adminDashboardClient.fetchSagaInstances(authHeader);
+        Mono<ResponseEntity<Object>> notifications = withCircuitBreaker(
+            "notificationsService",
+            () -> adminDashboardClient.fetchNotifications(authHeader),
+            t -> clientFallback(authHeader, t)
+        );
+        Mono<ResponseEntity<Object>> sagaInstances = withCircuitBreaker(
+            "sagaInstancesService",
+            () -> adminDashboardClient.fetchSagaInstances(authHeader),
+            t -> clientFallback(authHeader, t)
+        );
 
         return Mono.zip(users, accounts, transactions, payments, notifications, sagaInstances)
                 .flatMap(tuple -> {

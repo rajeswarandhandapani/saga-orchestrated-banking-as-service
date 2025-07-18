@@ -83,8 +83,8 @@ management:
 # =====================
 resilience4j:
   circuitbreaker:
-    instances:
-      paymentsService:
+    configs:
+      default:
         registerHealthIndicator: true
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
@@ -92,3 +92,18 @@ resilience4j:
         waitDurationInOpenState: 10s
         failureRateThreshold: 50
         eventConsumerBufferSize: 10
+        ignoreExceptions:
+          - org.springframework.web.server.ResponseStatusException
+    instances:
+      usersService:
+        baseConfig: default
+      accountsService:
+        baseConfig: default
+      transactionsService:
+        baseConfig: default
+      paymentsService:
+        baseConfig: default
+      notificationsService:
+        baseConfig: default
+      sagaInstancesService:
+        baseConfig: default
