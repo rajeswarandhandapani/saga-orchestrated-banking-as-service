@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody com.rajeswaran.user.dto.UpdateUserRequest request) {
+        log.info("Received request: updateUser id={}, fullName={}, email={}", id, request.getFullName(), request.getEmail());
+        return userService.updateUserDetails(id, request.getFullName(), request.getEmail());
+    }
 
     @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     @GetMapping
