@@ -97,4 +97,156 @@ public class AccountService {
     public void closeAccountByUserId(String userId) {
         accountRepository.deleteByUserId(userId);
     }
+
+    /**
+     * Atomically transfers money between two accounts with pessimistic locking.
+     * This method ensures that both debit and credit operations happen within a single transaction
+     * with proper locking to prevent concurrent access issues.
+     * 
+     * @param sourceAccountNumber the source account number
+     * @param destinationAccountNumber the destination account number
+     * @param amount the amount to transfer
+     * @return TransferResult containing success status and updated balances
+     */
+    @Transactional
+    public TransferResult transferMoney(String sourceAccountNumber, String destinationAccountNumber, double amount) {
+        // Fetch both accounts within the transaction with pessimistic locking
+        // Lock accounts in a consistent order to prevent deadlocks (alphabetical order)
+        String firstAccount = sourceAccountNumber.compareTo(destinationAccountNumber) < 0 ? 
+            sourceAccountNumber : destinationAccountNumber;
+        String secondAccount = sourceAccountNumber.compareTo(destinationAccountNumber) < 0 ? 
+            destinationAccountNumber : sourceAccountNumber;
+            
+        // Lock accounts in consistent order to prevent deadlocks
+        Optional<Account> firstOpt = accountRepository.findByAccountNumberWithLock(firstAccount);
+        Optional<Account> secondOpt = accountRepository.findByAccountNumberWithLock(secondAccount);
+        
+        // Map back to source and destination
+        Optional<Account> sourceOpt = sourceAccountNumber.equals(firstAccount) ? firstOpt : secondOpt;
+        Optional<Account> destOpt = destinationAccountNumber.equals(firstAccount) ? firstOpt : secondOpt;
+        
+        if (sourceOpt.isEmpty()) {
+            throw new IllegalArgumentException("Source account not found: " + sourceAccountNumber);
+        }
+        if (destOpt.isEmpty()) {
+            throw new IllegalArgumentException("Destination account not found: " + destinationAccountNumber);
+        }
+        
+        Account sourceAccount = sourceOpt.get();
+        Account destAccount = destOpt.get();
+        
+        // Validate account status
+        if (!"ACTIVE".equalsIgnoreCase(sourceAccount.getStatus())) {
+            throw new IllegalStateException("Source account is not active: " + sourceAccountNumber);
+        }
+        if (!"ACTIVE".equalsIgnoreCase(destAccount.getStatus())) {
+            throw new IllegalStateException("Destination account is not active: " + destinationAccountNumber);
+        }
+        
+        // Check sufficient balance (now with locked balance)
+        if (sourceAccount.getBalance() < amount) {
+            throw new IllegalStateException("Insufficient balance. Available: " + sourceAccount.getBalance() + ", Required: " + amount);
+        }
+        
+        // Perform the transfer atomically
+        sourceAccount.setBalance(sourceAccount.getBalance() - amount);
+        destAccount.setBalance(destAccount.getBalance() + amount);
+        
+        // Save both accounts - if either fails, entire transaction rolls back
+        accountRepository.save(sourceAccount);
+        accountRepository.save(destAccount);
+        
+        return new TransferResult(true, sourceAccount.getBalance(), destAccount.getBalance());
+    }
+
+    /**
+     * Alternative transfer method using optimistic locking instead of pessimistic locking.
+     * This approach is more performant but may require retry logic in case of concurrent access.
+     * 
+     * @param sourceAccountNumber the source account number
+     * @param destinationAccountNumber the destination account number
+     * @param amount the amount to transfer
+     * @param maxRetries maximum number of retry attempts for optimistic lock failures
+     * @return TransferResult containing success status and updated balances
+     */
+    @Transactional
+    public TransferResult transferMoneyOptimistic(String sourceAccountNumber, String destinationAccountNumber, 
+                                                 double amount, int maxRetries) {
+        int attempts = 0;
+        
+        while (attempts <= maxRetries) {
+            try {
+                // Fetch both accounts (optimistic locking via @Version)
+                Optional<Account> sourceOpt = getAccountByAccountNumber(sourceAccountNumber);
+                Optional<Account> destOpt = getAccountByAccountNumber(destinationAccountNumber);
+                
+                if (sourceOpt.isEmpty()) {
+                    throw new IllegalArgumentException("Source account not found: " + sourceAccountNumber);
+                }
+                if (destOpt.isEmpty()) {
+                    throw new IllegalArgumentException("Destination account not found: " + destinationAccountNumber);
+                }
+                
+                Account sourceAccount = sourceOpt.get();
+                Account destAccount = destOpt.get();
+                
+                // Validate account status
+                if (!"ACTIVE".equalsIgnoreCase(sourceAccount.getStatus())) {
+                    throw new IllegalStateException("Source account is not active: " + sourceAccountNumber);
+                }
+                if (!"ACTIVE".equalsIgnoreCase(destAccount.getStatus())) {
+                    throw new IllegalStateException("Destination account is not active: " + destinationAccountNumber);
+                }
+                
+                // Check sufficient balance
+                if (sourceAccount.getBalance() < amount) {
+                    throw new IllegalStateException("Insufficient balance. Available: " + sourceAccount.getBalance() + ", Required: " + amount);
+                }
+                
+                // Perform the transfer
+                sourceAccount.setBalance(sourceAccount.getBalance() - amount);
+                destAccount.setBalance(destAccount.getBalance() + amount);
+                
+                // Save both accounts - @Version will handle optimistic locking
+                accountRepository.save(sourceAccount);
+                accountRepository.save(destAccount);
+                
+                return new TransferResult(true, sourceAccount.getBalance(), destAccount.getBalance());
+                
+            } catch (org.springframework.orm.ObjectOptimisticLockingFailureException e) {
+                attempts++;
+                if (attempts > maxRetries) {
+                    throw new IllegalStateException("Transfer failed after " + maxRetries + " retries due to concurrent access. Please try again.", e);
+                }
+                // Brief pause before retry to reduce contention
+                try {
+                    Thread.sleep(10 + (attempts * 5)); // Progressive backoff
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Transfer interrupted during retry", ie);
+                }
+            }
+        }
+        
+        throw new IllegalStateException("Transfer failed unexpectedly");
+    }
+
+    /**
+     * Result object for money transfer operations.
+     */
+    public static class TransferResult {
+        private final boolean success;
+        private final double sourceBalance;
+        private final double destinationBalance;
+        
+        public TransferResult(boolean success, double sourceBalance, double destinationBalance) {
+            this.success = success;
+            this.sourceBalance = sourceBalance;
+            this.destinationBalance = destinationBalance;
+        }
+        
+        public boolean isSuccess() { return success; }
+        public double getSourceBalance() { return sourceBalance; }
+        public double getDestinationBalance() { return destinationBalance; }
+    }
 }

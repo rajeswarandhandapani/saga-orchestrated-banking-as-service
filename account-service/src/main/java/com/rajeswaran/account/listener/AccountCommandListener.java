@@ -83,7 +83,8 @@ public class AccountCommandListener {
     }
 
     /**
-     * Consumes ProcessPaymentCommand, fetches account, and logs result (incremental step).
+     * Consumes ProcessPaymentCommand, validates accounts, and processes payment atomically.
+     * Uses transactional money transfer to ensure data consistency.
      */
     @Bean
     public Consumer<Message<ProcessPaymentCommand>> processPaymentCommand() {
@@ -92,51 +93,45 @@ public class AccountCommandListener {
             Payment payment = cmd.getPayment();
             log.info("[Account] Received ProcessPaymentCommand for saga {} and payment: {}", cmd.getSagaId(), payment);
 
-            var srcOpt = accountService.getAccountByAccountNumber(payment.getSourceAccountNumber());
-            if (srcOpt.isEmpty()) {
-                publishFailed(cmd, "Source account not found", payment);
-                return;
-            }
-            var src = srcOpt.get();
-            if (!"ACTIVE".equalsIgnoreCase(src.getStatus())) {
-                publishFailed(cmd, "Source account is not active", payment);
-                return;
-            }
-            if (src.getBalance() < payment.getAmount()) {
-                publishFailed(cmd, "Insufficient balance", payment);
-                return;
-            }
-            var destOpt = accountService.getAccountByAccountNumber(payment.getDestinationAccountNumber());
-            if (destOpt.isEmpty()) {
-                publishFailed(cmd, "Destination account not found", payment);
-                return;
-            }
-            var dest = destOpt.get();
-            if (!"ACTIVE".equalsIgnoreCase(dest.getStatus())) {
-                publishFailed(cmd, "Destination account is not active", payment);
-                return;
-            }
-            payment.setDestinationAccountUserName(dest.getUserName());
+            try {
+                // Perform atomic money transfer
+                AccountService.TransferResult result = accountService.transferMoney(
+                    payment.getSourceAccountNumber(),
+                    payment.getDestinationAccountNumber(), 
+                    payment.getAmount()
+                );
+                
+                // Get destination account user name for the payment
+                var destOpt = accountService.getAccountByAccountNumber(payment.getDestinationAccountNumber());
+                if (destOpt.isPresent()) {
+                    payment.setDestinationAccountUserName(destOpt.get().getUserName());
+                }
+                
+                // Set the updated balances on the payment object
+                payment.setSourceAccountBalance(result.getSourceBalance());
+                payment.setDestinationAccountBalance(result.getDestinationBalance());
 
-
-            // All checks passed: update balances
-            boolean debited = accountService.deductFromAccount(payment.getSourceAccountNumber(), payment.getAmount());
-            boolean credited = accountService.addToAccount(payment.getDestinationAccountNumber(), payment.getAmount());
-
-            if (!debited || !credited) {
-                publishFailed(cmd, "Failed to update account balances", payment);
-                return;
+                log.info("[Account] Successfully transferred {} from {} to {}", 
+                    payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber());
+                
+                // Publish success event
+                streamBridge.send("paymentProcessedEvent-out-0", PaymentProcessedEvent.create(
+                    cmd.getSagaId(), payment
+                ));
+                log.info("[Account] Published PaymentProcessedEvent for saga {} and payment: {}", cmd.getSagaId(), payment.getId());
+                
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                // Business logic errors (account not found, insufficient balance, etc.)
+                log.warn("[Account] Payment validation failed for saga {} and payment {}: {}", 
+                    cmd.getSagaId(), payment.getId(), e.getMessage());
+                publishFailed(cmd, e.getMessage(), payment);
+                
+            } catch (Exception e) {
+                // Unexpected errors (database failures, etc.)
+                log.error("[Account] Unexpected error processing payment for saga {} and payment {}: {}", 
+                    cmd.getSagaId(), payment.getId(), e.getMessage(), e);
+                publishFailed(cmd, "Failed to process payment: " + e.getMessage(), payment);
             }
-
-            //set source and destination account balance after transaction on the payment
-            payment.setSourceAccountBalance(src.getBalance() - payment.getAmount());
-            payment.setDestinationAccountBalance(dest.getBalance() + payment.getAmount());
-
-            log.info("[Account] Debited {} from {} and credited to {}", payment.getAmount(), payment.getSourceAccountNumber(), payment.getDestinationAccountNumber());
-            streamBridge.send("paymentProcessedEvent-out-0", PaymentProcessedEvent.create(
-                cmd.getSagaId(), payment
-            ));
-            log.info("[Account] Published PaymentProcessedEvent for saga {} and payment: {}", cmd.getSagaId(), payment.getId());
         };
     }
 
