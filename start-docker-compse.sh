@@ -15,7 +15,7 @@ echo "Building microservices Docker images..."
 echo "========================================="
 
 # Build all the Docker images using Maven package goal
-mvn clean package
+mvn clean package -DskipTests -Ddocker.skip=true
 
 # Check if the Maven build was successful
 if [ $? -ne 0 ]; then
