@@ -44,5 +44,8 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    public List<Notification> getNotificationByUserName(String userName) {
+        return notificationRepository.findByUserName(userName);
+    }
 
 }

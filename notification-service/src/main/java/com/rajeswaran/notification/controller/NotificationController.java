@@ -1,6 +1,7 @@
 package com.rajeswaran.notification.controller;
 
 import com.rajeswaran.common.entity.Notification;
+import com.rajeswaran.common.util.SecurityUtil;
 import com.rajeswaran.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,12 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/api/notifications")
-@PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
-
+    
     @GetMapping
+    @PreAuthorize("hasRole(T(com.rajeswaran.common.AppConstants).ROLE_BAAS_ADMIN)")
     public List<Notification> getAllNotifications() {
         log.info("Received request: getAllNotifications");
         List<Notification> notifications = notificationService.getAllNotifications();
@@ -41,6 +42,15 @@ public class NotificationController {
             log.info("Completed request: getNotificationById, notificationId={} not found", id);
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/my-notifications")
+    public ResponseEntity<List<Notification>> getMyNotifications() {
+        log.info("Received request: getMyNotifications");
+        String username = SecurityUtil.getCurrentUsername();
+        List<Notification> notifications = notificationService.getNotificationByUserName(username);
+        log.info("Completed request: getMyNotifications, count={}", notifications.size());
+        return ResponseEntity.ok(notifications);
     }
 
 }
