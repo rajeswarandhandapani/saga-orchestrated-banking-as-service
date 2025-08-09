@@ -36,12 +36,12 @@
       ]
     },
     {
-      "username": "user1",
+      "username": "johndoe",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Regular",
-      "lastName": "User1",
-      "email": "user1@baas.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@baas.com",
       "credentials": [
         {
           "type": "password",
@@ -54,12 +54,12 @@
       ]
     },
     {
-      "username": "user2",
+      "username": "james",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Regular",
-      "lastName": "User2",
-      "email": "user2@baas.com",
+      "firstName": "James",
+      "lastName": "Smith",
+      "email": "james@baas.com",
       "credentials": [
         {
           "type": "password",
